@@ -274,36 +274,49 @@ ok "Authenticated as $GH_USER"
 
 # -------- Clone repos --------
 step "Cloning the dashboard into $ACCESSOR_DIR"
+CLONE_ERR_FILE=$(mktemp -t accessor-clone-err.XXXXXX)
 if [ -d "$ACCESSOR_DIR/.git" ]; then
   info "Existing clone detected; pulling latest..."
   git -C "$ACCESSOR_DIR" pull --ff-only
 else
-  if ! gh repo clone "$DASHBOARD_REPO" "$ACCESSOR_DIR" -- --depth=1 2>/tmp/accessor-clone-err; then
-    if grep -qi "not found\|denied\|404\|forbidden" /tmp/accessor-clone-err; then
+  if ! gh repo clone "$DASHBOARD_REPO" "$ACCESSOR_DIR" -- --depth=1 2>"$CLONE_ERR_FILE"; then
+    if grep -qi "not found\|denied\|404\|forbidden" "$CLONE_ERR_FILE"; then
       warn "GitHub denied access to $DASHBOARD_REPO."
       info ""
       info "Your GitHub user ($GH_USER) hasn't been added as a collaborator."
       info "Email ryan@shortux.com with this GitHub username and Ryan will"
       info "add you within a few hours. Then re-run this installer."
+      info ""
+      sed 's/^/  /' "$CLONE_ERR_FILE" >&2
+      rm -f "$CLONE_ERR_FILE"
       exit 2
     fi
-    fail "Clone failed. See /tmp/accessor-clone-err for details."
+    warn "Clone failed. Error output:"
+    sed 's/^/  /' "$CLONE_ERR_FILE" >&2
+    rm -f "$CLONE_ERR_FILE"
+    exit 1
   fi
 fi
+rm -f "$CLONE_ERR_FILE"
 ok "Dashboard cloned"
 
 step "Cloning the audit skill into $SKILL_PATH"
 mkdir -p "$(dirname "$SKILL_PATH")"
+SKILL_ERR_FILE=$(mktemp -t accessor-skill-err.XXXXXX)
 if [ -d "$SKILL_PATH/.git" ]; then
   info "Existing clone detected; pulling latest..."
   git -C "$SKILL_PATH" pull --ff-only
 else
-  if ! gh repo clone "$SKILL_REPO" "$SKILL_PATH" -- --depth=1 2>/tmp/accessor-skill-err; then
+  if ! gh repo clone "$SKILL_REPO" "$SKILL_PATH" -- --depth=1 2>"$SKILL_ERR_FILE"; then
     warn "Could not clone the skill repo. If this is also a 'not found',"
     warn "Ryan needs to add you to that repo too. Email ryan@shortux.com."
+    info ""
+    sed 's/^/  /' "$SKILL_ERR_FILE" >&2
+    rm -f "$SKILL_ERR_FILE"
     exit 2
   fi
 fi
+rm -f "$SKILL_ERR_FILE"
 ok "Skill cloned"
 
 # -------- npm install + setup --------
