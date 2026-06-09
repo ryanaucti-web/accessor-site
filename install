@@ -1,19 +1,25 @@
 #!/usr/bin/env bash
-# Accessor installer — minimal version.
+# Accessor installer.
 #
 # Usage:
 #   bash <(curl -fsSL https://accessor.shortux.com/install)
 #
-# Prerequisites you should have installed before running this:
-#   - Node.js 20 or newer (nodejs.org)
-#   - git (git-scm.com or pre-installed on most macOS via Xcode CLT)
-#   - GitHub CLI / gh (cli.github.com)
-#   - Python 3.9+ (built into macOS 12+; sudo apt install python3 on Linux)
+# What this checks and what it can install for you:
+#   - Node.js 20+ ........... can install portable into ~/.accessor/ (no admin)
+#   - GitHub CLI (gh) ....... can install portable into ~/.accessor/ (no admin)
+#   - git ................... must already be present (xcode-select or apt)
+#   - Python 3.9+ ........... must already be present (macOS 12+ has it)
 #
-# If you'd rather follow the manual steps yourself, the install kit has a
-# six-step version. This script just runs those same steps in one shot.
+# Customers with everything pre-installed run straight through. Customers
+# missing Node or gh get a yes/no prompt offering portable downloads (no
+# admin, no Homebrew). Customers missing git or Python are told to ask IT
+# or install via the official source.
 
 set -euo pipefail
+
+# Pinned versions. Bump and re-deploy when refreshing.
+NODE_VERSION="22.11.0"
+GH_VERSION="2.93.0"
 
 BOLD=$(tput bold 2>/dev/null || true)
 DIM=$(tput dim 2>/dev/null || true)
@@ -31,6 +37,11 @@ info() { printf '%s   %s%s\n' "${DIM}" "$1" "${RESET}"; }
 
 need_cmd() { command -v "$1" >/dev/null 2>&1; }
 
+version_ge() {
+  local v1="$1" v2="$2"
+  [ "$(printf '%s\n%s\n' "$v1" "$v2" | sort -V | head -n 1)" = "$v2" ]
+}
+
 ACCESSOR_DIR="${ACCESSOR_DIR:-$HOME/accessor}"
 ACCESSOR_FULL_BROWSERS="${ACCESSOR_FULL_BROWSERS:-0}"
 ACCESSOR_SKIP_LICENSE="${ACCESSOR_SKIP_LICENSE:-0}"
@@ -38,38 +49,214 @@ AUDITS_ROOT="$HOME/.accessibility-audits"
 SKILL_PATH="$HOME/.claude/skills/accessibility-audit"
 DASHBOARD_REPO="shortux/accessibility-dashboard"
 SKILL_REPO="shortux/accessibility-audit-skill"
+ACCESSOR_HOME="$HOME/.accessor"
+ACCESSOR_BIN="$ACCESSOR_HOME/bin"
+ACCESSOR_NODE_DIR="$ACCESSOR_HOME/node"
+
+# Platform detection
+case "$(uname -s)" in
+  Darwin*) PLATFORM="macos" ;;
+  Linux*)  PLATFORM="linux" ;;
+  *) fail "Unsupported platform: $(uname -s). macOS and Linux only." ;;
+esac
+
+ARCH_RAW=$(uname -m)
+case "$ARCH_RAW" in
+  arm64|aarch64) NODE_ARCH="arm64"; GH_ARCH="arm64" ;;
+  x86_64|amd64)  NODE_ARCH="x64";   GH_ARCH="amd64" ;;
+  *) fail "Unsupported architecture: $ARCH_RAW" ;;
+esac
+
+# If portable installs from previous runs exist, put them on PATH first
+export PATH="$ACCESSOR_BIN:$ACCESSOR_NODE_DIR/bin:$PATH"
 
 printf '\n'
 printf '%s  Accessor installer%s\n' "${BOLD}" "${RESET}"
 printf '%s  Local-first accessibility auditing. Built in Ottawa.%s\n' "${DIM}" "${RESET}"
 printf '\n'
 
-# -------- prerequisite check (no auto-install) --------
+# -------- prerequisite check --------
 step "Checking prerequisites"
-missing=()
-need_cmd node || missing+=("Node 20+ (https://nodejs.org — install the LTS)")
-need_cmd git  || missing+=("git (https://git-scm.com or macOS Xcode Command Line Tools)")
-need_cmd gh   || missing+=("GitHub CLI (https://cli.github.com)")
-need_cmd python3 || missing+=("Python 3.9+ (built into macOS 12+; apt install python3 on Linux)")
 
-if [ "${#missing[@]}" -gt 0 ]; then
-  fail "Missing prerequisites:
-$(printf '   - %s\n' "${missing[@]}")
+portable_missing=()   # things we can install for the customer (Node, gh)
+manual_missing=()     # things they have to install themselves (git, python3)
 
-Install whichever are missing using the official install for each tool, then
-re-run this installer. The install kit (PDF/DOCX) has direct links and notes
-for each one."
+# Node
+if need_cmd node; then
+  NODE_HAVE=$(node -p "process.versions.node" 2>/dev/null || echo "0.0.0")
+  if version_ge "$NODE_HAVE" "20.0.0"; then
+    ok "Node $NODE_HAVE"
+  else
+    info "Found Node $NODE_HAVE but Accessor needs 20+"
+    portable_missing+=("node")
+  fi
+else
+  portable_missing+=("node")
 fi
 
-# Verify Node version
-NODE_MAJOR=$(node -p "process.versions.node.split('.')[0]")
-if [ "$NODE_MAJOR" -lt 20 ]; then
-  fail "Node $(node -p 'process.versions.node') detected but Accessor needs 20+. Install the latest LTS from nodejs.org and re-run."
+# git
+if need_cmd git; then
+  ok "git $(git --version | awk '{print $3}')"
+else
+  manual_missing+=("git")
 fi
-ok "Node $(node -p 'process.versions.node')"
-ok "git $(git --version | awk '{print $3}')"
-ok "gh $(gh --version | head -1 | awk '{print $3}')"
-ok "python3 $(python3 --version | awk '{print $2}')"
+
+# gh
+if need_cmd gh; then
+  ok "gh $(gh --version | head -1 | awk '{print $3}')"
+else
+  portable_missing+=("gh")
+fi
+
+# Python 3.9+
+PY=""
+for c in python3.12 python3.11 python3.10 python3.9 python3 python; do
+  if need_cmd "$c"; then PY="$c"; break; fi
+done
+if [ -n "$PY" ]; then
+  PY_VERSION=$("$PY" -c 'import sys; print("{}.{}.{}".format(*sys.version_info[:3]))' 2>/dev/null || echo "0.0.0")
+  if version_ge "$PY_VERSION" "3.9.0"; then
+    ok "python3 $PY_VERSION ($PY)"
+  else
+    info "Found Python $PY_VERSION but Accessor needs 3.9+"
+    manual_missing+=("python3")
+  fi
+else
+  manual_missing+=("python3")
+fi
+
+# -------- handle missing prerequisites --------
+
+# Anything that can't be auto-installed bails the script.
+if [ "${#manual_missing[@]}" -gt 0 ]; then
+  printf '\n'
+  warn "The following must be installed manually before re-running:"
+  info ""
+  for tool in "${manual_missing[@]}"; do
+    case "$tool" in
+      git)
+        if [ "$PLATFORM" = "macos" ]; then
+          info "  git → run \`xcode-select --install\` (or ask IT to run it). This"
+          info "        pops up a GUI installer and does require an admin password."
+        else
+          info "  git → sudo apt install git (or your distro's equivalent)"
+        fi
+        ;;
+      python3)
+        if [ "$PLATFORM" = "macos" ]; then
+          info "  python3 → on macOS 12+ this should be at /usr/bin/python3. If"
+          info "            it's not, ask IT to install Python 3.9 or newer."
+        else
+          info "  python3 → sudo apt install python3 (or your distro's equivalent)"
+        fi
+        ;;
+    esac
+  done
+  info ""
+  fail "Install the above, then re-run: bash <(curl -fsSL https://accessor.shortux.com/install)"
+fi
+
+# Node and gh CAN be auto-installed. Ask the user.
+if [ "${#portable_missing[@]}" -gt 0 ]; then
+  printf '\n'
+  warn "Missing: ${portable_missing[*]}"
+  info ""
+  info "I can either:"
+  info "  1) Download portable copies into ~/.accessor/ (no admin needed,"
+  info "     no system changes, lives entirely in your home folder)"
+  info "  2) Exit so you install them yourself from the official sources:"
+  info "     - Node: https://nodejs.org (install the LTS)"
+  info "     - GitHub CLI: https://cli.github.com"
+  info ""
+  read -r -p "Choose [1/2] (default 1): " choice
+  choice="${choice:-1}"
+  if [ "$choice" != "1" ]; then
+    info "OK — install the missing tools and re-run the installer."
+    exit 0
+  fi
+
+  # Install whichever portable things are missing
+  mkdir -p "$ACCESSOR_BIN" "$ACCESSOR_NODE_DIR"
+
+  for tool in "${portable_missing[@]}"; do
+    case "$tool" in
+      node)
+        step "Downloading portable Node $NODE_VERSION into $ACCESSOR_NODE_DIR"
+        if [ "$PLATFORM" = "macos" ]; then
+          TARBALL="node-v${NODE_VERSION}-darwin-${NODE_ARCH}.tar.xz"
+        else
+          TARBALL="node-v${NODE_VERSION}-linux-${NODE_ARCH}.tar.xz"
+        fi
+        URL="https://nodejs.org/dist/v${NODE_VERSION}/${TARBALL}"
+        TMP=$(mktemp -d)
+        if ! curl -fsSL "$URL" -o "$TMP/$TARBALL"; then
+          fail "Couldn't download $URL. Check network/proxy and try again."
+        fi
+        rm -rf "$ACCESSOR_NODE_DIR"
+        mkdir -p "$ACCESSOR_NODE_DIR"
+        tar -xJf "$TMP/$TARBALL" -C "$TMP"
+        EXTRACTED=$(find "$TMP" -maxdepth 1 -type d -name 'node-v*' | head -1)
+        [ -z "$EXTRACTED" ] && fail "Tarball layout unexpected."
+        cp -R "$EXTRACTED"/* "$ACCESSOR_NODE_DIR"/
+        rm -rf "$TMP"
+        [ "$PLATFORM" = "macos" ] && xattr -dr com.apple.quarantine "$ACCESSOR_NODE_DIR" 2>/dev/null || true
+        export PATH="$ACCESSOR_NODE_DIR/bin:$PATH"
+        need_cmd node || fail "Node not on PATH after install."
+        ok "Node $(node -p process.versions.node) at $ACCESSOR_NODE_DIR"
+        ;;
+      gh)
+        step "Downloading portable GitHub CLI $GH_VERSION into $ACCESSOR_BIN"
+        if [ "$PLATFORM" = "macos" ]; then
+          FILENAME="gh_${GH_VERSION}_macOS_${GH_ARCH}.zip"
+        else
+          FILENAME="gh_${GH_VERSION}_linux_${GH_ARCH}.tar.gz"
+        fi
+        URL="https://github.com/cli/cli/releases/download/v${GH_VERSION}/${FILENAME}"
+        TMP=$(mktemp -d)
+        if ! curl -fsSL "$URL" -o "$TMP/$FILENAME"; then
+          fail "Couldn't download $URL. Check network/proxy and try again."
+        fi
+        cd "$TMP"
+        if [ "$PLATFORM" = "macos" ]; then
+          unzip -q "$FILENAME"
+        else
+          tar -xzf "$FILENAME"
+        fi
+        GH_BIN=$(find "$TMP" -type f -name 'gh' -path '*/bin/gh' | head -1)
+        [ -z "$GH_BIN" ] && fail "gh binary not found inside $FILENAME."
+        cp "$GH_BIN" "$ACCESSOR_BIN/gh"
+        chmod +x "$ACCESSOR_BIN/gh"
+        [ "$PLATFORM" = "macos" ] && xattr -dr com.apple.quarantine "$ACCESSOR_BIN/gh" 2>/dev/null || true
+        cd - >/dev/null
+        rm -rf "$TMP"
+        export PATH="$ACCESSOR_BIN:$PATH"
+        need_cmd gh || fail "gh not on PATH after install."
+        ok "gh $GH_VERSION at $ACCESSOR_BIN/gh"
+        ;;
+    esac
+  done
+
+  # Persist PATH for future shell sessions
+  step "Persisting PATH updates"
+  rc=""
+  case "$(basename "${SHELL:-}")" in
+    zsh)  rc="$HOME/.zshrc" ;;
+    bash) rc="$HOME/.bashrc" ;;
+    *)    rc="$HOME/.profile" ;;
+  esac
+  if [ -n "$rc" ] && [ -f "$rc" ] && grep -q 'ACCESSOR_HOME' "$rc"; then
+    info "Already added to $rc"
+  elif [ -n "$rc" ]; then
+    cat >> "$rc" <<EOF
+
+# Added by Accessor installer ($(date +%Y-%m-%d))
+export ACCESSOR_HOME="\$HOME/.accessor"
+[ -d "\$ACCESSOR_HOME/bin" ] && export PATH="\$ACCESSOR_HOME/bin:\$PATH"
+[ -d "\$ACCESSOR_HOME/node/bin" ] && export PATH="\$ACCESSOR_HOME/node/bin:\$PATH"
+EOF
+    info "Added 5 PATH lines to $rc"
+  fi
+fi
 
 # -------- GitHub authentication --------
 step "GitHub CLI authentication"
@@ -165,18 +352,18 @@ else
     ok "Copied $FOUND to $LICENSE_TARGET"
   else
     warn "No license.json found in ~/Downloads or ~/Desktop."
-    info "Drop the license.json into ~/Downloads, then press Enter to retry."
+    info "Drop it into ~/Downloads, then press Enter to retry."
     info "Or type 'skip' to continue without a license (new audits will be blocked)."
     while true; do
-      read -r -p "Path to license.json (or 'skip'): " LICENSE_INPUT
-      [ "$LICENSE_INPUT" = "skip" ] || [ -z "$LICENSE_INPUT" ] && { warn "Continuing without a license."; break; }
-      LICENSE_INPUT="${LICENSE_INPUT/#\~/$HOME}"
-      if [ -f "$LICENSE_INPUT" ]; then
-        cp "$LICENSE_INPUT" "$LICENSE_TARGET"
-        ok "Copied $LICENSE_INPUT to $LICENSE_TARGET"
+      read -r -p "Path to license.json (or 'skip'): " LIC
+      [ "$LIC" = "skip" ] || [ -z "$LIC" ] && { warn "Continuing without a license."; break; }
+      LIC="${LIC/#\~/$HOME}"
+      if [ -f "$LIC" ]; then
+        cp "$LIC" "$LICENSE_TARGET"
+        ok "Copied $LIC to $LICENSE_TARGET"
         break
       fi
-      warn "File not found: $LICENSE_INPUT"
+      warn "File not found: $LIC"
     done
   fi
 fi
@@ -187,9 +374,8 @@ cd "$ACCESSOR_DIR"
 info "Dashboard runs in the foreground. Press Ctrl-C to stop it."
 info "Open http://localhost:7878 in your browser."
 
-# Try to auto-open the URL after a short delay
 ( sleep 2 && {
-    if [ "$(uname -s)" = "Darwin" ]; then
+    if [ "$PLATFORM" = "macos" ]; then
       open http://localhost:7878 >/dev/null 2>&1 || true
     elif need_cmd xdg-open; then
       xdg-open http://localhost:7878 >/dev/null 2>&1 || true
