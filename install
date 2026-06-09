@@ -1,0 +1,346 @@
+#!/usr/bin/env bash
+# Accessor one-line installer.
+#
+# Usage:
+#   curl -fsSL https://accessor.shortux.com/install | bash
+#
+# Options (pass as env vars before the curl):
+#   ACCESSOR_FULL_BROWSERS=1   pull Firefox + WebKit alongside Chromium (Agency
+#                              tier — adds ~400 MB)
+#   ACCESSOR_DIR=/some/path    clone the dashboard here (default: ~/accessor)
+#   ACCESSOR_SKIP_LICENSE=1    skip the license-placement prompt (advanced)
+#
+# What this does, in order:
+#   1. Detects macOS or Linux/WSL and confirms required tools (Node 20+, Python
+#      3.9+, git, gh). Installs missing ones via Homebrew or apt.
+#   2. Authenticates the GitHub CLI if not already authenticated.
+#   3. Clones github.com/shortux/accessibility-dashboard and
+#      github.com/shortux/accessibility-audit-skill (the latter as a sibling
+#      of the first so npm run setup finds it).
+#   4. Runs npm install and npm run setup.
+#   5. Installs Playwright Chromium (and Firefox + WebKit on --full-browsers).
+#   6. Places your license.json into ~/.accessibility-audits/.
+#   7. Starts the dashboard at http://localhost:7878.
+#
+# If any step needs a manual decision (GitHub auth, license location), the
+# script asks. Otherwise it runs unattended.
+
+set -euo pipefail
+
+# -------- pretty printing --------
+BOLD=$(tput bold 2>/dev/null || true)
+DIM=$(tput dim 2>/dev/null || true)
+RED=$(tput setaf 1 2>/dev/null || true)
+GREEN=$(tput setaf 2 2>/dev/null || true)
+YELLOW=$(tput setaf 3 2>/dev/null || true)
+PURPLE=$(tput setaf 5 2>/dev/null || true)
+RESET=$(tput sgr0 2>/dev/null || true)
+
+step() { printf '\n%s==>%s %s%s%s\n' "${PURPLE}" "${RESET}" "${BOLD}" "$1" "${RESET}"; }
+ok()   { printf '%s ✓%s %s\n' "${GREEN}" "${RESET}" "$1"; }
+warn() { printf '%s ⚠%s %s\n' "${YELLOW}" "${RESET}" "$1"; }
+fail() { printf '%s ✗%s %s\n' "${RED}" "${RESET}" "$1" >&2; exit 1; }
+info() { printf '%s   %s%s\n' "${DIM}" "$1" "${RESET}"; }
+
+# -------- preflight: bash, OS, tty --------
+if [ -z "${BASH_VERSION:-}" ]; then
+  fail "This installer requires bash. Try: curl -fsSL ... | bash"
+fi
+
+PLATFORM="unknown"
+case "$(uname -s)" in
+  Darwin*) PLATFORM="macos" ;;
+  Linux*)
+    if grep -qi microsoft /proc/version 2>/dev/null; then
+      PLATFORM="wsl"
+    else
+      PLATFORM="linux"
+    fi
+    ;;
+  *) fail "Unsupported platform: $(uname -s). Accessor supports macOS and Linux." ;;
+esac
+
+ACCESSOR_DIR="${ACCESSOR_DIR:-$HOME/accessor}"
+ACCESSOR_FULL_BROWSERS="${ACCESSOR_FULL_BROWSERS:-0}"
+ACCESSOR_SKIP_LICENSE="${ACCESSOR_SKIP_LICENSE:-0}"
+AUDITS_ROOT="$HOME/.accessibility-audits"
+
+printf '\n'
+printf '%s  Accessor installer%s\n' "${BOLD}" "${RESET}"
+printf '%s  Local-first accessibility auditing. Built in Ottawa.%s\n' "${DIM}" "${RESET}"
+printf '\n'
+info "Platform: ${PLATFORM}"
+info "Install location: ${ACCESSOR_DIR}"
+info "Audits root: ${AUDITS_ROOT}"
+if [ "$ACCESSOR_FULL_BROWSERS" = "1" ]; then
+  info "Cross-browser scan engines: Chromium + Firefox + WebKit"
+else
+  info "Browser engines: Chromium only (set ACCESSOR_FULL_BROWSERS=1 for all three)"
+fi
+printf '\n'
+
+# -------- prerequisite checks --------
+need_cmd() { command -v "$1" >/dev/null 2>&1; }
+
+install_macos_brew() {
+  if ! need_cmd brew; then
+    step "Installing Homebrew"
+    info "Required to install Node, Python, git, and gh."
+    info "Homebrew's official one-line install will run next."
+    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+    # Add brew to PATH for this shell session
+    if [ -x /opt/homebrew/bin/brew ]; then
+      eval "$(/opt/homebrew/bin/brew shellenv)"
+    elif [ -x /usr/local/bin/brew ]; then
+      eval "$(/usr/local/bin/brew shellenv)"
+    fi
+  fi
+}
+
+install_macos_deps() {
+  install_macos_brew
+  local pkgs=()
+  need_cmd node || pkgs+=("node@20")
+  need_cmd python3 || pkgs+=("python")
+  need_cmd git || pkgs+=("git")
+  need_cmd gh || pkgs+=("gh")
+  if [ "${#pkgs[@]}" -gt 0 ]; then
+    step "Installing prerequisites: ${pkgs[*]}"
+    brew install "${pkgs[@]}"
+  else
+    ok "Node, Python, git, and gh are already installed"
+  fi
+  # Verify Node version
+  if need_cmd node; then
+    local node_major
+    node_major=$(node -p "process.versions.node.split('.')[0]")
+    if [ "$node_major" -lt 20 ]; then
+      warn "Node $node_major detected; Accessor needs 20+. Installing node@20."
+      brew install node@20
+      brew link --force --overwrite node@20 >/dev/null 2>&1 || true
+    fi
+  fi
+}
+
+install_linux_deps() {
+  step "Installing prerequisites via apt"
+  info "You'll be prompted for your sudo password."
+  sudo apt update -y
+  local pkgs=()
+  need_cmd node || pkgs+=("nodejs" "npm")
+  need_cmd python3 || pkgs+=("python3" "python3-pip")
+  need_cmd git || pkgs+=("git")
+  if [ "${#pkgs[@]}" -gt 0 ]; then
+    sudo apt install -y "${pkgs[@]}"
+  fi
+  # gh CLI is on its own repo
+  if ! need_cmd gh; then
+    info "Installing GitHub CLI from its official repo..."
+    sudo apt install -y curl
+    type -p curl >/dev/null || sudo apt install -y curl
+    curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg \
+      | sudo dd of=/usr/share/keyrings/githubcli-archive-keyring.gpg \
+      && sudo chmod go+r /usr/share/keyrings/githubcli-archive-keyring.gpg \
+      && echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" \
+        | sudo tee /etc/apt/sources.list.d/github-cli.list >/dev/null \
+      && sudo apt update -y \
+      && sudo apt install -y gh
+  fi
+  if need_cmd node; then
+    local node_major
+    node_major=$(node -p "process.versions.node.split('.')[0]" 2>/dev/null || echo "0")
+    if [ "$node_major" -lt 20 ]; then
+      warn "Node $node_major detected; Accessor needs 20+."
+      info "Installing Node 20 from NodeSource..."
+      curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
+      sudo apt install -y nodejs
+    fi
+  fi
+}
+
+case "$PLATFORM" in
+  macos)
+    install_macos_deps
+    ;;
+  linux|wsl)
+    install_linux_deps
+    ;;
+esac
+
+# Final sanity check
+for tool in node python3 git gh; do
+  if ! need_cmd "$tool"; then
+    fail "$tool is still missing after install. Re-run the installer or install $tool manually."
+  fi
+done
+ok "All prerequisites are present"
+
+# -------- GitHub authentication --------
+step "GitHub CLI authentication"
+if gh auth status >/dev/null 2>&1; then
+  ok "Already authenticated as $(gh api user --jq .login 2>/dev/null || echo "(unknown)")"
+else
+  info "Accessor's source repos are private. The GitHub CLI will open a browser"
+  info "for you to authenticate. Pick GitHub.com, HTTPS, and sign in normally."
+  info ""
+  read -r -p "Press Enter to start GitHub auth, or Ctrl-C to abort: " _
+  gh auth login --git-protocol https --web
+fi
+
+GH_USER=$(gh api user --jq .login 2>/dev/null || true)
+if [ -z "$GH_USER" ]; then
+  fail "Could not read your GitHub username after auth. Try running gh auth login manually."
+fi
+ok "Authenticated as $GH_USER"
+
+# -------- Clone the repos --------
+DASHBOARD_REPO="shortux/accessibility-dashboard"
+SKILL_REPO="shortux/accessibility-audit-skill"
+SKILL_DIR_NAME="accessibility-audit"
+SKILL_PATH="$HOME/.claude/skills/$SKILL_DIR_NAME"
+
+step "Cloning the dashboard into $ACCESSOR_DIR"
+if [ -d "$ACCESSOR_DIR/.git" ]; then
+  info "Existing clone detected; pulling latest..."
+  git -C "$ACCESSOR_DIR" pull --ff-only
+else
+  if ! gh repo clone "$DASHBOARD_REPO" "$ACCESSOR_DIR" -- --depth=1 2>/tmp/accessor-clone-err; then
+    if grep -qi "not found\|denied\|404\|forbidden" /tmp/accessor-clone-err; then
+      warn "GitHub denied access to $DASHBOARD_REPO."
+      info ""
+      info "Your GitHub user ($GH_USER) hasn't been added as a collaborator yet."
+      info "Email ryan@shortux.com with this GitHub username and Ryan will add"
+      info "you within a few hours. Then re-run this installer."
+      info ""
+      cat /tmp/accessor-clone-err | sed 's/^/  /' >&2
+      exit 2
+    else
+      fail "Clone failed. See /tmp/accessor-clone-err for details."
+    fi
+  fi
+fi
+ok "Dashboard cloned"
+
+step "Cloning the audit skill into $SKILL_PATH"
+mkdir -p "$(dirname "$SKILL_PATH")"
+if [ -d "$SKILL_PATH/.git" ]; then
+  info "Existing clone detected; pulling latest..."
+  git -C "$SKILL_PATH" pull --ff-only
+else
+  if ! gh repo clone "$SKILL_REPO" "$SKILL_PATH" -- --depth=1 2>/tmp/accessor-skill-err; then
+    warn "Could not clone the skill repo. If this is also a 'not found',"
+    warn "Ryan needs to add you to that repo too. Email ryan@shortux.com."
+    cat /tmp/accessor-skill-err | sed 's/^/  /' >&2
+    exit 2
+  fi
+fi
+ok "Skill cloned"
+
+# -------- npm install + setup --------
+step "Installing Node dependencies (this takes a minute)"
+cd "$ACCESSOR_DIR"
+npm install --no-audit --no-fund
+ok "Dashboard dependencies installed"
+
+step "Running the dashboard setup script"
+if npm run | grep -q '^  setup'; then
+  npm run setup
+else
+  info "No setup script defined; skipping."
+fi
+ok "Setup complete"
+
+step "Installing Playwright browser binaries"
+cd "$SKILL_PATH"
+if [ ! -f package.json ]; then
+  warn "Skill repo has no package.json; skipping Playwright install."
+else
+  npm install --no-audit --no-fund
+  if [ "$ACCESSOR_FULL_BROWSERS" = "1" ]; then
+    info "Pulling Chromium + Firefox + WebKit (~400 MB)..."
+    npx --yes playwright install chromium firefox webkit
+  else
+    info "Pulling Chromium (~150 MB)..."
+    npx --yes playwright install chromium
+  fi
+fi
+ok "Playwright ready"
+
+# -------- License placement --------
+step "Placing your license file"
+mkdir -p "$AUDITS_ROOT"
+LICENSE_TARGET="$AUDITS_ROOT/license.json"
+
+if [ "$ACCESSOR_SKIP_LICENSE" = "1" ]; then
+  info "Skipping license placement (ACCESSOR_SKIP_LICENSE=1)."
+elif [ -f "$LICENSE_TARGET" ]; then
+  ok "License already in place at $LICENSE_TARGET"
+else
+  # Try common locations first
+  CANDIDATES=(
+    "$HOME/Downloads/license.json"
+    "$HOME/Downloads/license-Evolving-Web.json"
+    "$HOME/Desktop/license.json"
+    "$HOME/Desktop/license-Evolving-Web.json"
+  )
+  FOUND=""
+  for c in "${CANDIDATES[@]}"; do
+    if [ -f "$c" ]; then
+      FOUND="$c"
+      break
+    fi
+  done
+  # Fallback: any file matching license-*.json in Downloads
+  if [ -z "$FOUND" ]; then
+    while IFS= read -r -d '' f; do
+      FOUND="$f"
+      break
+    done < <(find "$HOME/Downloads" -maxdepth 1 -type f -name 'license-*.json' -print0 2>/dev/null)
+  fi
+
+  if [ -n "$FOUND" ]; then
+    cp "$FOUND" "$LICENSE_TARGET"
+    ok "Copied $FOUND to $LICENSE_TARGET"
+  else
+    warn "No license.json found in ~/Downloads or ~/Desktop."
+    info ""
+    info "Drop the license.json Ryan sent you into ~/Downloads, then press Enter"
+    info "to retry. Or type 'skip' to continue without a license (the dashboard"
+    info "will open but new audits will be blocked)."
+    info ""
+    while true; do
+      read -r -p "Path to license.json (or 'skip'): " LICENSE_INPUT
+      if [ "$LICENSE_INPUT" = "skip" ] || [ "$LICENSE_INPUT" = "" ]; then
+        warn "Continuing without a license."
+        break
+      fi
+      # Expand ~
+      LICENSE_INPUT="${LICENSE_INPUT/#\~/$HOME}"
+      if [ -f "$LICENSE_INPUT" ]; then
+        cp "$LICENSE_INPUT" "$LICENSE_TARGET"
+        ok "Copied $LICENSE_INPUT to $LICENSE_TARGET"
+        break
+      else
+        warn "File not found: $LICENSE_INPUT"
+      fi
+    done
+  fi
+fi
+
+# -------- Launch the dashboard --------
+step "Starting the dashboard"
+cd "$ACCESSOR_DIR"
+info "The dashboard will run in the foreground. Press Ctrl-C to stop it."
+info "Open http://localhost:7878 in your browser."
+printf '\n'
+
+# Try to open the URL in the default browser. Don't error if it fails.
+( sleep 2 && {
+    if [ "$PLATFORM" = "macos" ]; then
+      open http://localhost:7878 >/dev/null 2>&1 || true
+    elif need_cmd xdg-open; then
+      xdg-open http://localhost:7878 >/dev/null 2>&1 || true
+    fi
+} ) &
+
+exec npm start
