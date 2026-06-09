@@ -82,12 +82,49 @@ printf '\n'
 # -------- prerequisite checks --------
 need_cmd() { command -v "$1" >/dev/null 2>&1; }
 
+check_macos_admin() {
+  # Homebrew requires admin/sudo on macOS. On many corporate-managed Macs,
+  # employees are standard users without sudo rights. Detect that early and
+  # exit with a clear message rather than failing halfway through the
+  # Homebrew installer with a cryptic "Need sudo access" error.
+  if id -Gn "$USER" | tr ' ' '\n' | grep -q '^admin$'; then
+    return 0
+  fi
+  printf '\n'
+  warn "Your user account ($USER) does not have admin rights on this Mac."
+  info ""
+  info "Accessor needs Homebrew (or your IT team's equivalent) to install"
+  info "Node, Python, git, and the GitHub CLI. Homebrew requires admin"
+  info "access to install, which standard users don't have on corporate"
+  info "Macs."
+  info ""
+  info "What to do next:"
+  info ""
+  info "Option A — Ask your IT team to install these once, system-wide:"
+  info "    Node 20+, Python 3.9+, git, gh (the GitHub CLI)"
+  info "  Then re-run this installer. It will skip the Homebrew step"
+  info "  since the tools are already on your PATH."
+  info ""
+  info "Option B — Ask IT for temporary admin rights on this machine,"
+  info "  run the installer, then ask them to revoke admin afterwards."
+  info ""
+  info "Option C — Use a personal laptop where you do have admin."
+  info ""
+  info "Forward this whole message to your IT team if it helps."
+  exit 3
+}
+
 install_macos_brew() {
   if ! need_cmd brew; then
+    check_macos_admin
     step "Installing Homebrew"
     info "Required to install Node, Python, git, and gh."
     info "Homebrew's official one-line install will run next."
-    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+    # NONINTERACTIVE=1 tells Homebrew to skip interactive prompts when stdin
+    # isn't a TTY (which happens when this script is invoked via process
+    # substitution from a curl pipe). It still runs sudo and may prompt for
+    # the user's password.
+    NONINTERACTIVE=1 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
     # Add brew to PATH for this shell session
     if [ -x /opt/homebrew/bin/brew ]; then
       eval "$(/opt/homebrew/bin/brew shellenv)"
