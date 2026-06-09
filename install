@@ -1,39 +1,20 @@
 #!/usr/bin/env bash
-# Accessor one-line installer (portable-binary edition).
+# Accessor installer — minimal version.
 #
 # Usage:
 #   bash <(curl -fsSL https://accessor.shortux.com/install)
 #
-# Options (pass as env vars before the bash):
-#   ACCESSOR_FULL_BROWSERS=1    pull Firefox + WebKit alongside Chromium (~400 MB)
-#   ACCESSOR_DIR=/some/path     clone the dashboard here (default: ~/accessor)
-#   ACCESSOR_SKIP_LICENSE=1     skip the license-placement prompt (advanced)
-#   ACCESSOR_USE_HOMEBREW=1     prefer Homebrew over portable binaries (needs admin)
+# Prerequisites you should have installed before running this:
+#   - Node.js 20 or newer (nodejs.org)
+#   - git (git-scm.com or pre-installed on most macOS via Xcode CLT)
+#   - GitHub CLI / gh (cli.github.com)
+#   - Python 3.9+ (built into macOS 12+; sudo apt install python3 on Linux)
 #
-# What this does, in order:
-#   1. Detects platform + architecture.
-#   2. Verifies a compatible Python 3.9+ and git are available (uses macOS system
-#      copies when present; no install needed in the common case).
-#   3. Installs portable Node 22 LTS and GitHub CLI into ~/.accessor/ without
-#      Homebrew or admin rights. Adds ~/.accessor/bin and ~/.accessor/node/bin
-#      to your PATH via ~/.zshrc (or ~/.bashrc) for future shells.
-#   4. Walks you through GitHub authentication.
-#   5. Clones github.com/shortux/accessibility-dashboard and the audit skill.
-#   6. Runs npm install + npm run setup.
-#   7. Installs Playwright Chromium (and Firefox + WebKit on --full-browsers).
-#   8. Places your license.json into ~/.accessibility-audits/.
-#   9. Starts the dashboard at http://localhost:7878.
-#
-# Everything Accessor downloads lives under ~/.accessor/. Uninstall is
-# `rm -rf ~/.accessor` plus `rm -rf ~/accessor ~/.accessibility-audits`.
+# If you'd rather follow the manual steps yourself, the install kit has a
+# six-step version. This script just runs those same steps in one shot.
 
 set -euo pipefail
 
-# Pinned versions. Update by bumping these and reshipping the script.
-NODE_VERSION="22.11.0"
-GH_VERSION="2.93.0"
-
-# -------- pretty printing --------
 BOLD=$(tput bold 2>/dev/null || true)
 DIM=$(tput dim 2>/dev/null || true)
 RED=$(tput setaf 1 2>/dev/null || true)
@@ -48,265 +29,63 @@ warn() { printf '%s ⚠%s %s\n' "${YELLOW}" "${RESET}" "$1"; }
 fail() { printf '%s ✗%s %s\n' "${RED}" "${RESET}" "$1" >&2; exit 1; }
 info() { printf '%s   %s%s\n' "${DIM}" "$1" "${RESET}"; }
 
-# -------- preflight: bash, OS, tty, architecture --------
-if [ -z "${BASH_VERSION:-}" ]; then
-  fail "This installer requires bash. Try: bash <(curl -fsSL ...)"
-fi
-
-PLATFORM="unknown"
-case "$(uname -s)" in
-  Darwin*) PLATFORM="macos" ;;
-  Linux*)
-    if grep -qi microsoft /proc/version 2>/dev/null; then
-      PLATFORM="wsl"
-    else
-      PLATFORM="linux"
-    fi
-    ;;
-  *) fail "Unsupported platform: $(uname -s). Accessor supports macOS and Linux." ;;
-esac
-
-ARCH_RAW=$(uname -m)
-case "$ARCH_RAW" in
-  arm64|aarch64) NODE_ARCH="arm64"; GH_ARCH="arm64" ;;
-  x86_64|amd64)  NODE_ARCH="x64";   GH_ARCH="amd64" ;;
-  *) fail "Unsupported architecture: $ARCH_RAW" ;;
-esac
-# gh's macOS arm64 file uses "arm64", x64 uses "amd64". Node uses x64 / arm64
-# universally. Quirk worth nothing.
+need_cmd() { command -v "$1" >/dev/null 2>&1; }
 
 ACCESSOR_DIR="${ACCESSOR_DIR:-$HOME/accessor}"
 ACCESSOR_FULL_BROWSERS="${ACCESSOR_FULL_BROWSERS:-0}"
 ACCESSOR_SKIP_LICENSE="${ACCESSOR_SKIP_LICENSE:-0}"
-ACCESSOR_USE_HOMEBREW="${ACCESSOR_USE_HOMEBREW:-0}"
-ACCESSOR_HOME="$HOME/.accessor"
-ACCESSOR_BIN="$ACCESSOR_HOME/bin"
-ACCESSOR_NODE_DIR="$ACCESSOR_HOME/node"
 AUDITS_ROOT="$HOME/.accessibility-audits"
+SKILL_PATH="$HOME/.claude/skills/accessibility-audit"
+DASHBOARD_REPO="shortux/accessibility-dashboard"
+SKILL_REPO="shortux/accessibility-audit-skill"
 
 printf '\n'
 printf '%s  Accessor installer%s\n' "${BOLD}" "${RESET}"
 printf '%s  Local-first accessibility auditing. Built in Ottawa.%s\n' "${DIM}" "${RESET}"
 printf '\n'
-info "Platform: ${PLATFORM} (${ARCH_RAW})"
-info "Dashboard location: ${ACCESSOR_DIR}"
-info "Accessor home: ${ACCESSOR_HOME}"
-info "Audits root: ${AUDITS_ROOT}"
-if [ "$ACCESSOR_FULL_BROWSERS" = "1" ]; then
-  info "Cross-browser scan engines: Chromium + Firefox + WebKit"
-else
-  info "Browser engines: Chromium only (set ACCESSOR_FULL_BROWSERS=1 for all three)"
-fi
-printf '\n'
 
-# -------- helpers --------
-need_cmd() { command -v "$1" >/dev/null 2>&1; }
+# -------- prerequisite check (no auto-install) --------
+step "Checking prerequisites"
+missing=()
+need_cmd node || missing+=("Node 20+ (https://nodejs.org — install the LTS)")
+need_cmd git  || missing+=("git (https://git-scm.com or macOS Xcode Command Line Tools)")
+need_cmd gh   || missing+=("GitHub CLI (https://cli.github.com)")
+need_cmd python3 || missing+=("Python 3.9+ (built into macOS 12+; apt install python3 on Linux)")
 
-version_ge() {
-  # version_ge X.Y.Z A.B.C → returns 0 if X.Y.Z >= A.B.C
-  local v1="$1" v2="$2"
-  [ "$(printf '%s\n%s\n' "$v1" "$v2" | sort -V | head -n 1)" = "$v2" ]
-}
+if [ "${#missing[@]}" -gt 0 ]; then
+  fail "Missing prerequisites:
+$(printf '   - %s\n' "${missing[@]}")
 
-# Add ~/.accessor/bin and ~/.accessor/node/bin to a shell rc file, once.
-persist_path() {
-  local rc="$1"
-  [ -z "$rc" ] && return 0
-  if [ -f "$rc" ] && grep -q 'ACCESSOR_HOME' "$rc"; then
-    return 0
-  fi
-  cat >> "$rc" <<EOF
-
-# Added by Accessor installer ($(date +%Y-%m-%d))
-export ACCESSOR_HOME="\$HOME/.accessor"
-[ -d "\$ACCESSOR_HOME/bin" ] && export PATH="\$ACCESSOR_HOME/bin:\$PATH"
-[ -d "\$ACCESSOR_HOME/node/bin" ] && export PATH="\$ACCESSOR_HOME/node/bin:\$PATH"
-EOF
-}
-
-# Strip macOS quarantine attribute on a downloaded binary so Gatekeeper
-# doesn't block first execution. No-op on Linux.
-unquarantine() {
-  [ "$PLATFORM" = "macos" ] || return 0
-  xattr -dr com.apple.quarantine "$1" 2>/dev/null || true
-}
-
-# -------- create accessor home --------
-mkdir -p "$ACCESSOR_BIN" "$ACCESSOR_NODE_DIR"
-
-# Already-installed Node / gh might live in $ACCESSOR_HOME from a previous
-# run. Put those on PATH first so the rest of the script sees them.
-export PATH="$ACCESSOR_BIN:$ACCESSOR_NODE_DIR/bin:$PATH"
-
-# -------- prerequisite: Python --------
-# macOS Monterey+ (12.3+) ships Python 3.10; Sonoma+ ships 3.11. Linux
-# distributions all carry a Python 3 by default. We don't try to install
-# Python; if it's missing or too old we tell the user to involve IT.
-PY=""
-for candidate in python3.12 python3.11 python3.10 python3.9 python3 python; do
-  if need_cmd "$candidate"; then
-    PY="$candidate"
-    break
-  fi
-done
-
-if [ -z "$PY" ]; then
-  fail "Python 3.9 or newer is required but not found. On macOS 12+ the system Python at /usr/bin/python3 should work. On Linux: sudo apt install python3 (or your distro's equivalent). On a corporate Mac without admin: ask IT to install Python 3."
+Install whichever are missing using the official install for each tool, then
+re-run this installer. The install kit (PDF/DOCX) has direct links and notes
+for each one."
 fi
 
-PY_VERSION=$("$PY" -c 'import sys; print("{}.{}.{}".format(*sys.version_info[:3]))')
-if ! version_ge "$PY_VERSION" "3.9.0"; then
-  fail "Found Python $PY_VERSION via $PY but Accessor needs 3.9+. On macOS 12+ /usr/bin/python3 is 3.10+. On Linux upgrade via your package manager."
+# Verify Node version
+NODE_MAJOR=$(node -p "process.versions.node.split('.')[0]")
+if [ "$NODE_MAJOR" -lt 20 ]; then
+  fail "Node $(node -p 'process.versions.node') detected but Accessor needs 20+. Install the latest LTS from nodejs.org and re-run."
 fi
-ok "Python $PY_VERSION ($PY)"
-
-# -------- prerequisite: git --------
-if ! need_cmd git; then
-  if [ "$PLATFORM" = "macos" ]; then
-    warn "git is missing. macOS provides it via Xcode Command Line Tools."
-    info "Triggering the Command Line Tools installer (it pops up a GUI dialog)."
-    info "If you're a standard user, this will prompt for an admin password."
-    xcode-select --install >/dev/null 2>&1 || true
-    info ""
-    info "Click Install in the dialog. When the install finishes, re-run this"
-    info "installer. If you don't have admin rights, forward this to your IT"
-    info "team and ask them to run \"xcode-select --install\" on your Mac."
-    exit 3
-  else
-    fail "git is missing. Install via your distro's package manager (sudo apt install git) or ask your IT team."
-  fi
-fi
+ok "Node $(node -p 'process.versions.node')"
 ok "git $(git --version | awk '{print $3}')"
-
-# -------- prerequisite: Node 20+ --------
-NODE_OK=0
-if need_cmd node; then
-  NODE_HAVE=$(node -p "process.versions.node" 2>/dev/null || echo "0.0.0")
-  if version_ge "$NODE_HAVE" "20.0.0"; then
-    NODE_OK=1
-    ok "Node $NODE_HAVE (system / pre-installed)"
-  fi
-fi
-
-if [ "$NODE_OK" = "0" ]; then
-  if [ "$ACCESSOR_USE_HOMEBREW" = "1" ] && need_cmd brew; then
-    step "Installing Node $NODE_VERSION via Homebrew (ACCESSOR_USE_HOMEBREW=1)"
-    brew install node@20
-  else
-    step "Downloading portable Node $NODE_VERSION into $ACCESSOR_NODE_DIR"
-    if [ "$PLATFORM" = "macos" ]; then
-      NODE_TARBALL="node-v${NODE_VERSION}-darwin-${NODE_ARCH}.tar.xz"
-    else
-      NODE_TARBALL="node-v${NODE_VERSION}-linux-${NODE_ARCH}.tar.xz"
-    fi
-    NODE_URL="https://nodejs.org/dist/v${NODE_VERSION}/${NODE_TARBALL}"
-    info "URL: $NODE_URL"
-    TMP_NODE=$(mktemp -d)
-    if ! curl -fsSL "$NODE_URL" -o "$TMP_NODE/$NODE_TARBALL"; then
-      fail "Could not download Node from $NODE_URL. Check your network or proxy settings. If you're behind a corporate proxy that blocks nodejs.org, ask IT to allowlist it (or install Node system-wide via their normal process)."
-    fi
-    # Extract into a clean subdirectory then move
-    rm -rf "$ACCESSOR_NODE_DIR"
-    mkdir -p "$ACCESSOR_NODE_DIR"
-    tar -xJf "$TMP_NODE/$NODE_TARBALL" -C "$TMP_NODE"
-    # The tarball extracts into node-vX.Y.Z-platform-arch/. Move its contents up.
-    EXTRACTED_DIR=$(find "$TMP_NODE" -maxdepth 1 -type d -name 'node-v*' | head -1)
-    if [ -z "$EXTRACTED_DIR" ]; then
-      fail "Node tarball didn't extract to the expected layout. Aborting."
-    fi
-    # Use rsync if available for atomic move, else cp+rm
-    cp -R "$EXTRACTED_DIR"/* "$ACCESSOR_NODE_DIR"/
-    rm -rf "$TMP_NODE"
-    unquarantine "$ACCESSOR_NODE_DIR"
-    export PATH="$ACCESSOR_NODE_DIR/bin:$PATH"
-    if ! need_cmd node; then
-      fail "Node binary not on PATH after install. Something went wrong extracting $NODE_TARBALL."
-    fi
-    ok "Node $(node -p process.versions.node) installed at $ACCESSOR_NODE_DIR"
-  fi
-fi
-
-# -------- prerequisite: gh (GitHub CLI) --------
-GH_OK=0
-if need_cmd gh; then
-  GH_OK=1
-  ok "gh $(gh --version | head -1 | awk '{print $3}') (system / pre-installed)"
-fi
-
-if [ "$GH_OK" = "0" ]; then
-  if [ "$ACCESSOR_USE_HOMEBREW" = "1" ] && need_cmd brew; then
-    step "Installing GitHub CLI via Homebrew (ACCESSOR_USE_HOMEBREW=1)"
-    brew install gh
-  else
-    step "Downloading portable GitHub CLI $GH_VERSION into $ACCESSOR_BIN"
-    if [ "$PLATFORM" = "macos" ]; then
-      GH_FILENAME="gh_${GH_VERSION}_macOS_${GH_ARCH}.zip"
-    else
-      GH_FILENAME="gh_${GH_VERSION}_linux_${GH_ARCH}.tar.gz"
-    fi
-    GH_URL="https://github.com/cli/cli/releases/download/v${GH_VERSION}/${GH_FILENAME}"
-    info "URL: $GH_URL"
-    TMP_GH=$(mktemp -d)
-    if ! curl -fsSL "$GH_URL" -o "$TMP_GH/$GH_FILENAME"; then
-      fail "Could not download GitHub CLI from $GH_URL. Check your network or proxy settings."
-    fi
-    cd "$TMP_GH"
-    if [ "$PLATFORM" = "macos" ]; then
-      unzip -q "$GH_FILENAME"
-    else
-      tar -xzf "$GH_FILENAME"
-    fi
-    # Find the gh binary inside the extracted folder
-    GH_BIN=$(find "$TMP_GH" -type f -name 'gh' -path '*/bin/gh' | head -1)
-    if [ -z "$GH_BIN" ]; then
-      fail "Couldn't find gh binary inside $GH_FILENAME. Layout may have changed."
-    fi
-    cp "$GH_BIN" "$ACCESSOR_BIN/gh"
-    chmod +x "$ACCESSOR_BIN/gh"
-    unquarantine "$ACCESSOR_BIN/gh"
-    cd - >/dev/null
-    rm -rf "$TMP_GH"
-    export PATH="$ACCESSOR_BIN:$PATH"
-    if ! need_cmd gh; then
-      fail "gh binary not on PATH after install. Check $ACCESSOR_BIN."
-    fi
-    ok "gh $GH_VERSION installed at $ACCESSOR_BIN/gh"
-  fi
-fi
-
-# -------- persist PATH for future shells --------
-step "Persisting PATH updates"
-case "$(basename "${SHELL:-}")" in
-  zsh)  persist_path "$HOME/.zshrc";  RC_FILE="$HOME/.zshrc" ;;
-  bash) persist_path "$HOME/.bashrc"; RC_FILE="$HOME/.bashrc" ;;
-  *)    persist_path "$HOME/.profile"; RC_FILE="$HOME/.profile" ;;
-esac
-info "Added Accessor's PATH lines to $RC_FILE"
-info "New terminal sessions will pick this up automatically."
+ok "gh $(gh --version | head -1 | awk '{print $3}')"
+ok "python3 $(python3 --version | awk '{print $2}')"
 
 # -------- GitHub authentication --------
 step "GitHub CLI authentication"
 if gh auth status >/dev/null 2>&1; then
   ok "Already authenticated as $(gh api user --jq .login 2>/dev/null || echo "(unknown)")"
 else
-  info "Accessor's source repos are private. The GitHub CLI will open a browser"
-  info "for you to authenticate. Pick GitHub.com, HTTPS, and sign in normally."
-  info ""
+  info "Accessor's source repos are private. The GitHub CLI will open a"
+  info "browser. Pick GitHub.com, HTTPS, and sign in normally."
   read -r -p "Press Enter to start GitHub auth, or Ctrl-C to abort: " _
   gh auth login --git-protocol https --web
 fi
-
 GH_USER=$(gh api user --jq .login 2>/dev/null || true)
-if [ -z "$GH_USER" ]; then
-  fail "Could not read your GitHub username after auth. Try running gh auth login manually."
-fi
+[ -z "$GH_USER" ] && fail "Could not read GitHub username after auth. Try \`gh auth login\` manually."
 ok "Authenticated as $GH_USER"
 
-# -------- Clone the repos --------
-DASHBOARD_REPO="shortux/accessibility-dashboard"
-SKILL_REPO="shortux/accessibility-audit-skill"
-SKILL_PATH="$HOME/.claude/skills/accessibility-audit"
-
+# -------- Clone repos --------
 step "Cloning the dashboard into $ACCESSOR_DIR"
 if [ -d "$ACCESSOR_DIR/.git" ]; then
   info "Existing clone detected; pulling latest..."
@@ -316,15 +95,12 @@ else
     if grep -qi "not found\|denied\|404\|forbidden" /tmp/accessor-clone-err; then
       warn "GitHub denied access to $DASHBOARD_REPO."
       info ""
-      info "Your GitHub user ($GH_USER) hasn't been added as a collaborator yet."
-      info "Email ryan@shortux.com with this GitHub username and Ryan will add"
-      info "you within a few hours. Then re-run this installer."
-      info ""
-      cat /tmp/accessor-clone-err | sed 's/^/  /' >&2
+      info "Your GitHub user ($GH_USER) hasn't been added as a collaborator."
+      info "Email ryan@shortux.com with this GitHub username and Ryan will"
+      info "add you within a few hours. Then re-run this installer."
       exit 2
-    else
-      fail "Clone failed. See /tmp/accessor-clone-err for details."
     fi
+    fail "Clone failed. See /tmp/accessor-clone-err for details."
   fi
 fi
 ok "Dashboard cloned"
@@ -338,7 +114,6 @@ else
   if ! gh repo clone "$SKILL_REPO" "$SKILL_PATH" -- --depth=1 2>/tmp/accessor-skill-err; then
     warn "Could not clone the skill repo. If this is also a 'not found',"
     warn "Ryan needs to add you to that repo too. Email ryan@shortux.com."
-    cat /tmp/accessor-skill-err | sed 's/^/  /' >&2
     exit 2
   fi
 fi
@@ -350,19 +125,15 @@ cd "$ACCESSOR_DIR"
 npm install --no-audit --no-fund
 ok "Dashboard dependencies installed"
 
-step "Running the dashboard setup script"
 if npm run | grep -q '^  setup'; then
+  step "Running npm run setup"
   npm run setup
-else
-  info "No setup script defined; skipping."
+  ok "Setup complete"
 fi
-ok "Setup complete"
 
 step "Installing Playwright browser binaries"
 cd "$SKILL_PATH"
-if [ ! -f package.json ]; then
-  warn "Skill repo has no package.json; skipping Playwright install."
-else
+if [ -f package.json ]; then
   npm install --no-audit --no-fund
   if [ "$ACCESSOR_FULL_BROWSERS" = "1" ]; then
     info "Pulling Chromium + Firefox + WebKit (~400 MB)..."
@@ -371,8 +142,8 @@ else
     info "Pulling Chromium (~150 MB)..."
     npx --yes playwright install chromium
   fi
+  ok "Playwright ready"
 fi
-ok "Playwright ready"
 
 # -------- License placement --------
 step "Placing your license file"
@@ -384,63 +155,41 @@ if [ "$ACCESSOR_SKIP_LICENSE" = "1" ]; then
 elif [ -f "$LICENSE_TARGET" ]; then
   ok "License already in place at $LICENSE_TARGET"
 else
-  CANDIDATES=(
-    "$HOME/Downloads/license.json"
-    "$HOME/Downloads/license-Evolving-Web.json"
-    "$HOME/Desktop/license.json"
-    "$HOME/Desktop/license-Evolving-Web.json"
-  )
   FOUND=""
-  for c in "${CANDIDATES[@]}"; do
-    if [ -f "$c" ]; then
-      FOUND="$c"
-      break
-    fi
+  for c in "$HOME/Downloads/license.json" "$HOME/Downloads"/license-*.json \
+           "$HOME/Desktop/license.json" "$HOME/Desktop"/license-*.json; do
+    [ -f "$c" ] && FOUND="$c" && break
   done
-  if [ -z "$FOUND" ]; then
-    while IFS= read -r -d '' f; do
-      FOUND="$f"
-      break
-    done < <(find "$HOME/Downloads" -maxdepth 1 -type f -name 'license-*.json' -print0 2>/dev/null)
-  fi
-
   if [ -n "$FOUND" ]; then
     cp "$FOUND" "$LICENSE_TARGET"
     ok "Copied $FOUND to $LICENSE_TARGET"
   else
     warn "No license.json found in ~/Downloads or ~/Desktop."
-    info ""
-    info "Drop the license.json Ryan sent you into ~/Downloads, then press Enter"
-    info "to retry. Or type 'skip' to continue without a license (the dashboard"
-    info "will open but new audits will be blocked)."
-    info ""
+    info "Drop the license.json into ~/Downloads, then press Enter to retry."
+    info "Or type 'skip' to continue without a license (new audits will be blocked)."
     while true; do
       read -r -p "Path to license.json (or 'skip'): " LICENSE_INPUT
-      if [ "$LICENSE_INPUT" = "skip" ] || [ "$LICENSE_INPUT" = "" ]; then
-        warn "Continuing without a license."
-        break
-      fi
+      [ "$LICENSE_INPUT" = "skip" ] || [ -z "$LICENSE_INPUT" ] && { warn "Continuing without a license."; break; }
       LICENSE_INPUT="${LICENSE_INPUT/#\~/$HOME}"
       if [ -f "$LICENSE_INPUT" ]; then
         cp "$LICENSE_INPUT" "$LICENSE_TARGET"
         ok "Copied $LICENSE_INPUT to $LICENSE_TARGET"
         break
-      else
-        warn "File not found: $LICENSE_INPUT"
       fi
+      warn "File not found: $LICENSE_INPUT"
     done
   fi
 fi
 
-# -------- Launch the dashboard --------
+# -------- Launch --------
 step "Starting the dashboard"
 cd "$ACCESSOR_DIR"
-info "The dashboard will run in the foreground. Press Ctrl-C to stop it."
+info "Dashboard runs in the foreground. Press Ctrl-C to stop it."
 info "Open http://localhost:7878 in your browser."
-printf '\n'
 
+# Try to auto-open the URL after a short delay
 ( sleep 2 && {
-    if [ "$PLATFORM" = "macos" ]; then
+    if [ "$(uname -s)" = "Darwin" ]; then
       open http://localhost:7878 >/dev/null 2>&1 || true
     elif need_cmd xdg-open; then
       xdg-open http://localhost:7878 >/dev/null 2>&1 || true
