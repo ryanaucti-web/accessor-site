@@ -1,0 +1,79 @@
+---
+interface Props {
+  heading?: string;
+  body?: string;
+  primaryLabel?: string;
+  primaryHref?: string;
+  secondaryLabel?: string;
+  secondaryHref?: string;
+}
+
+const {
+  heading = 'See what you should fix first.',
+  body = "Bring one product. We'll show you the findings that matter, who owns them, and what it takes to clear them.",
+  primaryLabel = 'Book a demo',
+  primaryHref = '/contact',
+  secondaryLabel = 'See how it works',
+  secondaryHref = '/platform',
+} = Astro.props;
+---
+
+<section class="band band--green cta">
+  <div class="cta__inner">
+    <h2 class="cta__head">{heading}</h2>
+    <p class="cta__body">{body}</p>
+    <div class="cta__actions">
+      <a href={primaryHref} class="btn btn--onGreen cta__btn">{primaryLabel}</a>
+      {secondaryLabel && <a href={secondaryHref} class="btn btn--ghost cta__btn">{secondaryLabel}</a>}
+    </div>
+  </div>
+</section>
+
+<style>
+  .cta__inner {
+    max-width: 1080px;
+    margin: 0 auto;
+    text-align: center;
+  }
+
+  .cta__head {
+    font-size: 44px;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    line-height: 1.06;
+    margin-bottom: 16px;
+    color: var(--paper);
+    text-wrap: balance;
+  }
+
+  .cta__body {
+    font-size: 18px;
+    line-height: 1.55;
+    color: rgba(244, 241, 234, 0.86);
+    margin: 0 auto 30px;
+    max-width: 44ch;
+  }
+
+  .cta__actions {
+    display: flex;
+    gap: 14px;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .cta__btn {
+    height: 52px;
+    padding: 0 30px;
+    font-size: 16px;
+    border-radius: var(--r-control);
+  }
+
+  @media (max-width: 1000px) {
+    .cta__head {
+      font-size: 32px;
+    }
+    .cta__body {
+      font-size: 16.5px;
+    }
+  }
+</style>

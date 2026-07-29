@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80">
+  <rect width="80" height="80" fill="#F4F1EA"/>
+  <clipPath id="a"><rect width="80" height="47"/></clipPath>
+  <circle cx="40" cy="42" r="18" fill="#2C7A52" opacity=".16"/>
+  <circle cx="40" cy="42" r="18" fill="#2C7A52" clip-path="url(#a)"/>
+  <line x1="11" y1="47" x2="69" y2="47" stroke="#16261C" stroke-width="3" stroke-linecap="round"/>
+</svg>

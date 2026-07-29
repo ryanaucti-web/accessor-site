@@ -1,0 +1,531 @@
+---
+import Base from '../../layouts/Base.astro';
+import ProductHero from '../../components/product/ProductHero.astro';
+import FrictionBand from '../../components/product/FrictionBand.astro';
+import ProductRow from '../../components/product/ProductRow.astro';
+import OutcomeBand from '../../components/product/OutcomeBand.astro';
+import CtaBand from '../../components/CtaBand.astro';
+import RoleChip from '../../components/ui/RoleChip.astro';
+
+const stats = [
+  { num: '28', label: 'findings routed', delta: 'none sitting with you', ok: true },
+  { num: '6', label: 'awaiting your verdict', delta: 'judgment calls only' },
+  { num: '5', label: 'of 7 teams on track', delta: '2 behind, named' },
+  { num: '↑ 14', label: 'points this quarter', delta: 'evidence attached', ok: true },
+];
+
+const teams = [
+  {
+    name: 'Checkout squad',
+    meta: '8 open · 3 shipped this sprint',
+    avatar: { initials: 'CS', role: 'dev' as const },
+    bar: 82,
+    verdict: 'pass' as const,
+    verdictLabel: 'On track',
+
+  },
+  {
+    name: 'Design system',
+    meta: '4 open · component fixes',
+    avatar: { initials: 'DS', role: 'design' as const },
+    bar: 76,
+    verdict: 'pass' as const,
+    verdictLabel: 'On track',
+
+  },
+  {
+    name: 'Content team',
+    meta: '11 open · alt text backlog',
+    avatar: { initials: 'CT', role: 'content' as const },
+    bar: 41,
+    verdict: 'attention' as const,
+    verdictLabel: 'Behind',
+
+  },
+  {
+    name: 'Mobile app',
+    meta: '5 open · no movement in 3 weeks',
+    avatar: { initials: 'MA', role: 'dev' as const },
+    bar: 22,
+    verdict: 'fail' as const,
+    verdictLabel: 'Stalled',
+
+  },
+  {
+    name: 'Marketing site',
+    meta: '0 open · verified at last release',
+    avatar: { initials: 'MS', role: 'content' as const },
+    bar: 96,
+    verdict: 'pass' as const,
+    verdictLabel: 'Clear',
+
+  },
+];
+
+const frictions = [
+  {
+    title: 'You cannot prioritize their backlog',
+    d: 'M4 6h16M4 12h10M4 18h7',
+    body: 'Every team has its own roadmap and its own pressures. Accessibility arrives as a request from outside, competing with work their manager set.',
+  },
+  {
+    title: 'You become the bottleneck',
+    d: 'M6 3h9l4 4v14H6zM14 3v5h5',
+    body: 'When findings have no owner they route to you by default. You end up triaging thousands of items for work you are not staffed to do.',
+  },
+  {
+    title: 'Progress is invisible',
+    d: 'M4 19V5M4 19h16M8 16v-4M12 16V8M16 16v-6',
+    body: 'Nobody upstairs can tell whether the programme is working. Without a trend, budget conversations start from zero every year.',
+  },
+];
+
+const routed = [
+  { role: 'dev' as const, title: 'Card field labels', dest: 'LINEAR' },
+  { role: 'design' as const, title: 'Focus ring on buttons', dest: 'FIGMA' },
+  { role: 'content' as const, title: 'Alt text, 214 images', dest: 'CMS' },
+  { role: 'dev' as const, title: 'Heading order on templates', dest: 'JIRA' },
+];
+
+const ladder = [
+  { label: 'Reactive', on: true },
+  { label: 'Aware', on: true },
+  { label: 'Organized', on: true },
+  { label: 'Operational', on: false },
+  { label: 'By design', on: false },
+];
+
+const execRows = [
+  { label: 'Open findings, all products', val: '↓ 41%', ok: true },
+  { label: 'Products meeting target', val: '3 of 4' },
+  { label: 'Teams behind schedule', val: '2, named' },
+];
+
+const outcomes = [
+  'Every finding has a named owner in their own tracker, so you are steering rather than forwarding.',
+  'The teams that are behind are visible by name, which does the persuading for you.',
+  'Your judgment calls are recorded against the criterion, so conformance has a person behind it.',
+  'A live executive view, so the quarterly update is a link instead of a fortnight of screenshots.',
+];
+---
+
+<Base
+  title="limena for accessibility leads"
+  description="You are accountable for accessibility across the organization and you manage none of the teams who ship. limena gives you attributable, prioritized, visible work."
+  active="usecases"
+>
+  <ProductHero
+    backHref="/use-cases"
+    backLabel="Use cases"
+    title="For accessibility leads"
+    lede="You are accountable for accessibility across the organization and you manage none of the teams who ship. limena gives you the one thing that closes that gap: attributable, prioritized, visible work."
+    panelTitle="Your programme this week"
+    panelMeta="7 teams · 4 products"
+    panelStatus="On track"
+    panelStatusTone="pass"
+    stats={stats}
+    rows={teams}
+  />
+
+  <FrictionBand
+    heading="Accountable for everything, in charge of nothing."
+    lede="The role is almost always one person, or a very small team, responsible for an obligation that only other people can discharge."
+    items={frictions}
+  />
+
+  <ProductRow
+    first
+    eyebrow="01 · Stop being the queue"
+    heading="Findings go to owners, not to you."
+    body={[
+      "Without routing, every barrier lands in your inbox and you become the bottleneck for work you cannot do. limena assigns each finding using the W3C ARRM roles and pushes it into that team's tracker.",
+      'Your job shifts from triaging a list to steering a programme.',
+    ]}
+  >
+    <div class="panel">
+      <div class="panel__head">
+        <span class="panel__title">Routed this sprint</span>
+        <span class="panel__meta">28 findings · 0 to you</span>
+      </div>
+      <ul>
+        {
+          routed.map((r) => (
+            <li class="routed">
+              <RoleChip role={r.role} />
+              <span class="routed__title">{r.title}</span>
+              <span class="routed__dest">{r.dest}</span>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </ProductRow>
+
+  <ProductRow
+    flip
+    eyebrow="02 · Your expertise, recorded"
+    heading="The calls only you can make, logged as evidence."
+    body={[
+      'limena handles the mechanical sweep and queues everything that needs judgment. Your verdict is attached to the criterion with your name and the date, so the conformance claim has a person behind it.',
+      'That is also the record that protects you if the decision is ever questioned.',
+    ]}
+  >
+    <div class="verdict">
+      <div class="verdict__head">
+        <span class="verdict__flag">Needs your verdict</span>
+        <span class="verdict__q">Is the error message clear enough?</span>
+      </div>
+
+      <div class="verdict__block">
+        <p class="verdict__label">What automation found</p>
+        <p class="verdict__text">
+          The field has an associated error message and it is announced. WCAG 3.3.1 is technically satisfied.
+        </p>
+        <p class="verdict__code">"Error: invalid input in field 3."</p>
+      </div>
+
+      <div class="verdict__block verdict__block--why">
+        <p class="verdict__label verdict__label--why">Why it is queued for you</p>
+        <p class="verdict__text">
+          Whether that message actually helps someone recover is a judgment call. limena will not pass it as conformant
+          on automation alone.
+        </p>
+      </div>
+
+      <div class="verdict__actions">
+        <span class="verdict__btn verdict__btn--no">Not sufficient</span>
+        <span class="verdict__btn">Accept</span>
+        <span class="verdict__note">Recorded against 3.3.1 with your name and the date</span>
+      </div>
+    </div>
+  </ProductRow>
+
+  <ProductRow
+    last
+    eyebrow="03 · The quarterly update"
+    heading="Something to show, without building a deck."
+    body={[
+      'Leadership does not want a finding count. They want to know whether this is getting better, who is behind, and whether the organization is exposed. limena keeps that view current so the update is a link rather than a fortnight of screenshots.',
+    ]}
+  >
+    <div class="exec">
+      <div class="exec__head">
+        <span class="exec__title">Executive view · live</span>
+        <span class="exec__action">Share link</span>
+      </div>
+
+      <p class="exec__label">Maturity</p>
+      <ol class="exec__ladder">
+        {
+          ladder.map((l) => (
+            <li class={`rung ${l.on ? 'rung--on' : ''}`}>
+              <span class="rung__mark" aria-hidden="true" />
+              <span>{l.label}</span>
+            </li>
+          ))
+        }
+      </ol>
+
+      <ul class="exec__rows">
+        {
+          execRows.map((e) => (
+            <li class="exec__row">
+              <span class="exec__rowLabel">{e.label}</span>
+              <span class={`exec__val ${e.ok ? 'exec__val--ok' : ''}`}>{e.val}</span>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </ProductRow>
+
+  <OutcomeBand heading="From chasing people to running a programme." outcomes={outcomes} />
+
+  <CtaBand
+    heading="Bring the product you worry about most."
+    body="We will show you what is blocking people, who owns each fix, and what your next quarterly update could look like."
+    primaryLabel="Book a demo"
+    primaryHref="/contact"
+    secondaryLabel="Test a page free"
+    secondaryHref="/scan"
+  />
+</Base>
+
+<style>
+  .panel {
+    background: var(--white);
+    border: 1px solid var(--border-strong);
+    border-radius: var(--r-card);
+    box-shadow: var(--shadow);
+    overflow: hidden;
+  }
+
+  .panel__head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 14px 20px;
+    background: var(--sunken);
+    border-bottom: 1px solid rgba(22, 38, 28, 0.08);
+  }
+
+  .panel__title {
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  .panel__meta {
+    font-size: 12.5px;
+    color: var(--muted);
+  }
+
+  .routed {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 20px;
+    border-bottom: 1px solid rgba(22, 38, 28, 0.06);
+  }
+
+  .routed:last-child {
+    border-bottom: none;
+  }
+
+  .routed__title {
+    flex: 1;
+    font-size: 14.5px;
+    font-weight: 600;
+  }
+
+  .routed__dest {
+    font-family: var(--mono);
+    font-size: 10.5px;
+    font-weight: 600;
+    color: var(--muted);
+    flex: none;
+  }
+
+  /* ---------- Verdict card ---------- */
+
+  .verdict {
+    background: var(--white);
+    border: 1px solid var(--border-strong);
+    border-left: 4px solid var(--attention);
+    border-radius: var(--r-card-sm);
+    box-shadow: var(--shadow);
+    overflow: hidden;
+  }
+
+  .verdict__head {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 18px 22px;
+    border-bottom: 1px solid rgba(22, 38, 28, 0.08);
+    flex-wrap: wrap;
+  }
+
+  .verdict__flag {
+    display: inline-flex;
+    align-items: center;
+    height: 25px;
+    padding: 0 11px;
+    background: var(--attention-tint);
+    color: var(--attention-text);
+    border-radius: var(--r-pill);
+    font-size: 12.5px;
+    font-weight: 600;
+    flex: none;
+  }
+
+  .verdict__q {
+    font-size: 17px;
+    font-weight: 700;
+    letter-spacing: -0.015em;
+  }
+
+  .verdict__block {
+    padding: 18px 22px;
+    border-bottom: 1px solid rgba(22, 38, 28, 0.08);
+  }
+
+  .verdict__block--why {
+    background: var(--green-tint);
+  }
+
+  .verdict__label {
+    font-family: var(--mono);
+    font-size: 10.5px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 7px;
+  }
+
+  .verdict__label--why {
+    color: var(--green-hover);
+  }
+
+  .verdict__text {
+    font-size: 14.5px;
+    line-height: 1.6;
+    color: var(--ink-700);
+  }
+
+  .verdict__code {
+    margin-top: 10px;
+    padding: 10px 12px;
+    background: var(--rail);
+    border-radius: 9px;
+    font-family: var(--mono);
+    font-size: 12.5px;
+    color: var(--ink-700);
+  }
+
+  .verdict__actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 18px 22px;
+    flex-wrap: wrap;
+  }
+
+  .verdict__btn {
+    display: inline-flex;
+    align-items: center;
+    height: 32px;
+    padding: 0 13px;
+    background: var(--green);
+    color: var(--paper);
+    border-radius: 9px;
+    font-size: 13px;
+    font-weight: 600;
+    flex: none;
+  }
+
+  .verdict__btn--no {
+    background: var(--white);
+    color: var(--evergreen);
+    border: 1px solid rgba(22, 38, 28, 0.18);
+  }
+
+  .verdict__note {
+    font-size: 12.5px;
+    color: var(--muted);
+    flex: 1;
+    min-width: 180px;
+  }
+
+  /* ---------- Executive view ---------- */
+
+  .exec {
+    background: var(--evergreen);
+    border-radius: var(--r-card);
+    padding: 28px;
+    box-shadow: 0 2px 8px rgba(22, 38, 28, 0.16), 0 30px 60px -34px rgba(22, 38, 28, 0.5);
+  }
+
+  .exec__head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 22px;
+  }
+
+  .exec__title {
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    color: var(--green-light);
+  }
+
+  .exec__action {
+    display: inline-flex;
+    align-items: center;
+    height: 26px;
+    padding: 0 11px;
+    background: rgba(116, 199, 154, 0.16);
+    color: var(--green-light);
+    border-radius: var(--r-pill);
+    font-size: 12px;
+    font-weight: 600;
+    flex: none;
+  }
+
+  .exec__label {
+    font-size: 12.5px;
+    color: var(--on-dark-sage);
+    margin-bottom: 12px;
+  }
+
+  .exec__ladder {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px 18px;
+    margin-bottom: 22px;
+  }
+
+  .rung {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    font-size: 13px;
+    color: rgba(244, 241, 234, 0.45);
+  }
+
+  .rung--on {
+    color: var(--paper);
+  }
+
+  .rung__mark {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: rgba(244, 241, 234, 0.25);
+    flex: none;
+  }
+
+  .rung--on .rung__mark {
+    background: var(--green-light);
+  }
+
+  .exec__rows {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .exec__row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding-top: 12px;
+    border-top: 1px solid rgba(244, 241, 234, 0.12);
+  }
+
+  .exec__rowLabel {
+    flex: 1;
+    font-size: 14px;
+    color: var(--on-dark-mist);
+  }
+
+  .exec__val {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--paper);
+    flex: none;
+  }
+
+  .exec__val--ok {
+    color: var(--green-light);
+  }
+</style>

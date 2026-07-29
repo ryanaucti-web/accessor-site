@@ -1,0 +1,1019 @@
+---
+import Base from '../layouts/Base.astro';
+import CtaBand from '../components/CtaBand.astro';
+import CheckCircle from '../components/ui/CheckCircle.astro';
+
+const plans = [
+  {
+    name: 'Assess',
+    forWho: 'For teams establishing a defensible baseline for the first time.',
+    prefix: 'from',
+    price: '$15k',
+    unit: '/ year',
+    billing: 'Billed annually · 1 product in scope',
+    cta: 'Book a demo',
+    href: '/contact',
+    includesLabel: 'Everything you need to know where you stand',
+    features: [
+      'One product under governance',
+      'Automated testing of every page, on a cadence',
+      'Up to 500 documents a year, read in full',
+      'AI plain-language explanations',
+      'Reach and severity prioritization',
+      'Live VPAT and evidence record',
+      'Unlimited seats',
+    ],
+  },
+  {
+    name: 'Operate',
+    forWho: 'For organizations running accessibility continuously across teams.',
+    prefix: 'from',
+    price: '$45k',
+    unit: '/ year',
+    billing: 'Billed annually · up to 5 products',
+    cta: 'Book a demo',
+    href: '/contact',
+    badgeLabel: 'Most common',
+    includesLabel: 'Everything in Assess, plus the operating layer',
+    features: [
+      'Up to 5 products under governance',
+      'Up to 5,000 documents a year, read in full',
+      'ARRM ownership routing',
+      'Linear, Jira and GitHub sync',
+      'Regression detection at every release',
+      'Maturity scoring and trend history',
+      'Executive reporting',
+      'Priority support',
+    ],
+  },
+  {
+    name: 'Govern',
+    forWho: 'For enterprises and public bodies answering to regulators.',
+    prefix: '',
+    price: 'Custom',
+    unit: '',
+    billing: 'Annual contract · unlimited products',
+    cta: 'Talk to sales',
+    href: '/contact',
+    includesLabel: 'Everything in Operate, plus governance and control',
+    features: [
+      'Unlimited products and portfolio rollups',
+      'Unlimited document volume',
+      'Procurement and compliance exports',
+      'SAML SSO and audit history',
+      'Data residency options',
+      'API and CI integration',
+      'Named contact and onboarding',
+      'Custom terms and security review',
+    ],
+  },
+];
+
+const agencyAdds = [
+  {
+    title: 'Full white-label',
+    body: 'Your logo, colours, and domain across the dashboard and every exported report.',
+  },
+  {
+    title: 'Isolated client workspaces',
+    body: "Each client's data, programmes, and evidence stay separate. Switch between them from one login.",
+  },
+  {
+    title: 'Client-facing access',
+    body: 'Give a client read-only sight of their own programme, or keep it entirely behind your team.',
+  },
+  {
+    title: 'Room to resell',
+    body: 'Per-client cost is set so you can package accessibility as a retainer and hold your margin.',
+  },
+  {
+    title: 'Operate-grade capability per client',
+    body: 'Ownership routing, tracker sync, regression detection, and a live VPAT, scoped to one product per client workspace.',
+  },
+];
+
+const risks = [
+  {
+    tag: 'Legal',
+    title: 'A demand letter',
+    body: 'Accessibility claims are filed in volume and settled quietly. The cost is rarely the settlement alone, it is the emergency remediation that follows on someone else’s timeline.',
+  },
+  {
+    tag: 'Commercial',
+    title: 'A failed procurement',
+    body: 'Public bodies and large enterprises ask for conformance evidence as a gate. Arriving without it does not lose you points, it removes you from the process.',
+  },
+  {
+    tag: 'Operational',
+    title: 'Fixing it late',
+    body: 'A barrier caught in design is a conversation. The same barrier caught after launch is a release, a regression risk, and a retrofit across every page that inherited it.',
+  },
+];
+
+const matrix: [string, string, string, string][] = [
+  ['Products under governance', '1', 'Up to 5', 'Unlimited'],
+  ['Documents read per year', '500', '5,000', 'Unlimited'],
+  ['Word, Excel, PowerPoint, PDF', 'yes', 'yes', 'yes'],
+  ['Automated testing, every page', 'yes', 'yes', 'yes'],
+  ['AI plain-language explanations', 'yes', 'yes', 'yes'],
+  ['Reach and severity prioritization', 'yes', 'yes', 'yes'],
+  ['Live VPAT and evidence record', 'yes', 'yes', 'yes'],
+  ['Unlimited seats', 'yes', 'yes', 'yes'],
+  ['ARRM ownership routing', 'no', 'yes', 'yes'],
+  ['Tracker sync (Linear, Jira, GitHub)', 'no', 'yes', 'yes'],
+  ['Regression detection at release', 'no', 'yes', 'yes'],
+  ['Maturity scoring and trends', 'no', 'yes', 'yes'],
+  ['Portfolio rollups', 'no', 'no', 'yes'],
+  ['SAML SSO and audit history', 'no', 'no', 'yes'],
+  ['Data residency options', 'no', 'no', 'yes'],
+  ['API and CI integration', 'no', 'yes', 'yes'],
+  ['Named contact and onboarding', 'no', 'no', 'yes'],
+];
+
+const faq = [
+  {
+    q: 'Why is pricing annual rather than monthly?',
+    a: 'Accessibility is a programme, not a one-off check. Annual terms match the cadence of audits, procurement cycles, and the reporting your stakeholders actually ask for.',
+  },
+  {
+    q: 'What counts as a product?',
+    a: 'One website, web app, or document set under governance. Pages and templates inside a website or app are unlimited, so nobody is ever tempted to narrow scope to save money.',
+  },
+  {
+    q: 'We send thousands of documents a year. How does that work?',
+    a: 'Documents carry an annual volume allowance rather than being unlimited, because every file is read page by page instead of sharing one live template. Assess covers 500 a year, Operate 5,000, and Govern is unlimited. Most findings trace back to a handful of templates, so the remediation work is far smaller than the file count suggests.',
+  },
+  {
+    q: 'Do documents count against the product limit?',
+    a: 'No. A document set is one product no matter how many templates it spans, and it is the volume allowance that scales. A firm governing one website and its client deliverables is on two products.',
+  },
+  {
+    q: 'We already have Acrobat Pro. Why pay for this too?',
+    a: 'Acrobat and PAC check the file in front of you, and limena aligns with those rule sets rather than competing with them. What they cannot do is run across every file on a cadence without someone clicking, trace three hundred failures back to the two templates that caused them, route each one to an owner, and keep a dated record you can attach to a proposal. Keep Acrobat for the file on your desk; limena governs the estate.',
+  },
+  {
+    q: 'Why are seats unlimited?',
+    a: 'Because per-seat pricing quietly makes accessibility one person’s job. Findings need to reach designers, content editors, and engineers directly, so the whole team is included.',
+  },
+  {
+    q: 'Do you offer nonprofit or public sector terms?',
+    a: 'Yes. Registered nonprofits, educational institutions, and public bodies have dedicated terms, usually on Govern. Tell us your context and we will sort it.',
+  },
+  {
+    q: 'Is the evidence sufficient for a real audit?',
+    a: 'Findings map to WCAG success criteria and the VPAT is generated from live results. Govern adds procurement-ready exports. Where a conformance claim needs human judgment, your specialists make it and limena records who signed off.',
+  },
+  {
+    q: 'Can we start smaller than Assess?',
+    a: 'You can test a single page free, with no account, to see the output before any conversation about price. Assess is the smallest governed programme we support.',
+  },
+  {
+    q: 'We are an agency. Which plan applies?',
+    a: 'The Agency plan. It is priced per client workspace rather than per organization, at wholesale rates set against your client count, so margin stays in your retainer. Each workspace covers one product with the same capability as a direct plan, white-labelled and isolated from your other clients. Talk to partnerships and we will size it with you.',
+  },
+];
+---
+
+<Base
+  title="Pricing · limena"
+  description="limena is the system of record for accessibility across your digital estate. Plans are annual, seats are unlimited, and every plan includes the full testing and evidence layer."
+  active="pricing"
+>
+  <!-- HERO -->
+  <section class="band band--dark priceHero">
+    <div class="priceHero__inner">
+      <p class="eyebrow priceHero__eyebrow">Pricing</p>
+      <h1 class="priceHero__h1">Priced against the risk you are managing.</h1>
+      <p class="priceHero__lede">
+        limena is the system of record for accessibility across your digital estate. Plans are annual, seats are
+        unlimited, and every plan includes the full testing and evidence layer.
+      </p>
+    </div>
+  </section>
+
+  <!-- PLANS -->
+  <section class="band band--paper">
+    <div class="band__inner">
+      <div class="plans">
+        {
+          plans.map((p, i) => (
+            <div class={`plan ${i === 1 ? 'plan--featured' : ''}`}>
+              {p.badgeLabel && <span class="plan__badge">{p.badgeLabel}</span>}
+              <h2 class="plan__name">{p.name}</h2>
+              <p class="plan__for">{p.forWho}</p>
+
+              <p class="plan__priceRow">
+                {p.prefix && <span class="plan__prefix">{p.prefix}</span>}
+                <span class="plan__price">{p.price}</span>
+                {p.unit && <span class="plan__unit">{p.unit}</span>}
+              </p>
+              <p class="plan__billing">{p.billing}</p>
+
+              <a href={p.href} class={`btn plan__cta ${i === 1 ? 'btn--onGreen' : 'btn--primary'}`}>
+                {p.cta}
+              </a>
+
+              <p class="plan__includes">{p.includesLabel}</p>
+              <ul class="plan__features">
+                {p.features.map((f) => (
+                  <li class="plan__feature">
+                    <CheckCircle size={16} color={i === 1 ? 'var(--green-light)' : 'var(--green-hover)'} />
+                    <span>{f}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))
+        }
+      </div>
+
+      <p class="plansNote">
+        Every plan includes unlimited seats, full automated coverage of every page in scope, AI explanations, ownership
+        routing, and a live VPAT. Websites, web apps, and documents are all first-class: Word, Excel, PowerPoint, and PDF
+        are tested page by page, never sampled. Nonprofits and public bodies have dedicated terms.
+      </p>
+    </div>
+  </section>
+
+  <!-- WHAT DRIVES PRICE -->
+  <section class="band band--banded ruled">
+    <div class="band__inner">
+      <div class="lead">
+        <p class="eyebrow">How pricing works</p>
+        <h2 class="h2 lead__h2">Two inputs, no surprises.</h2>
+        <p class="lede">
+          We do not price per page or per scan, because that punishes you for testing thoroughly. Price is set by the
+          size of your organization and the breadth of what you are governing.
+        </p>
+      </div>
+
+      <div class="drivers">
+        <div class="card driver">
+          <span class="driver__icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path
+                d="M9 8a3 3 0 100-6 3 3 0 000 6zM3 20c0-3.3 2.7-5 6-5s6 1.7 6 5M17 11a2.5 2.5 0 100-5 2.5 2.5 0 000 5zM21 20c0-2.5-1.8-4-4-4"
+                stroke="var(--green-hover)"
+                stroke-width="1.8"
+                stroke-linecap="round"
+                stroke-linejoin="round"></path>
+            </svg>
+          </span>
+          <h3 class="driver__title">Organization size</h3>
+          <p class="driver__body">
+            A 40-person studio and a 12,000-person bank carry different accessibility exposure. Size sets the band, and
+            it is the only thing that changes as you grow.
+          </p>
+        </div>
+
+        <div class="card driver">
+          <span class="driver__icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path
+                d="M4 5h7v7H4zM13 12h7v7h-7z"
+                stroke="var(--green-hover)"
+                stroke-width="1.8"
+                stroke-linecap="round"
+                stroke-linejoin="round"></path>
+            </svg>
+          </span>
+          <h3 class="driver__title">Products in scope</h3>
+          <p class="driver__body">
+            Each website, web app, or document set you bring under governance. Pages and templates inside a product are
+            never counted, so test everything.
+          </p>
+          <p class="driver__body">
+            Documents work the same way, with an annual volume allowance per plan, because each file is read individually
+            rather than sharing a template at runtime.
+          </p>
+        </div>
+      </div>
+
+      <p class="seatsNote">
+        <strong>Seats are never a lever.</strong> Accessibility fails when it belongs to one person. Every plan is unlimited
+        seats so design, content, engineering, QA, and compliance all work in the same system.
+      </p>
+    </div>
+  </section>
+
+  <!-- AGENCY MODEL -->
+  <section class="band band--paper">
+    <div class="band__inner agency">
+      <div>
+        <p class="eyebrow agency__eyebrow">For agencies and partners</p>
+        <h2 class="h2 lead__h2">One workspace, every client.</h2>
+        <p class="body agency__body">
+          Agencies do not run one accessibility programme, they run a dozen. The Agency plan prices per client workspace
+          instead of per organization, so the economics work when you are the one delivering the service.
+        </p>
+        <p class="body agency__body">
+          It is white-label throughout. Your brand on the dashboard, your brand on every report. Clients never see limena
+          unless you want them to.
+        </p>
+
+        <div class="partnerCard">
+          <p class="partnerCard__label">Partner pricing</p>
+          <p class="partnerCard__price">Priced per client workspace, scaled to your book.</p>
+          <p class="partnerCard__body">
+            Wholesale rates that leave margin inside your retainer, with volume terms as your client count grows. Built
+            for agencies running accessibility for three or more clients.
+          </p>
+          <a href="/partners" class="btn btn--primary">See the partner programme</a>
+        </div>
+
+        <p class="agency__note">
+          Every workspace carries the same capability as a direct plan, scoped to one product per client. A client with
+          several products, or one needing governance controls, moves onto a direct plan you can resell.
+        </p>
+      </div>
+
+      <div class="addsCard">
+        <p class="addsCard__label">What the agency plan adds</p>
+        <ul>
+          {
+            agencyAdds.map((a) => (
+              <li class="add">
+                <CheckCircle size={17} />
+                <span class="add__main">
+                  <span class="add__title">{a.title}</span>
+                  <span class="add__body">{a.body}</span>
+                </span>
+              </li>
+            ))
+          }
+        </ul>
+        <p class="addsCard__note">
+          Reselling under your own SKU, or running accessibility for more than 25 clients? That is a partnership
+          conversation rather than a plan.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- RISK ANCHOR -->
+  <section class="band band--dark">
+    <div class="band__inner">
+      <div class="lead">
+        <p class="eyebrow">What this is measured against</p>
+        <h2 class="h2 riskLead__h2">The cost of not knowing.</h2>
+        <p class="lede">
+          Accessibility is one of the few product risks that arrives as a legal letter rather than a bug report. These
+          are the events limena exists to prevent.
+        </p>
+      </div>
+
+      <div class="risks">
+        {
+          risks.map((r) => (
+            <div class="riskCard">
+              <p class="riskCard__tag">{r.tag}</p>
+              <h3 class="riskCard__title">{r.title}</h3>
+              <p class="riskCard__body">{r.body}</p>
+            </div>
+          ))
+        }
+      </div>
+
+      <p class="riskNote">
+        Set against any one of these, the question stops being what limena costs and becomes what it is worth to know
+        first.
+      </p>
+    </div>
+  </section>
+
+  <!-- COMPARISON -->
+  <section class="band band--paper">
+    <div class="band__inner">
+      <h2 class="h2 matrix__h2">What is in each plan</h2>
+
+      <div class="tableWrap">
+        <table class="matrix">
+          <caption class="visually-hidden">Capabilities included in the Assess, Operate, and Govern plans.</caption>
+          <thead>
+            <tr>
+              <th scope="col">Capability</th>
+              <th scope="col">Assess</th>
+              <th scope="col">Operate</th>
+              <th scope="col">Govern</th>
+            </tr>
+          </thead>
+          <tbody>
+            {
+              matrix.map(([label, a, b, c]) => (
+                <tr>
+                  <th scope="row">{label}</th>
+                  {[a, b, c].map((v) => (
+                    <td class={v === 'yes' ? 'cell--yes' : v === 'no' ? 'cell--no' : 'cell--text'}>
+                      {v === 'yes' ? (
+                        <>
+                          <span aria-hidden="true">✓</span>
+                          <span class="visually-hidden">Included</span>
+                        </>
+                      ) : v === 'no' ? (
+                        <>
+                          <span aria-hidden="true">·</span>
+                          <span class="visually-hidden">Not included</span>
+                        </>
+                      ) : (
+                        v
+                      )}
+                    </td>
+                  ))}
+                </tr>
+              ))
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section class="band band--banded ruled">
+    <div class="band__inner">
+      <h2 class="h2 faq__h2">Common questions</h2>
+      <div class="faq">
+        {
+          faq.map((q) => (
+            <div class="faqItem">
+              <h3 class="faqItem__q">{q.q}</h3>
+              <p class="faqItem__a">{q.a}</p>
+            </div>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <CtaBand
+    heading="Start with one product."
+    body="We will test it, show you what matters most, and price the programme around what we find. No obligation to continue."
+    primaryLabel="Book a demo"
+    primaryHref="/contact"
+    secondaryLabel="Test a page free"
+    secondaryHref="/scan"
+  />
+</Base>
+
+<style>
+  .visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  .ruled {
+    border-top: 1px solid rgba(22, 38, 28, 0.06);
+    border-bottom: 1px solid rgba(22, 38, 28, 0.06);
+  }
+
+  .lead {
+    max-width: 62ch;
+    margin-bottom: 44px;
+  }
+
+  .lead .eyebrow {
+    display: block;
+    font-size: 13px;
+    letter-spacing: 0.14em;
+    margin-bottom: 16px;
+  }
+
+  .lead__h2 {
+    margin-bottom: 14px;
+  }
+
+  /* ---------- Hero ---------- */
+
+  .priceHero__inner {
+    max-width: var(--content-narrow);
+    margin: 0 auto;
+    text-align: center;
+  }
+
+  .priceHero__eyebrow {
+    display: block;
+    font-size: 13px;
+    letter-spacing: 0.14em;
+    margin-bottom: 20px;
+  }
+
+  .priceHero__h1 {
+    font-size: 54px;
+    font-weight: 800;
+    letter-spacing: -0.035em;
+    line-height: 1.04;
+    color: var(--paper);
+    margin-bottom: 20px;
+    text-wrap: balance;
+  }
+
+  .priceHero__lede {
+    font-size: 19px;
+    line-height: 1.6;
+    color: var(--on-dark-sage);
+    max-width: 62ch;
+    margin: 0 auto;
+    text-wrap: pretty;
+  }
+
+  /* ---------- Plans ---------- */
+
+  .plans {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    align-items: start;
+  }
+
+  .plan {
+    position: relative;
+    background: var(--white);
+    border: 1px solid var(--border-strong);
+    border-radius: 20px;
+    padding: 34px;
+    box-shadow: 0 1px 2px rgba(22, 38, 28, 0.04), 0 22px 44px -34px rgba(22, 38, 28, 0.3);
+  }
+
+  .plan--featured {
+    background: var(--evergreen);
+    border-color: var(--evergreen);
+    color: var(--paper);
+    box-shadow: 0 2px 6px rgba(22, 38, 28, 0.1), 0 34px 64px -32px rgba(22, 38, 28, 0.6);
+  }
+
+  .plan__badge {
+    position: absolute;
+    top: -12px;
+    left: 34px;
+    display: inline-flex;
+    align-items: center;
+    height: 24px;
+    padding: 0 12px;
+    background: var(--green-light);
+    color: var(--evergreen);
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    border-radius: var(--r-pill);
+    white-space: nowrap;
+  }
+
+  .plan__name {
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    margin-bottom: 7px;
+  }
+
+  .plan__for {
+    font-size: 14.5px;
+    line-height: 1.5;
+    color: var(--ink-500);
+    margin-bottom: 24px;
+    min-height: 66px;
+  }
+
+  .plan--featured .plan__for {
+    color: var(--on-dark-sage);
+  }
+
+  .plan__priceRow {
+    display: flex;
+    align-items: baseline;
+    gap: 7px;
+    flex-wrap: wrap;
+  }
+
+  .plan__prefix,
+  .plan__unit {
+    font-size: 15px;
+    color: var(--muted);
+  }
+
+  .plan--featured .plan__prefix,
+  .plan--featured .plan__unit {
+    color: var(--on-dark-sage);
+  }
+
+  .plan__prefix {
+    font-weight: 500;
+  }
+
+  .plan__price {
+    font-size: 46px;
+    font-weight: 800;
+    letter-spacing: -0.035em;
+    line-height: 1;
+  }
+
+  .plan__billing {
+    font-size: 13px;
+    color: var(--muted);
+    margin-top: 10px;
+    margin-bottom: 22px;
+  }
+
+  .plan--featured .plan__billing {
+    color: var(--on-dark-sage);
+  }
+
+  .plan__cta {
+    width: 100%;
+    margin-bottom: 26px;
+  }
+
+  .plan__includes {
+    font-family: var(--mono);
+    font-size: 10.5px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 16px;
+  }
+
+  .plan--featured .plan__includes {
+    color: var(--green-light);
+  }
+
+  .plan__features {
+    display: flex;
+    flex-direction: column;
+    gap: 11px;
+  }
+
+  .plan__feature {
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+    font-size: 14.5px;
+    line-height: 1.45;
+    color: var(--ink-700);
+  }
+
+  .plan--featured .plan__feature {
+    color: var(--on-dark-mist);
+  }
+
+  .plan__feature :global(svg) {
+    margin-top: 2px;
+  }
+
+  .plansNote {
+    margin-top: 32px;
+    font-size: 14px;
+    line-height: 1.65;
+    color: var(--muted);
+    max-width: 90ch;
+  }
+
+  /* ---------- Drivers ---------- */
+
+  .drivers {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 18px;
+  }
+
+  .driver {
+    padding: 30px;
+  }
+
+  .driver__icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 11px;
+    background: var(--green-tint);
+    margin-bottom: 16px;
+  }
+
+  .driver__title {
+    font-size: 19px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    margin-bottom: 8px;
+  }
+
+  .driver__body {
+    font-size: 15px;
+    line-height: 1.6;
+    color: var(--ink-500);
+  }
+
+  .driver__body + .driver__body {
+    margin-top: 12px;
+  }
+
+  .seatsNote {
+    margin-top: 20px;
+    padding: 18px 22px;
+    background: var(--green-tint);
+    border-radius: var(--r-control);
+    font-size: 14.5px;
+    line-height: 1.6;
+    color: var(--ink-700);
+  }
+
+  /* ---------- Agency ---------- */
+
+  .agency {
+    display: grid;
+    grid-template-columns: 0.52fr 0.48fr;
+    gap: 56px;
+    align-items: start;
+  }
+
+  .agency__eyebrow {
+    display: block;
+    font-size: 13px;
+    letter-spacing: 0.14em;
+    margin-bottom: 16px;
+  }
+
+  .agency__body + .agency__body {
+    margin-top: 14px;
+  }
+
+  .partnerCard {
+    margin-top: 26px;
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: var(--r-card);
+    box-shadow: var(--shadow);
+    padding: 28px;
+  }
+
+  .partnerCard__label {
+    font-family: var(--mono);
+    font-size: 10.5px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--green-hover);
+    margin-bottom: 10px;
+  }
+
+  .partnerCard__price {
+    font-size: 21px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    margin-bottom: 10px;
+  }
+
+  .partnerCard__body {
+    font-size: 14.5px;
+    line-height: 1.6;
+    color: var(--ink-500);
+    margin-bottom: 20px;
+  }
+
+  .agency__note {
+    margin-top: 20px;
+    font-size: 13.5px;
+    line-height: 1.6;
+    color: var(--muted);
+  }
+
+  .addsCard {
+    background: var(--sunken);
+    border: 1px solid var(--border);
+    border-radius: var(--r-card);
+    padding: 30px;
+  }
+
+  .addsCard__label {
+    font-family: var(--mono);
+    font-size: 10.5px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 20px;
+  }
+
+  .add {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+  }
+
+  .add + .add {
+    margin-top: 18px;
+    padding-top: 18px;
+    border-top: 1px solid rgba(22, 38, 28, 0.07);
+  }
+
+  .add :global(svg) {
+    margin-top: 3px;
+  }
+
+  .add__title {
+    display: block;
+    font-size: 15px;
+    font-weight: 700;
+    letter-spacing: -0.015em;
+    margin-bottom: 3px;
+  }
+
+  .add__body {
+    display: block;
+    font-size: 14px;
+    line-height: 1.55;
+    color: var(--ink-500);
+  }
+
+  .addsCard__note {
+    margin-top: 22px;
+    padding-top: 18px;
+    border-top: 1px solid rgba(22, 38, 28, 0.07);
+    font-size: 13.5px;
+    line-height: 1.6;
+    color: var(--muted);
+  }
+
+  /* ---------- Risks ---------- */
+
+  .riskLead__h2 {
+    color: var(--paper);
+    margin-bottom: 14px;
+  }
+
+  .risks {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 18px;
+  }
+
+  .riskCard {
+    background: rgba(244, 241, 234, 0.05);
+    border: 1px solid var(--on-dark-border);
+    border-radius: var(--r-card);
+    padding: 28px;
+  }
+
+  .riskCard__tag {
+    font-family: var(--mono);
+    font-size: 10.5px;
+    font-weight: 600;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    color: var(--green-light);
+    margin-bottom: 14px;
+  }
+
+  .riskCard__title {
+    font-size: 20px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    color: var(--paper);
+    margin-bottom: 8px;
+  }
+
+  .riskCard__body {
+    font-size: 14.5px;
+    line-height: 1.6;
+    color: var(--on-dark-sage);
+  }
+
+  .riskNote {
+    margin-top: 26px;
+    font-size: 15px;
+    line-height: 1.6;
+    color: var(--on-dark-mist);
+    max-width: 66ch;
+  }
+
+  /* ---------- Comparison ---------- */
+
+  .matrix__h2 {
+    text-align: center;
+    margin-bottom: 40px;
+  }
+
+  .tableWrap {
+    overflow-x: auto;
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: var(--r-card);
+  }
+
+  .matrix {
+    width: 100%;
+    min-width: 640px;
+    border-collapse: collapse;
+    text-align: left;
+  }
+
+  .matrix thead th {
+    padding: 15px 24px;
+    background: var(--sunken);
+    border-bottom: 1px solid var(--border);
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+  }
+
+  .matrix thead th:not(:first-child),
+  .matrix td {
+    text-align: center;
+  }
+
+  .matrix tbody th {
+    padding: 14px 24px;
+    font-size: 15px;
+    font-weight: 400;
+    color: var(--ink-700);
+  }
+
+  .matrix tbody td {
+    padding: 14px 12px;
+  }
+
+  .matrix tbody tr:not(:last-child) th,
+  .matrix tbody tr:not(:last-child) td {
+    border-bottom: 1px solid rgba(22, 38, 28, 0.06);
+  }
+
+  .matrix tbody tr:nth-child(even) {
+    background: var(--sunken);
+  }
+
+  .cell--yes {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--green-hover);
+  }
+
+  .cell--no {
+    font-size: 16px;
+    color: var(--muted);
+  }
+
+  .cell--text {
+    font-size: 14px;
+    font-weight: 600;
+  }
+
+  /* ---------- FAQ ---------- */
+
+  .faq__h2 {
+    margin-bottom: 40px;
+  }
+
+  .faq {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 18px;
+  }
+
+  .faqItem {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: var(--r-card-sm);
+    padding: 26px;
+  }
+
+  .faqItem__q {
+    font-size: 17px;
+    font-weight: 700;
+    letter-spacing: -0.015em;
+    margin-bottom: 8px;
+  }
+
+  .faqItem__a {
+    font-size: 14.5px;
+    line-height: 1.6;
+    color: var(--ink-500);
+  }
+
+  /* ---------- Responsive ---------- */
+
+  @media (max-width: 1000px) {
+    .priceHero__h1 {
+      font-size: 36px;
+    }
+    .plans,
+    .drivers,
+    .agency,
+    .risks,
+    .faq {
+      grid-template-columns: 1fr;
+    }
+    .agency {
+      gap: 32px;
+    }
+    .plan__for {
+      min-height: 0;
+    }
+  }
+</style>

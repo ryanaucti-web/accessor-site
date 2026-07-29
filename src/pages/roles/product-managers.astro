@@ -1,0 +1,688 @@
+---
+import Base from '../../layouts/Base.astro';
+import ProductHero from '../../components/product/ProductHero.astro';
+import FrictionBand from '../../components/product/FrictionBand.astro';
+import ProductRow from '../../components/product/ProductRow.astro';
+import OutcomeBand from '../../components/product/OutcomeBand.astro';
+import CtaBand from '../../components/CtaBand.astro';
+
+const stats = [
+  { num: '$412k', label: 'exposure on the order path', delta: 'from 4 barriers' },
+  { num: '2', label: 'small tickets clear 94%', delta: 'shared components', ok: true },
+  { num: '1.4M', label: 'sessions affected', delta: 'your own figures' },
+  { num: '0', label: 'reopened last year', delta: 'verified at release', ok: true },
+];
+
+const candidates = [
+  {
+    rank: '01',
+    title: 'Card fields have no labels',
+    meta: 'Payment step · no alternative route',
+    reach: '1.4M',
+    money: '$310k',
+    effort: 'S',
+  },
+  {
+    rank: '02',
+    title: 'Cart quantity control unreachable',
+    meta: 'Keyboard users cannot change quantity',
+    reach: '890k',
+    money: '$78k',
+    effort: 'S',
+  },
+  {
+    rank: '03',
+    title: 'Focus lost after filter apply',
+    meta: 'Category pages · recoverable',
+    reach: '2.1M',
+    money: '$18k',
+    effort: 'M',
+  },
+  {
+    rank: '04',
+    title: 'Heading order on templates',
+    meta: 'Navigation friction, not a block',
+    reach: '2.1M',
+    money: '$6k',
+    effort: 'M',
+  },
+  {
+    rank: '05',
+    title: 'Product image alt text',
+    meta: '6,489 images · name in text nearby',
+    reach: '2.1M',
+    money: '$24k',
+    effort: 'L',
+  },
+];
+
+const frictions = [
+  {
+    title: 'No unit anyone recognises',
+    d: 'M4 19V5M4 19h16M8 16v-4M12 16V8M16 16v-6',
+    body: 'Growth arrives with conversion lift, infra with latency, support with ticket volume. A severity label competes against none of that.',
+  },
+  {
+    title: 'The volume is misleading',
+    d: 'M4 5h7v7H4zM13 12h7v7h-7z',
+    body: 'Eight thousand findings reads as a quarter of work, so it never starts. Almost all of it is one component, and the eleven that matter are buried.',
+  },
+  {
+    title: 'It reappears every audit',
+    d: 'M4 12a8 8 0 018-8 8 8 0 016.9 4M20 12a8 8 0 01-8 8 8 8 0 01-6.9-4M18 3v5h-5M6 21v-5h5',
+    body: 'Nothing verifies the fix, so last year’s remediation shows up again as new findings. It looks like the investment achieved nothing.',
+  },
+];
+
+const maths = [
+  { label: 'Sessions reaching the payment step', val: '1.4M / year' },
+  { label: 'Share unable to complete unaided', val: '~1.6%' },
+  { label: 'Conversion rate and average order value', val: 'your figures' },
+  { label: 'Estimated revenue at risk', val: '$310k / year', ok: true },
+];
+
+// x is effort (left is cheap), y is impact (top is high), r is reach.
+const bubbles = [
+  { x: 70, y: 34, r: 16, tone: 'fail', label: 'Card labels' },
+  { x: 108, y: 62, r: 13, tone: 'fail', label: 'Cart quantity' },
+  { x: 196, y: 108, r: 18, tone: 'attention', label: 'Focus after filter' },
+  { x: 232, y: 134, r: 18, tone: 'attention', label: 'Heading order' },
+  { x: 314, y: 120, r: 30, tone: 'neutral', label: 'Product image alts' },
+];
+
+const dod = [
+  { label: 'Labels present and announced', meta: '3.3.2' },
+  { label: 'Keyboard reaches every field', meta: '2.1.1' },
+  { label: 'Verified on production', meta: 'v8.2' },
+  { label: 'Regression check active', meta: 'every PR' },
+];
+
+const outcomes = [
+  'Every barrier carries a reach and a cost built from your own traffic, with the working shown.',
+  'The two cheapest tickets that clear the most exposure, identified before planning starts.',
+  'High-volume, low-consequence findings visibly separated from the ones that block orders.',
+  'Fixes verified at release, so the same work is never funded twice.',
+];
+---
+
+<Base
+  title="limena for product managers"
+  description="Accessibility loses every prioritization argument because it arrives without a number. limena gives each barrier a reach and a cost."
+  active="usecases"
+>
+  <ProductHero
+    backHref="/use-cases"
+    backLabel="Use cases"
+    title="For product managers"
+    lede="Accessibility loses every prioritization argument because it arrives without a number. limena gives each barrier a reach and a cost, so it competes on the same terms as everything else in the backlog."
+    panelTitle="Next sprint · candidates"
+    panelMeta="Ranked by impact / effort"
+    panelStatus="2 are small"
+    panelStatusTone="pass"
+    stats={stats}
+  >
+    {
+      candidates.map((c) => (
+        <div class="cand">
+          <span class="cand__rank">{c.rank}</span>
+          <span class="cand__main">
+            <span class="cand__title">{c.title}</span>
+            <span class="cand__meta">{c.meta}</span>
+          </span>
+          <span class="cand__reach">{c.reach}</span>
+          <span class="cand__money">{c.money}</span>
+          <span class={`cand__effort cand__effort--${c.effort}`}>{c.effort}</span>
+        </div>
+      ))
+    }
+  </ProductHero>
+
+  <FrictionBand
+    heading='"Serious" is not a business case.'
+    lede="Every other candidate for sprint capacity arrives with a number attached. Accessibility arrives with a severity label and a WCAG reference, and loses."
+    items={frictions}
+  />
+
+  <ProductRow
+    first
+    flip
+    eyebrow="01 · A number you can defend"
+    heading="Reach and revenue, from your own figures."
+    body={[
+      'limena uses the session and order data you supply, so the estimate is yours rather than a vendor benchmark. The working is shown, which is what makes it survivable in a planning meeting.',
+      'Where you have no revenue model, it falls back to reach: how many people are blocked, and from what.',
+    ]}
+  >
+    <div class="numCard">
+      <div class="numCard__head">
+        <span class="numCard__verdict">Fail</span>
+        <span class="numCard__title">Card fields have no labels</span>
+        <span class="numCard__effort">S</span>
+      </div>
+
+      <div class="numCard__impact">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path
+            d="M4 19V5M4 19h16M8 16v-4M12 16V8M16 16v-6"
+            stroke="var(--green-light)"
+            stroke-width="1.8"
+            stroke-linecap="round"
+            stroke-linejoin="round"></path>
+        </svg>
+        <div>
+          <p class="numCard__impactLabel">Business impact</p>
+          <p class="numCard__impactBody">
+            Payment step of every order · 1.4M sessions a year · no alternative route to pay. Estimated <strong
+              >$310k a year at risk</strong
+            >.
+          </p>
+        </div>
+      </div>
+
+      <div class="numCard__maths">
+        <p class="numCard__mathsLabel">How the number is built</p>
+        <ul>
+          {
+            maths.map((m) => (
+              <li class="mathRow">
+                <span class="mathRow__label">{m.label}</span>
+                <span class={`mathRow__val ${m.ok ? 'mathRow__val--ok' : ''}`}>{m.val}</span>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+
+      <div class="numCard__actions">
+        <span class="numCard__btn">Add to sprint</span>
+        <span class="numCard__note">Effort S · one shared component</span>
+      </div>
+    </div>
+  </ProductRow>
+
+  <ProductRow
+    eyebrow="02 · Quick wins are visible"
+    heading="Most of the value is in a few small tickets."
+    body={[
+      'Because barriers group to shared components, the highest-impact items are often the cheapest. Two small tickets clear more exposure than a quarter of scattered work.',
+      'That is the argument that gets accessibility into a sprint that is already full.',
+    ]}
+  >
+    <div class="plot">
+      <div class="plot__head">
+        <span class="plot__title">Impact vs effort</span>
+        <span class="plot__meta">bubble size = reach</span>
+      </div>
+
+      <svg
+        viewBox="0 0 400 200"
+        width="100%"
+        role="img"
+        aria-label="Impact against effort. Card labels and cart quantity sit high-impact and low-effort. Product image alt text has the largest reach but the lowest impact and the highest effort."
+      >
+        <line x1="40" y1="14" x2="40" y2="172" stroke="rgba(22,38,28,0.14)" stroke-width="1"></line>
+        <line x1="40" y1="172" x2="386" y2="172" stroke="rgba(22,38,28,0.14)" stroke-width="1"></line>
+        <text x="16" y="20" font-family="JetBrains Mono" font-size="9" fill="#5F6862">high</text>
+        <text x="16" y="170" font-family="JetBrains Mono" font-size="9" fill="#5F6862">low</text>
+        <text x="46" y="190" font-family="JetBrains Mono" font-size="9" fill="#5F6862">cheap</text>
+        <text x="340" y="190" font-family="JetBrains Mono" font-size="9" fill="#5F6862">costly</text>
+
+        {
+          bubbles.map((b) => (
+            <g>
+              <circle
+                cx={b.x}
+                cy={b.y}
+                r={b.r}
+                fill={
+                  b.tone === 'fail'
+                    ? 'rgba(178,74,51,0.28)'
+                    : b.tone === 'attention'
+                      ? 'rgba(185,128,42,0.26)'
+                      : 'rgba(22,38,28,0.12)'
+                }
+                stroke={b.tone === 'fail' ? '#B24A33' : b.tone === 'attention' ? '#B9802A' : '#5F6862'}
+                stroke-width="1.5"
+              />
+              <text
+                x={b.x + b.r + 7}
+                y={b.y + 4}
+                font-family="Hanken Grotesk"
+                font-size="11"
+                fill={b.tone === 'neutral' ? '#5F6862' : '#34423A'}
+              >
+                {b.label}
+              </text>
+            </g>
+          ))
+        }
+      </svg>
+
+      <p class="plot__note">
+        The large grey bubble is 6,489 product image alts. High volume, low consequence, and not where the quarter should
+        go.
+      </p>
+    </div>
+  </ProductRow>
+
+  <ProductRow
+    last
+    flip
+    eyebrow="03 · Done means done"
+    heading="You do not pay for the same fix twice."
+    body={[
+      'A closed ticket is not proof. limena verifies the fix against the criterion, records the release it shipped in, and re-checks it every time you deploy.',
+      'So accessibility stops being an annual line item that reappears with the same items on it.',
+    ]}
+  >
+    <div class="dod">
+      <div class="dod__head">
+        <span class="dod__title">Definition of done · LIM-412</span>
+        <span class="dod__status">Verified</span>
+      </div>
+      <ul>
+        {
+          dod.map((d) => (
+            <li class="dod__row">
+              <span class="dod__mark" aria-hidden="true">
+                ✓
+              </span>
+              <span class="dod__label">{d.label}</span>
+              <span class="dod__meta">{d.meta}</span>
+            </li>
+          ))
+        }
+      </ul>
+      <p class="dod__note">
+        Shipped in v8.2. limena re-checks this at every release, so it will not reappear in next year's audit as a new
+        finding.
+      </p>
+    </div>
+  </ProductRow>
+
+  <OutcomeBand heading="Accessibility that wins a prioritization argument." outcomes={outcomes} />
+
+  <CtaBand
+    heading="Bring your next sprint."
+    body="We will price the barriers on your order path and show you which two tickets clear most of the exposure."
+    primaryLabel="Book a demo"
+    primaryHref="/contact"
+    secondaryLabel="Test a page free"
+    secondaryHref="/scan"
+  />
+</Base>
+
+<style>
+  /* ---------- Candidate rows ---------- */
+
+  .cand {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 24px;
+    border-bottom: 1px solid rgba(22, 38, 28, 0.06);
+  }
+
+  .cand:last-child {
+    border-bottom: none;
+  }
+
+  .cand__rank {
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--muted);
+    flex: none;
+  }
+
+  .cand__main {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .cand__title {
+    display: block;
+    font-size: 14.5px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+  }
+
+  .cand__meta {
+    display: block;
+    font-size: 12.5px;
+    color: var(--muted);
+    margin-top: 2px;
+  }
+
+  .cand__reach {
+    font-family: var(--mono);
+    font-size: 12.5px;
+    color: var(--muted);
+    flex: none;
+    width: 54px;
+    text-align: right;
+  }
+
+  .cand__money {
+    font-family: var(--mono);
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--evergreen);
+    flex: none;
+    width: 56px;
+    text-align: right;
+  }
+
+  .cand__effort {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 26px;
+    height: 22px;
+    border-radius: 7px;
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 600;
+    flex: none;
+  }
+
+  .cand__effort--S {
+    background: var(--green-soft);
+    color: var(--green-hover);
+  }
+  .cand__effort--M {
+    background: var(--attention-tint);
+    color: var(--attention-text);
+  }
+  .cand__effort--L {
+    background: var(--rail);
+    color: var(--ink-500);
+  }
+
+  /* ---------- Priced finding ---------- */
+
+  .numCard {
+    background: var(--white);
+    border: 1px solid var(--border-strong);
+    border-left: 4px solid var(--fail);
+    border-radius: var(--r-card-sm);
+    box-shadow: var(--shadow);
+    overflow: hidden;
+  }
+
+  .numCard__head {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 18px 22px;
+    border-bottom: 1px solid rgba(22, 38, 28, 0.08);
+  }
+
+  .numCard__verdict {
+    display: inline-flex;
+    align-items: center;
+    height: 25px;
+    padding: 0 11px;
+    background: var(--fail-tint);
+    color: var(--fail-text);
+    border-radius: var(--r-pill);
+    font-size: 12.5px;
+    font-weight: 600;
+    flex: none;
+  }
+
+  .numCard__title {
+    flex: 1;
+    font-size: 17px;
+    font-weight: 700;
+    letter-spacing: -0.015em;
+  }
+
+  .numCard__effort {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 26px;
+    height: 22px;
+    background: var(--green-soft);
+    color: var(--green-hover);
+    border-radius: 7px;
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 600;
+    flex: none;
+  }
+
+  .numCard__impact {
+    display: flex;
+    gap: 11px;
+    align-items: flex-start;
+    padding: 18px 22px;
+    background: var(--evergreen);
+  }
+
+  .numCard__impact svg {
+    flex: none;
+    margin-top: 2px;
+  }
+
+  .numCard__impactLabel {
+    font-family: var(--mono);
+    font-size: 10.5px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--green-light);
+    margin-bottom: 5px;
+  }
+
+  .numCard__impactBody {
+    font-size: 14px;
+    line-height: 1.5;
+    color: var(--on-dark-mist);
+  }
+
+  .numCard__impactBody strong {
+    color: var(--paper);
+  }
+
+  .numCard__maths {
+    padding: 18px 22px;
+    border-bottom: 1px solid rgba(22, 38, 28, 0.08);
+  }
+
+  .numCard__mathsLabel {
+    font-family: var(--mono);
+    font-size: 10.5px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 12px;
+  }
+
+  .mathRow {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 14px;
+    color: var(--ink-700);
+  }
+
+  .mathRow + .mathRow {
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px solid rgba(22, 38, 28, 0.06);
+  }
+
+  .mathRow__label {
+    flex: 1;
+  }
+
+  .mathRow__val {
+    font-family: var(--mono);
+    font-size: 12.5px;
+    font-weight: 600;
+    color: var(--muted);
+    flex: none;
+  }
+
+  .mathRow__val--ok {
+    color: var(--green-hover);
+  }
+
+  .numCard__actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px 22px;
+    flex-wrap: wrap;
+  }
+
+  .numCard__btn {
+    display: inline-flex;
+    align-items: center;
+    height: 32px;
+    padding: 0 13px;
+    background: var(--green);
+    color: var(--paper);
+    border-radius: 9px;
+    font-size: 13px;
+    font-weight: 600;
+    flex: none;
+  }
+
+  .numCard__note {
+    font-size: 12.5px;
+    color: var(--muted);
+  }
+
+  /* ---------- Impact vs effort plot ---------- */
+
+  .plot {
+    background: var(--white);
+    border: 1px solid var(--border-strong);
+    border-radius: var(--r-card);
+    box-shadow: var(--shadow);
+    padding: 22px 24px 20px;
+  }
+
+  .plot__head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 10px;
+  }
+
+  .plot__title {
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  .plot__meta {
+    font-size: 12.5px;
+    color: var(--muted);
+  }
+
+  .plot__note {
+    margin-top: 10px;
+    font-size: 13.5px;
+    line-height: 1.55;
+    color: var(--ink-500);
+  }
+
+  /* ---------- Definition of done ---------- */
+
+  .dod {
+    background: var(--white);
+    border: 1px solid var(--border-strong);
+    border-radius: var(--r-card);
+    box-shadow: var(--shadow);
+    overflow: hidden;
+  }
+
+  .dod__head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 14px 20px;
+    background: var(--sunken);
+    border-bottom: 1px solid rgba(22, 38, 28, 0.08);
+  }
+
+  .dod__title {
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  .dod__status {
+    display: inline-flex;
+    align-items: center;
+    height: 23px;
+    padding: 0 10px;
+    background: var(--green-soft);
+    color: var(--green-hover);
+    border-radius: var(--r-pill);
+    font-size: 12px;
+    font-weight: 600;
+  }
+
+  .dod__row {
+    display: flex;
+    align-items: center;
+    gap: 11px;
+    padding: 13px 20px;
+    border-bottom: 1px solid rgba(22, 38, 28, 0.06);
+    font-size: 14.5px;
+    color: var(--ink-700);
+  }
+
+  .dod__mark {
+    font-family: var(--mono);
+    font-weight: 700;
+    color: var(--green-hover);
+    flex: none;
+  }
+
+  .dod__label {
+    flex: 1;
+  }
+
+  .dod__meta {
+    font-family: var(--mono);
+    font-size: 11.5px;
+    color: var(--muted);
+    flex: none;
+  }
+
+  .dod__note {
+    padding: 16px 20px;
+    font-size: 13px;
+    line-height: 1.55;
+    color: var(--muted);
+  }
+
+  @media (max-width: 700px) {
+    .cand {
+      flex-wrap: wrap;
+      gap: 8px 12px;
+    }
+    .cand__main {
+      flex-basis: calc(100% - 34px);
+    }
+    .cand__reach,
+    .cand__money {
+      width: auto;
+    }
+  }
+</style>

@@ -1,0 +1,111 @@
+---
+import CheckCircle from '../ui/CheckCircle.astro';
+
+/** Dark release-check panel. Verified items read plainly; a caught regression
+ *  gets its own tinted, bordered row so it is legible as an exception without
+ *  relying on colour alone. */
+
+export interface CheckItem {
+  label: string;
+  verdict: string;
+  caught?: boolean;
+}
+
+interface Props {
+  head: string;
+  items: CheckItem[];
+  note?: string;
+}
+
+const { head, items, note } = Astro.props;
+---
+
+<div class="rc">
+  <p class="rc__head">{head}</p>
+  <ul class="rc__list">
+    {
+      items.map((i) =>
+        i.caught ? (
+          <li class="rc__item rc__item--caught">
+            <svg width="17" height="17" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+              <path d="M8 4v5M8 11.5v.5" stroke="var(--fail-on-dark)" stroke-width="2" stroke-linecap="round" />
+              <circle cx="8" cy="8" r="7" stroke="var(--fail-on-dark)" stroke-width="1.5" />
+            </svg>
+            <span class="rc__label">{i.label}</span>
+            <span class="rc__verdict rc__verdict--caught">{i.verdict}</span>
+          </li>
+        ) : (
+          <li class="rc__item">
+            <CheckCircle size={17} color="var(--green-light)" />
+            <span class="rc__label">{i.label}</span>
+            <span class="rc__verdict">{i.verdict}</span>
+          </li>
+        )
+      )
+    }
+  </ul>
+  {note && <p class="rc__note">{note}</p>}
+</div>
+
+<style>
+  .rc {
+    background: var(--evergreen);
+    border-radius: var(--r-card);
+    padding: 28px;
+  }
+
+  .rc__head {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--green-light);
+    margin-bottom: 16px;
+  }
+
+  .rc__list {
+    display: flex;
+    flex-direction: column;
+    gap: 11px;
+  }
+
+  .rc__item {
+    display: flex;
+    align-items: center;
+    gap: 11px;
+    font-size: 14px;
+    color: var(--on-dark-mist);
+  }
+
+  .rc__item svg {
+    flex: none;
+  }
+
+  .rc__item--caught {
+    color: var(--paper);
+    background: rgba(178, 74, 51, 0.18);
+    border: 1px solid rgba(178, 74, 51, 0.4);
+    border-radius: 9px;
+    padding: 10px 12px;
+  }
+
+  .rc__label {
+    flex: 1;
+  }
+
+  .rc__verdict {
+    color: var(--green-light);
+    font-weight: 600;
+    flex: none;
+  }
+
+  .rc__verdict--caught {
+    color: var(--fail-on-dark);
+  }
+
+  .rc__note {
+    font-size: 13px;
+    color: var(--on-dark-sage);
+    margin-top: 16px;
+  }
+</style>

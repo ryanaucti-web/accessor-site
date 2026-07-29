@@ -1,0 +1,1317 @@
+---
+import Base from '../layouts/Base.astro';
+
+/** The free scan is the no-login lead gen surface. It is a faithful simulation:
+ *  a real scan needs a backend, so the phases and findings here are scripted.
+ *  Wire `runScan` in the script below to the real endpoint when it exists. */
+
+const steps = [
+  { n: '01', title: 'Point at a page', body: 'A URL or a document. No install, no account.' },
+  { n: '02', title: 'See it in plain language', body: 'A clear verdict and the barriers that matter, not error codes.' },
+  { n: '03', title: 'Fix and track', body: 'Create a free account to unlock fixes and re-scans.' },
+];
+
+const findings = {
+  contrast: {
+    n: '1',
+    sev: 'fail',
+    wcag: 'WCAG 1.4.3',
+    web: {
+      title: 'Button falls below contrast',
+      impact: 'The "Begin return" button sits at 3.1:1. People with low vision may not see it well enough to use it.',
+      fix: 'Darken the button or lighten its text to reach at least 4.5:1.',
+    },
+    doc: {
+      title: 'Text falls below contrast',
+      impact: 'This heading sits at 3.1:1 against the page. People with low vision may not be able to read it.',
+      fix: 'Darken the text to reach at least 4.5:1 against the background.',
+    },
+    owner: 'Design',
+    ownerInit: 'D',
+    memory: 'limena remembers this fix and flags it if contrast ever regresses.',
+  },
+  alt: {
+    n: '2',
+    sev: 'fail',
+    wcag: 'WCAG 1.1.1',
+    web: {
+      title: 'Image missing alt text',
+      impact: 'The illustration has no alt text, so screen-reader users hear nothing in its place.',
+      fix: 'Add concise alt text, or mark it decorative if it carries no information.',
+    },
+    doc: {
+      title: 'Figure missing alt text',
+      impact: 'Figure 1 has no alt text, so screen-reader users hear nothing in its place and miss the data it shows.',
+      fix: 'Add concise alt text, or mark it decorative if it carries no information.',
+    },
+    owner: 'Content',
+    ownerInit: 'C',
+    memory: 'Once resolved, limena keeps watch and re-checks every new image.',
+  },
+  heading: {
+    n: '3',
+    sev: 'attention',
+    wcag: 'WCAG 1.3.1',
+    web: {
+      title: 'Heading levels skip a step',
+      impact: 'The page jumps from a heading level 1 to a level 3, so the outline is lost.',
+      fix: 'Use heading levels in order so the structure stays logical.',
+    },
+    doc: {
+      title: 'Heading styled by hand',
+      impact: 'The title is bold text, not a real heading style, so it is missing from the document outline.',
+      fix: 'Apply the built-in Heading 1 style so assistive tech can navigate it.',
+    },
+    owner: 'Development',
+    ownerInit: 'D',
+    memory: 'limena tracks this across re-scans so it stays fixed for good.',
+  },
+};
+
+const keys = ['contrast', 'alt', 'heading'] as const;
+---
+
+<Base
+  title="Free accessibility scan · limena"
+  description="Paste a URL or drop in a document. limena checks it against WCAG 2.2 and shows you the barriers in plain language, in seconds."
+>
+  <!-- HERO + SCANNER -->
+  <section class="band band--dark scanHero">
+    <div class="scanHero__inner">
+      <p class="freeTag"><span class="freeTag__dot" aria-hidden="true"></span>Free · no account needed</p>
+      <h1 class="scanHero__h1">See where your page stands.</h1>
+      <p class="scanHero__lede">
+        Paste a URL or drop in a document. limena checks it against WCAG 2.2 and shows you the barriers in plain
+        language, in seconds.
+      </p>
+
+      <div class="scanner" data-scanner>
+        <div class="scanner__tabs" role="tablist" aria-label="What to scan">
+          <button type="button" class="scanner__tab" role="tab" aria-selected="true" aria-controls="pane-url" id="tab-url" data-source="url">
+            Web page
+          </button>
+          <button type="button" class="scanner__tab" role="tab" aria-selected="false" tabindex="-1" aria-controls="pane-file" id="tab-file" data-source="file">
+            Document
+          </button>
+        </div>
+
+        <div class="scanner__body">
+          <div role="tabpanel" id="pane-url" aria-labelledby="tab-url">
+            <div class="urlRow">
+              <label class="visually-hidden" for="scan-url">Page address</label>
+              <input id="scan-url" class="urlRow__input" type="text" inputmode="url" placeholder="aucti.ca" />
+              <button type="button" class="btn btn--primary urlRow__go" data-run>Scan free</button>
+            </div>
+          </div>
+
+          <div role="tabpanel" id="pane-file" aria-labelledby="tab-file" hidden>
+            <label class="drop" for="scan-file">
+              <input id="scan-file" class="visually-hidden" type="file" accept=".docx,.pdf,.pptx" data-file />
+              <span class="drop__label" data-filelabel>Choose a document, or drop one here</span>
+              <span class="drop__hint">.docx · .pdf · .pptx · up to 20 MB</span>
+            </label>
+            <button type="button" class="btn btn--primary drop__go" data-run hidden>Scan this document</button>
+          </div>
+
+          <p class="scanner__note">
+            We don't store your file. The scan runs once and nothing is saved until you create an account.
+          </p>
+        </div>
+      </div>
+
+      <p class="scanHero__trust">Checks against WCAG 2.2 AA. No crawler installed, nothing added to your site.</p>
+    </div>
+  </section>
+
+  <!-- RESULT -->
+  <section class="band band--paper result" data-result hidden>
+    <div class="result__inner">
+      <!-- Scanning -->
+      <div class="scanning" data-scanning>
+        <div class="scanning__bar"><span class="scanning__fill"></span></div>
+        <p class="scanning__label" role="status" aria-live="polite" data-scanning-label>Reading the page…</p>
+      </div>
+
+      <!-- Finished -->
+      <div class="done" data-done hidden>
+        <div class="verdict">
+          <div>
+            <p class="verdict__kicker">Result · <span data-target>aucti.ca</span></p>
+            <p class="verdict__state">
+              <span class="verdict__dot" aria-hidden="true"></span>Needs attention
+            </p>
+            <p class="verdict__body">
+              We found 14 barriers on this page. Choose a marker to see the barrier and how to fix it.
+            </p>
+          </div>
+          <div class="verdict__score">
+            <span class="verdict__num">78<span class="verdict__pct">%</span></span>
+            <span class="verdict__scoreLabel">checks passing</span>
+          </div>
+        </div>
+
+        <ul class="tally">
+          <li class="tally__item tally__item--pass"><strong>182</strong> pass</li>
+          <li class="tally__item tally__item--attention"><strong>10</strong> needs attention</li>
+          <li class="tally__item tally__item--fail"><strong>4</strong> fail</li>
+        </ul>
+
+        <div class="preview">
+          <div class="preview__chrome">
+            <span class="preview__dot" aria-hidden="true"></span>
+            <span class="preview__dot" aria-hidden="true"></span>
+            <span class="preview__dot" aria-hidden="true"></span>
+            <span class="preview__url" data-target>aucti.ca</span>
+          </div>
+
+          <div class="preview__stage">
+            <!-- Website preview -->
+            <div class="page" data-preview="url">
+              <p class="page__brand">aucti · returns portal</p>
+              <div class="page__hero">
+                <div>
+                  <p class="page__h1">Start a return in minutes.</p>
+                  <p class="page__p">
+                    Tell us what you're sending back and we'll email you a prepaid label right away.
+                  </p>
+                  <span class="page__cta">Begin return</span>
+                </div>
+                <div class="page__img" aria-hidden="true"></div>
+              </div>
+              <p class="page__h3">How returns work</p>
+              <div class="page__rows">
+                <span></span><span></span><span></span>
+              </div>
+            </div>
+
+            <!-- Document preview -->
+            <div class="doc" data-preview="file" hidden>
+              <p class="doc__title">2026 Accessibility Plan</p>
+              <p class="doc__p">
+                This plan sets out how our organization will identify, remove, and prevent barriers over the coming year.
+                It applies across all departments and public-facing services.
+              </p>
+              <p class="doc__sub">Summary of commitments</p>
+              <p class="doc__p">
+                We will review progress each quarter and report publicly on the results, in line with our obligations.
+              </p>
+              <div class="doc__figure" aria-hidden="true"><span>Figure 1. Barriers by area</span></div>
+            </div>
+
+            <!-- Markers. Real buttons, so keyboard and screen reader users get
+                 the same affordance as a pointer. -->
+            {
+              keys.map((k) => (
+                <button
+                  type="button"
+                  class={`marker marker--${findings[k].sev} marker--${k}`}
+                  data-marker={k}
+                  aria-pressed="false"
+                >
+                  <span class="visually-hidden">Barrier {findings[k].n}: </span>
+                  <span aria-hidden="true">{findings[k].n}</span>
+                  <span class="visually-hidden" data-marker-title />
+                </button>
+              ))
+            }
+          </div>
+
+          <!-- Barrier detail -->
+          <div class="barrier" data-barrier role="region" aria-live="polite" aria-label="Selected barrier">
+            <div class="barrier__head">
+              <span class="barrier__n" data-b-n>1</span>
+              <span class="barrier__sev" data-b-sev>Fail</span>
+              <span class="barrier__wcag" data-b-wcag>WCAG 1.4.3</span>
+            </div>
+            <p class="barrier__title" data-b-title></p>
+            <p class="barrier__impact" data-b-impact></p>
+            <div class="barrier__fix">
+              <p class="barrier__fixLabel">How to fix</p>
+              <p data-b-fix></p>
+            </div>
+            <div class="barrier__owner">
+              <span class="barrier__avatar" data-b-init>D</span>
+              <span class="barrier__ownerMeta">
+                <span class="barrier__ownerLabel">Owner</span>
+                <span data-b-owner>Design</span>
+              </span>
+            </div>
+            <p class="barrier__memory" data-b-memory></p>
+          </div>
+
+          <!-- Gate -->
+          <div class="gate">
+            <p class="gate__count">4 of 14 barriers shown</p>
+            <p class="gate__title">Unlock every barrier, on every page</p>
+            <p class="gate__body">
+              Create a free account for the full report, plain-language fixes for all 14 barriers, and re-scans that
+              track your progress over time.
+            </p>
+            <div class="gate__actions">
+              <a href="/pricing" class="btn btn--primary">Create free account</a>
+              <button type="button" class="btn btn--ghost" data-reset>Scan another page</button>
+            </div>
+            <p class="gate__note">No card required · free plan includes 3 pages</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- HOW IT WORKS -->
+  <section class="band band--banded how" data-how>
+    <div class="band__inner how__grid">
+      {
+        steps.map((s) => (
+          <div class="howCard">
+            <p class="howCard__n">{s.n}</p>
+            <p class="howCard__title">{s.title}</p>
+            <p class="howCard__body">{s.body}</p>
+          </div>
+        ))
+      }
+    </div>
+  </section>
+</Base>
+
+<style>
+  .visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  /* ---------- Hero ---------- */
+
+  .scanHero__inner {
+    max-width: 860px;
+    margin: 0 auto;
+    text-align: center;
+  }
+
+  .freeTag {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    height: 30px;
+    padding: 0 14px;
+    background: rgba(116, 199, 154, 0.14);
+    border: 1px solid rgba(116, 199, 154, 0.3);
+    color: var(--green-light);
+    border-radius: var(--r-pill);
+    font-family: var(--mono);
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-bottom: 24px;
+  }
+
+  .freeTag__dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--green-light);
+  }
+
+  .scanHero__h1 {
+    font-size: 54px;
+    font-weight: 800;
+    letter-spacing: -0.035em;
+    line-height: 1.02;
+    color: var(--paper);
+    margin-bottom: 18px;
+    text-wrap: balance;
+  }
+
+  .scanHero__lede {
+    font-size: 19px;
+    line-height: 1.6;
+    color: var(--on-dark-sage);
+    max-width: 56ch;
+    margin: 0 auto 36px;
+    text-wrap: pretty;
+  }
+
+  /* ---------- Scanner ---------- */
+
+  .scanner {
+    background: var(--paper);
+    border-radius: var(--r-card);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2), 0 40px 80px -40px rgba(0, 0, 0, 0.6);
+    overflow: hidden;
+    text-align: left;
+    color: var(--evergreen);
+  }
+
+  .scanner__tabs {
+    display: flex;
+    background: var(--white);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .scanner__tab {
+    padding: 13px 20px;
+    border: 1px solid transparent;
+    border-bottom-color: transparent;
+    background: none;
+    font-family: var(--sans);
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--ink-500);
+    cursor: pointer;
+  }
+
+  .scanner__tab[aria-selected='true'] {
+    font-weight: 600;
+    color: var(--evergreen);
+    border-bottom-color: var(--green);
+    border-bottom-width: 2px;
+  }
+
+  .scanner__body {
+    padding: 22px;
+  }
+
+  .urlRow {
+    display: flex;
+    gap: 10px;
+  }
+
+  .urlRow__input {
+    flex: 1;
+    min-width: 0;
+    height: 48px;
+    padding: 0 16px;
+    border: 1px solid rgba(22, 38, 28, 0.18);
+    border-radius: var(--r-control-sm);
+    background: var(--white);
+    font-family: var(--sans);
+    font-size: 16px;
+    color: var(--evergreen);
+  }
+
+  .urlRow__go,
+  .drop__go {
+    height: 48px;
+    flex: none;
+  }
+
+  .drop {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 30px 20px;
+    border: 1px dashed rgba(22, 38, 28, 0.28);
+    border-radius: var(--r-control);
+    background: var(--white);
+    cursor: pointer;
+    text-align: center;
+  }
+
+  .drop:hover {
+    border-color: var(--green);
+  }
+
+  .drop:focus-within {
+    outline: 3px solid var(--green-hover);
+    outline-offset: 2px;
+  }
+
+  .drop__label {
+    font-size: 15.5px;
+    font-weight: 600;
+  }
+
+  .drop__hint {
+    font-family: var(--mono);
+    font-size: 11.5px;
+    color: var(--muted);
+  }
+
+  .drop__go {
+    width: 100%;
+    margin-top: 12px;
+  }
+
+  .scanner__note {
+    margin-top: 14px;
+    font-size: 13px;
+    line-height: 1.5;
+    color: var(--muted);
+  }
+
+  .scanHero__trust {
+    margin-top: 22px;
+    font-size: 13.5px;
+    color: var(--on-dark-sage);
+  }
+
+  /* ---------- Result ---------- */
+
+  .result__inner {
+    max-width: 900px;
+    margin: 0 auto;
+  }
+
+  .scanning__bar {
+    height: 6px;
+    border-radius: var(--r-pill);
+    background: #e3e1d9;
+    overflow: hidden;
+  }
+
+  .scanning__fill {
+    display: block;
+    height: 100%;
+    width: 0;
+    background: var(--green);
+    animation: scanFill 2.6s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  }
+
+  @keyframes scanFill {
+    to {
+      width: 100%;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .scanning__fill {
+      animation: none;
+      width: 100%;
+    }
+  }
+
+  .scanning__label {
+    margin-top: 14px;
+    font-family: var(--mono);
+    font-size: 12.5px;
+    color: var(--muted);
+  }
+
+  .verdict {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 32px;
+    flex-wrap: wrap;
+    margin-bottom: 22px;
+  }
+
+  .verdict__kicker {
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 10px;
+  }
+
+  .verdict__state {
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+    font-size: 26px;
+    font-weight: 800;
+    letter-spacing: -0.025em;
+    color: var(--attention-text);
+    margin-bottom: 10px;
+  }
+
+  .verdict__dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: var(--attention);
+    flex: none;
+  }
+
+  .verdict__body {
+    font-size: 16px;
+    line-height: 1.6;
+    color: var(--ink-500);
+    max-width: 52ch;
+  }
+
+  .verdict__score {
+    text-align: right;
+    flex: none;
+  }
+
+  .verdict__num {
+    display: block;
+    font-size: 48px;
+    font-weight: 800;
+    letter-spacing: -0.035em;
+    line-height: 1;
+    color: var(--attention-text);
+  }
+
+  .verdict__pct {
+    font-size: 24px;
+  }
+
+  .verdict__scoreLabel {
+    display: block;
+    font-family: var(--mono);
+    font-size: 10.5px;
+    font-weight: 600;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-top: 6px;
+  }
+
+  .tally {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 22px;
+  }
+
+  .tally__item {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 6px;
+    padding: 7px 13px;
+    border-radius: var(--r-pill);
+    font-size: 13.5px;
+  }
+
+  .tally__item--pass {
+    background: var(--green-soft);
+    color: var(--green-hover);
+  }
+  .tally__item--attention {
+    background: var(--attention-tint);
+    color: var(--attention-text);
+  }
+  .tally__item--fail {
+    background: var(--fail-tint);
+    color: var(--fail-text);
+  }
+
+  /* ---------- Preview ---------- */
+
+  .preview {
+    background: var(--white);
+    border: 1px solid var(--border-strong);
+    border-radius: var(--r-card);
+    box-shadow: var(--shadow);
+    overflow: hidden;
+  }
+
+  .preview__chrome {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    padding: 12px 16px;
+    background: var(--sunken);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .preview__dot {
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: #d9d5c8;
+    flex: none;
+  }
+
+  .preview__url {
+    margin-left: 10px;
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--muted);
+  }
+
+  .preview__stage {
+    position: relative;
+    padding: 28px;
+    min-height: 300px;
+  }
+
+  /* Website mock */
+
+  .page__brand {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--muted);
+    margin-bottom: 18px;
+  }
+
+  .page__hero {
+    display: grid;
+    grid-template-columns: 1.2fr 0.8fr;
+    gap: 24px;
+    align-items: center;
+    margin-bottom: 26px;
+  }
+
+  .page__h1 {
+    font-size: 24px;
+    font-weight: 800;
+    letter-spacing: -0.025em;
+    margin-bottom: 8px;
+  }
+
+  .page__p {
+    font-size: 14px;
+    line-height: 1.55;
+    color: var(--ink-500);
+    margin-bottom: 16px;
+  }
+
+  /* Deliberately the failing pair: this is the barrier being demonstrated. */
+  .page__cta {
+    display: inline-flex;
+    align-items: center;
+    height: 38px;
+    padding: 0 18px;
+    background: #9fd4b6;
+    color: #f4f1ea;
+    border-radius: var(--r-control-sm);
+    font-size: 14.5px;
+    font-weight: 600;
+  }
+
+  .page__img {
+    height: 108px;
+    border-radius: var(--r-control);
+    background: linear-gradient(135deg, #e3e1d9, #d1cec2);
+  }
+
+  .page__h3 {
+    font-size: 17px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    margin-bottom: 12px;
+  }
+
+  .page__rows {
+    display: flex;
+    flex-direction: column;
+    gap: 9px;
+  }
+
+  .page__rows span {
+    display: block;
+    height: 9px;
+    border-radius: var(--r-pill);
+    background: #eae7dd;
+  }
+
+  .page__rows span:nth-child(2) {
+    width: 84%;
+  }
+  .page__rows span:nth-child(3) {
+    width: 62%;
+  }
+
+  /* Document mock */
+
+  .doc__title {
+    font-size: 21px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    margin-bottom: 14px;
+  }
+
+  .doc__p {
+    font-size: 14px;
+    line-height: 1.7;
+    color: var(--ink-500);
+    margin-bottom: 16px;
+    max-width: 62ch;
+  }
+
+  /* Also deliberately low contrast: this is barrier 1 in the document view. */
+  .doc__sub {
+    font-size: 16px;
+    font-weight: 700;
+    color: #9fd4b6;
+    margin-bottom: 10px;
+  }
+
+  .doc__figure {
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    height: 110px;
+    padding: 12px;
+    border-radius: var(--r-control);
+    background: linear-gradient(135deg, #e3e1d9, #d1cec2);
+    font-size: 12.5px;
+    color: var(--muted);
+  }
+
+  /* Markers */
+
+  .marker {
+    position: absolute;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    border: 2px solid var(--white);
+    color: var(--white);
+    font-family: var(--mono);
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(22, 38, 28, 0.3);
+  }
+
+  .marker--fail {
+    background: var(--fail);
+  }
+  .marker--attention {
+    background: var(--attention);
+  }
+
+  .marker[aria-pressed='true'] {
+    outline: 3px solid var(--evergreen);
+    outline-offset: 2px;
+  }
+
+  /* Marker positions differ per preview, so they are set per mode. */
+  /* Each marker sits on the corner of the element it flags, not over it, so
+     the thing being described stays readable. */
+  [data-mode='url'] .marker--contrast {
+    top: 158px;
+    left: 132px;
+  }
+  [data-mode='url'] .marker--alt {
+    top: 70px;
+    right: 8px;
+  }
+  [data-mode='url'] .marker--heading {
+    top: 230px;
+    left: 190px;
+  }
+
+  [data-mode='file'] .marker--contrast {
+    top: 161px;
+    left: 231px;
+  }
+  [data-mode='file'] .marker--alt {
+    top: 247px;
+    left: 40px;
+  }
+  [data-mode='file'] .marker--heading {
+    top: 32px;
+    left: 249px;
+  }
+
+  /* ---------- Barrier detail ---------- */
+
+  .barrier {
+    padding: 22px 28px 26px;
+    border-top: 1px solid var(--border);
+    background: var(--sunken);
+  }
+
+  .barrier__head {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+    flex-wrap: wrap;
+  }
+
+  .barrier__n {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: var(--evergreen);
+    color: var(--paper);
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 600;
+    flex: none;
+  }
+
+  .barrier__sev {
+    display: inline-flex;
+    align-items: center;
+    height: 24px;
+    padding: 0 11px;
+    border-radius: var(--r-pill);
+    font-size: 12px;
+    font-weight: 600;
+    background: var(--fail-tint);
+    color: var(--fail-text);
+  }
+
+  .barrier__sev[data-sev='attention'] {
+    background: var(--attention-tint);
+    color: var(--attention-text);
+  }
+
+  .barrier__wcag {
+    font-family: var(--mono);
+    font-size: 11.5px;
+    color: var(--muted);
+  }
+
+  .barrier__title {
+    font-size: 18px;
+    font-weight: 700;
+    letter-spacing: -0.015em;
+    margin-bottom: 8px;
+  }
+
+  .barrier__impact {
+    font-size: 14.5px;
+    line-height: 1.6;
+    color: var(--ink-700);
+    margin-bottom: 14px;
+    max-width: 62ch;
+  }
+
+  .barrier__fix {
+    background: var(--green-tint);
+    border-radius: var(--r-control-sm);
+    padding: 14px 16px;
+    margin-bottom: 14px;
+    font-size: 14px;
+    line-height: 1.55;
+    color: var(--ink-700);
+  }
+
+  .barrier__fixLabel {
+    font-family: var(--mono);
+    font-size: 10.5px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--green-hover);
+    margin-bottom: 5px;
+  }
+
+  .barrier__owner {
+    display: flex;
+    align-items: center;
+    gap: 11px;
+    margin-bottom: 12px;
+  }
+
+  .barrier__avatar {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: var(--chip-design-ink);
+    color: var(--white);
+    font-size: 12px;
+    font-weight: 700;
+    flex: none;
+  }
+
+  .barrier__ownerLabel {
+    display: block;
+    font-family: var(--mono);
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  .barrier__ownerMeta {
+    font-size: 14px;
+    font-weight: 600;
+  }
+
+  .barrier__memory {
+    font-size: 13px;
+    line-height: 1.5;
+    color: var(--muted);
+  }
+
+  /* ---------- Gate ---------- */
+
+  .gate {
+    padding: 26px 28px 28px;
+    border-top: 1px solid var(--border);
+    background: var(--evergreen);
+    color: var(--paper);
+  }
+
+  .gate__count {
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    color: var(--green-light);
+    margin-bottom: 12px;
+  }
+
+  .gate__title {
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    margin-bottom: 8px;
+  }
+
+  .gate__body {
+    font-size: 15px;
+    line-height: 1.6;
+    color: var(--on-dark-sage);
+    max-width: 58ch;
+    margin-bottom: 20px;
+  }
+
+  .gate__actions {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-bottom: 14px;
+  }
+
+  .gate .btn--ghost {
+    border-color: rgba(244, 241, 234, 0.38);
+    color: var(--paper);
+  }
+
+  .gate .btn--ghost:hover {
+    background: rgba(244, 241, 234, 0.1);
+  }
+
+  .gate__note {
+    font-size: 13px;
+    color: var(--on-dark-sage);
+  }
+
+  /* ---------- How it works ---------- */
+
+  .how__grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 18px;
+  }
+
+  .howCard {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: var(--r-card-sm);
+    padding: 26px;
+  }
+
+  .howCard__n {
+    font-family: var(--mono);
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--green-hover);
+    margin-bottom: 12px;
+  }
+
+  .howCard__title {
+    font-size: 18px;
+    font-weight: 700;
+    letter-spacing: -0.015em;
+    margin-bottom: 6px;
+  }
+
+  .howCard__body {
+    font-size: 14.5px;
+    line-height: 1.55;
+    color: var(--ink-500);
+  }
+
+  /* ---------- Responsive ---------- */
+
+  @media (max-width: 1000px) {
+    .scanHero__h1 {
+      font-size: 36px;
+    }
+    .how__grid {
+      grid-template-columns: 1fr;
+    }
+    .page__hero {
+      grid-template-columns: 1fr;
+    }
+    .verdict__score {
+      text-align: left;
+    }
+  }
+
+  @media (max-width: 640px) {
+    .urlRow {
+      flex-direction: column;
+    }
+    .urlRow__go {
+      width: 100%;
+    }
+    /* Absolute markers cannot be anchored reliably once the mock reflows, so
+       they stack below it as a plain list of buttons instead. */
+    .preview__stage {
+      padding-bottom: 64px;
+    }
+    .marker {
+      position: static;
+      margin: 12px 8px 0 0;
+    }
+  }
+</style>
+
+<script>
+  type Sev = 'fail' | 'attention';
+  interface Variant {
+    title: string;
+    impact: string;
+    fix: string;
+  }
+  interface Finding {
+    n: string;
+    sev: Sev;
+    wcag: string;
+    web: Variant;
+    doc: Variant;
+    owner: string;
+    ownerInit: string;
+    memory: string;
+  }
+
+  const FINDINGS: Record<string, Finding> = {
+    contrast: {
+      n: '1',
+      sev: 'fail',
+      wcag: 'WCAG 1.4.3',
+      web: {
+        title: 'Button falls below contrast',
+        impact: 'The "Begin return" button sits at 3.1:1. People with low vision may not see it well enough to use it.',
+        fix: 'Darken the button or lighten its text to reach at least 4.5:1.',
+      },
+      doc: {
+        title: 'Text falls below contrast',
+        impact: 'This heading sits at 3.1:1 against the page. People with low vision may not be able to read it.',
+        fix: 'Darken the text to reach at least 4.5:1 against the background.',
+      },
+      owner: 'Design',
+      ownerInit: 'D',
+      memory: 'limena remembers this fix and flags it if contrast ever regresses.',
+    },
+    alt: {
+      n: '2',
+      sev: 'fail',
+      wcag: 'WCAG 1.1.1',
+      web: {
+        title: 'Image missing alt text',
+        impact: 'The illustration has no alt text, so screen-reader users hear nothing in its place.',
+        fix: 'Add concise alt text, or mark it decorative if it carries no information.',
+      },
+      doc: {
+        title: 'Figure missing alt text',
+        impact:
+          'Figure 1 has no alt text, so screen-reader users hear nothing in its place and miss the data it shows.',
+        fix: 'Add concise alt text, or mark it decorative if it carries no information.',
+      },
+      owner: 'Content',
+      ownerInit: 'C',
+      memory: 'Once resolved, limena keeps watch and re-checks every new image.',
+    },
+    heading: {
+      n: '3',
+      sev: 'attention',
+      wcag: 'WCAG 1.3.1',
+      web: {
+        title: 'Heading levels skip a step',
+        impact: 'The page jumps from a heading level 1 to a level 3, so the outline is lost.',
+        fix: 'Use heading levels in order so the structure stays logical.',
+      },
+      doc: {
+        title: 'Heading styled by hand',
+        impact: 'The title is bold text, not a real heading style, so it is missing from the document outline.',
+        fix: 'Apply the built-in Heading 1 style so assistive tech can navigate it.',
+      },
+      owner: 'Development',
+      ownerInit: 'D',
+      memory: 'limena tracks this across re-scans so it stays fixed for good.',
+    },
+  };
+
+  const OWNER_TINT: Record<string, string> = {
+    Design: 'var(--chip-design-ink)',
+    Content: '#5c645c',
+    Development: 'var(--chip-dev-ink)',
+  };
+
+  const scanner = document.querySelector<HTMLElement>('[data-scanner]');
+  const result = document.querySelector<HTMLElement>('[data-result]');
+  const how = document.querySelector<HTMLElement>('[data-how]');
+
+  if (scanner && result && how) {
+    const tabs = Array.from(scanner.querySelectorAll<HTMLButtonElement>('[data-source]'));
+    const urlInput = scanner.querySelector<HTMLInputElement>('#scan-url')!;
+    const fileInput = scanner.querySelector<HTMLInputElement>('[data-file]')!;
+    const fileLabel = scanner.querySelector<HTMLElement>('[data-filelabel]')!;
+    const fileGo = scanner.querySelector<HTMLButtonElement>('.drop__go')!;
+
+    const scanning = result.querySelector<HTMLElement>('[data-scanning]')!;
+    const scanningLabel = result.querySelector<HTMLElement>('[data-scanning-label]')!;
+    const done = result.querySelector<HTMLElement>('[data-done]')!;
+    const stage = result.querySelector<HTMLElement>('.preview__stage')!;
+    const markers = Array.from(result.querySelectorAll<HTMLButtonElement>('[data-marker]'));
+
+    let source: 'url' | 'file' = 'url';
+    let timer: number | undefined;
+    let ticker: number | undefined;
+
+    /* ---------- Tabs ---------- */
+
+    const selectSource = (next: 'url' | 'file', focus = false) => {
+      source = next;
+      for (const t of tabs) {
+        const on = t.dataset.source === next;
+        t.setAttribute('aria-selected', on ? 'true' : 'false');
+        t.tabIndex = on ? 0 : -1;
+        document.getElementById(t.getAttribute('aria-controls')!)?.toggleAttribute('hidden', !on);
+        if (on && focus) t.focus();
+      }
+      // A source change invalidates the previous result.
+      reset();
+    };
+
+    for (const [i, tab] of tabs.entries()) {
+      tab.addEventListener('click', () => selectSource(tab.dataset.source as 'url' | 'file'));
+      tab.addEventListener('keydown', (e) => {
+        const step = { ArrowRight: 1, ArrowLeft: -1 }[e.key];
+        if (!step) return;
+        e.preventDefault();
+        const next = tabs[(i + step + tabs.length) % tabs.length];
+        selectSource(next.dataset.source as 'url' | 'file', true);
+      });
+    }
+
+    fileInput.addEventListener('change', () => {
+      const name = fileInput.files?.[0]?.name;
+      fileLabel.textContent = name ?? 'Choose a document, or drop one here';
+      fileGo.toggleAttribute('hidden', !name);
+    });
+
+    /* ---------- Scan ---------- */
+
+    const PHASES = ['Reading the page…', 'Checking against WCAG 2.2…', 'Writing the findings in plain language…'];
+
+    const target = () =>
+      source === 'url' ? urlInput.value.trim() || 'aucti.ca' : (fileInput.files?.[0]?.name ?? 'your document');
+
+    const runScan = () => {
+      clearTimeout(timer);
+      clearInterval(ticker);
+
+      for (const el of result.querySelectorAll<HTMLElement>('[data-target]')) el.textContent = target();
+      for (const el of result.querySelectorAll<HTMLElement>('[data-preview]')) {
+        el.toggleAttribute('hidden', el.dataset.preview !== source);
+      }
+      stage.dataset.mode = source;
+      // Marker names describe the barrier in the mode being shown.
+      for (const m of markers) {
+        const f = FINDINGS[m.dataset.marker!];
+        const label = m.querySelector<HTMLElement>('[data-marker-title]');
+        if (label) label.textContent = (source === 'url' ? f.web : f.doc).title;
+      }
+
+      result.hidden = false;
+      how.hidden = true;
+      scanning.hidden = false;
+      done.hidden = true;
+
+      let i = 0;
+      scanningLabel.textContent = PHASES[0];
+      ticker = window.setInterval(() => {
+        i = Math.min(i + 1, PHASES.length - 1);
+        scanningLabel.textContent = PHASES[i];
+      }, 850);
+
+      result.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+      timer = window.setTimeout(() => {
+        clearInterval(ticker);
+        scanning.hidden = true;
+        done.hidden = false;
+        selectMarker('contrast');
+      }, 2600);
+    };
+
+    const reset = () => {
+      clearTimeout(timer);
+      clearInterval(ticker);
+      result.hidden = true;
+      how.hidden = false;
+    };
+
+    for (const btn of document.querySelectorAll<HTMLButtonElement>('[data-run]')) {
+      btn.addEventListener('click', runScan);
+    }
+    urlInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        runScan();
+      }
+    });
+    document.querySelector<HTMLButtonElement>('[data-reset]')?.addEventListener('click', () => {
+      reset();
+      scanner.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      urlInput.focus();
+    });
+
+    /* ---------- Markers ---------- */
+
+    const set = (sel: string, text: string) => {
+      const el = result.querySelector<HTMLElement>(sel);
+      if (el) el.textContent = text;
+    };
+
+    const selectMarker = (key: string) => {
+      const f = FINDINGS[key];
+      if (!f) return;
+      const v = source === 'url' ? f.web : f.doc;
+
+      for (const m of markers) m.setAttribute('aria-pressed', m.dataset.marker === key ? 'true' : 'false');
+
+      set('[data-b-n]', f.n);
+      set('[data-b-wcag]', f.wcag);
+      set('[data-b-title]', v.title);
+      set('[data-b-impact]', v.impact);
+      set('[data-b-fix]', v.fix);
+      set('[data-b-owner]', f.owner);
+      set('[data-b-init]', f.ownerInit);
+      set('[data-b-memory]', f.memory);
+
+      const sev = result.querySelector<HTMLElement>('[data-b-sev]')!;
+      sev.textContent = f.sev === 'fail' ? 'Fail' : 'Attention';
+      sev.dataset.sev = f.sev;
+
+      const avatar = result.querySelector<HTMLElement>('[data-b-init]')!;
+      avatar.style.background = OWNER_TINT[f.owner] ?? 'var(--chip-design-ink)';
+    };
+
+    for (const m of markers) {
+      // Titles live in the marker's own accessible name, so a screen reader
+      // user knows what each numbered marker is before activating it.
+      const key = m.dataset.marker!;
+      const label = m.querySelector<HTMLElement>('[data-marker-title]');
+      if (label) label.textContent = FINDINGS[key].web.title;
+      m.addEventListener('click', () => selectMarker(key));
+    }
+  }
+</script>

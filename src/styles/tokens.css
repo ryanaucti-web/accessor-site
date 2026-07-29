@@ -1,0 +1,79 @@
+/* limena design tokens.
+   Source of truth for colour, type, spacing, radius, and shadow.
+   Rule 6 from the build spec: muted text is --muted (#5F6862) and accent labels
+   at 11-13px use --green-hover (#1E5E3D). The lighter greens and greys read fine
+   as decoration but fail AA as text on paper, so they are named separately below
+   and must never be used for body or label copy. */
+
+:root {
+  /* Surfaces */
+  --paper: #F4F1EA;
+  --band: #EDEAE0;
+  --sunken: #FBFAF6;
+  --app-paper: #EEECE4;
+  --rail: #F0EEE6;
+  --white: #FFFFFF;
+
+  /* Ink */
+  --evergreen: #16261C;
+  --ink-700: #34423A;
+  --ink-500: #4F584F;
+  --muted: #5F6862;
+  --border: rgba(22, 38, 28, 0.10);
+  --border-strong: rgba(22, 38, 28, 0.12);
+
+  /* Access green */
+  --green: #2C7A52;
+  --green-hover: #1E5E3D;
+  --green-light: #74C79A;
+  --green-tint: #ECF5F0;
+  --green-soft: #E1EFE7;
+
+  /* Status: colour is never the only signal (rule 5) */
+  --pass: #2C7A52;
+  --attention: #B9802A;
+  --attention-text: #8A5E16;
+  --attention-tint: #F5EAD3;
+  --fail: #B24A33;
+  --fail-text: #97402C;
+  --fail-tint: #F3E0DA;
+  --fail-on-dark: #E9A08C;
+
+  /* Role chips */
+  --chip-design-bg: #EDE7F6;
+  --chip-design-ink: #5B3FA8;
+  --chip-dev-bg: #DCEBFB;
+  --chip-dev-ink: #2A5FA8;
+  --chip-content-bg: #EAE8E0;
+  --chip-content-ink: #5C645C;
+
+  /* On dark */
+  --on-dark: #F4F1EA;
+  --on-dark-muted: rgba(244, 241, 234, 0.72);
+  --on-dark-border: rgba(244, 241, 234, 0.16);
+  /* Sage and mist, for secondary and lifted copy on evergreen. Both clear AA
+     against #16261C; neither is ever used on paper. */
+  --on-dark-sage: #9FB1A3;
+  --on-dark-mist: #CFE0D5;
+
+  /* Type */
+  --sans: 'Hanken Grotesk', system-ui, -apple-system, sans-serif;
+  --mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+
+  /* Layout */
+  --content: 1240px;
+  --content-narrow: 1000px;
+  --gutter: 32px;
+
+  /* Radius */
+  --r-card: 16px;
+  --r-card-sm: 14px;
+  --r-control: 12px;
+  --r-control-sm: 10px;
+  --r-pill: 999px;
+
+  /* Shadow */
+  --shadow: 0 1px 2px rgba(22, 38, 28, 0.04), 0 24px 48px -34px rgba(22, 38, 28, 0.3);
+  --shadow-pop: 0 2px 8px rgba(22, 38, 28, 0.06), 0 30px 60px -28px rgba(22, 38, 28, 0.34);
+  --shadow-lift: 0 -30px 60px -30px rgba(0, 0, 0, 0.5);
+}

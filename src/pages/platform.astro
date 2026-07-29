@@ -1,0 +1,1037 @@
+---
+import Base from '../layouts/Base.astro';
+import CtaBand from '../components/CtaBand.astro';
+import CheckCircle from '../components/ui/CheckCircle.astro';
+
+const platformCards = [
+  {
+    title: 'Programs and portfolios',
+    body: 'Manage many products and clients from one workspace, white-labelled.',
+  },
+  {
+    title: 'Tracker integrations',
+    body: 'Two-way sync with Linear, Jira, and GitHub so fixes live where work happens.',
+  },
+  {
+    title: 'VPAT and reporting',
+    body: 'Generate conformance reports and shareable evidence from live data.',
+  },
+  {
+    title: 'Roles and permissions',
+    body: 'Unlimited seats with role-based access, so the whole team takes part.',
+  },
+  {
+    title: 'SSO and security',
+    body: 'SAML SSO, audit history, and Canadian data residency options.',
+  },
+  {
+    title: 'API and CI',
+    body: 'Run checks in your pipeline and pull results through the API.',
+  },
+];
+
+const aiSteps = [
+  { n: '01', title: 'Explains', body: 'Turns each raw violation into plain language and a suggested fix.' },
+  { n: '02', title: 'Prioritizes', body: 'Ranks barriers by real-world impact and effort, not raw counts.' },
+  { n: '03', title: 'Coordinates', body: 'Routes each fix to the right owner and tracks it to done.' },
+];
+---
+
+<Base
+  title="Platform · limena"
+  description="limena is the system your team runs on: one loop that finds what matters, routes it to an owner, and proves it stays fixed at every release."
+  active="platform"
+>
+  <!-- HERO -->
+  <section class="band band--dark hero">
+    <div class="hero__inner">
+      <p class="eyebrow hero__eyebrow">The platform</p>
+      <h1 class="hero__h1">Run accessibility as an operation, not a one-time audit.</h1>
+      <p class="hero__lede">
+        Scanners hand you a list. Overlays hide the problem. limena is the system your team runs on, one loop that finds
+        what matters, routes it to an owner, and proves it stays fixed at every release.
+      </p>
+      <div class="hero__stall">
+        <p class="eyebrow">Why accessibility stalls</p>
+        <p class="hero__stallBody">
+          Finding issues was never the hard part. A scan hands you 400 errors with no priority, no owner, and no way to
+          keep them fixed. Accessibility stalls for lack of a system, not a scanner.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- WORKFLOW ROWS -->
+  <section class="flow">
+    <!-- 01 DISCOVER -->
+    <div class="flowRow">
+      <div>
+        <p class="flowRow__n">01 · Discover</p>
+        <h2 class="h2 h2--row flowRow__h2">Find every barrier, across the whole experience.</h2>
+        <p class="flowRow__body">
+          limena crawls every page, template, and state the way a real visitor moves, then checks each against WCAG 2.2.
+          No tags to install, no page you forgot to test.
+        </p>
+        <ul class="ticks">
+          <li><CheckCircle size={18} color="var(--green)" /><span>Whole-site and authenticated crawls</span></li>
+          <li><CheckCircle size={18} color="var(--green)" /><span>Runs on a schedule and at every release</span></li>
+        </ul>
+      </div>
+
+      <div class="mock mock--sunken">
+        <div class="urlBar">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <circle cx="11" cy="11" r="7" stroke="var(--muted)" stroke-width="2"></circle>
+            <path d="M16 16l4.5 4.5" stroke="var(--muted)" stroke-width="2" stroke-linecap="round"></path>
+          </svg>
+          <span>aucti.ca</span>
+        </div>
+        <ul class="crawl">
+          <li><span class="crawl__dot crawl__dot--done" aria-hidden="true"></span>Crawled 42 pages across 6 templates</li>
+          <li>
+            <span class="crawl__dot crawl__dot--done" aria-hidden="true"></span>Checked 202 criteria against WCAG 2.2 AA
+          </li>
+          <li class="crawl__pending">
+            <span class="crawl__dot crawl__dot--pending" aria-hidden="true"></span>Grouping duplicate barriers by source…
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- 02 UNDERSTAND -->
+    <div class="flowRow flowRow--flip">
+      <div class="findingCard">
+        <div class="findingCard__head">
+          <span class="verdict verdict--fail">
+            <svg width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+              <path d="M5 5l6 6M11 5l-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round"></path>
+            </svg>
+            Fail
+          </span>
+          <h3 class="findingCard__title">Buttons fall below contrast</h3>
+        </div>
+        <p class="findingCard__body">
+          Your primary button sits at 3.1:1 against its background. Anyone with low vision may not see it well enough to
+          use it.
+        </p>
+        <div class="fixBox">
+          <p class="fixBox__label">How to fix</p>
+          <p class="fixBox__body">Darken the button or lighten its text to reach at least 4.5:1.</p>
+        </div>
+        <div class="impactStrip">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true" style="flex:none;">
+            <path
+              d="M4 19V5M4 19h16M8 16v-4M12 16V8M16 16v-6"
+              stroke="var(--green-light)"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"></path>
+          </svg>
+          <span>
+            <strong>Business impact:</strong> it's the checkout button, on the path of ~12,000 visitors a month.
+          </span>
+        </div>
+        <div class="chips">
+          <span class="chip chip--neutral">WCAG 1.4.3</span>
+          <span class="chip chip--green">Affects low vision</span>
+        </div>
+      </div>
+
+      <div>
+        <p class="flowRow__n">02 · Understand</p>
+        <h2 class="h2 h2--row flowRow__h2">Every barrier, in plain language.</h2>
+        <p class="flowRow__body">
+          limena's AI explains what's wrong, who it affects, and how to fix it, in words a content editor and a developer
+          both understand. The WCAG reference and affected elements sit one click away.
+        </p>
+        <blockquote class="quote">
+          <p>"Our content team fixed half the list themselves. They finally understood what each finding meant."</p>
+          <cite>Product Manager</cite>
+        </blockquote>
+      </div>
+    </div>
+
+    <!-- 03 PRIORITIZE -->
+    <div class="flowRow">
+      <div>
+        <p class="flowRow__n">03 · Prioritize</p>
+        <h2 class="h2 h2--row flowRow__h2">Know what to fix first.</h2>
+        <p class="flowRow__body">
+          Barriers are ranked by real-world impact and effort, not raw counts. Blocking issues that affect the most people
+          rise to the top, so a team of any size knows where Monday morning goes.
+        </p>
+        <ul class="ticks">
+          <li><CheckCircle size={18} color="var(--green)" /><span>Impact and effort scoring on every finding</span></li>
+          <li><CheckCircle size={18} color="var(--green)" /><span>Duplicate barriers grouped to one source fix</span></li>
+        </ul>
+      </div>
+
+      <div class="mock mock--sunken queue">
+        <div class="queue__row">
+          <span class="queue__p queue__p--high">P1</span>
+          <span class="queue__name">Buttons fall below contrast</span>
+          <span class="chip chip--fail">High impact</span>
+          <span class="queue__count">6 pages</span>
+        </div>
+        <div class="queue__row">
+          <span class="queue__p queue__p--high">P2</span>
+          <span class="queue__name">Images missing alt text</span>
+          <span class="chip chip--attention">Medium</span>
+          <span class="queue__count">9 pages</span>
+        </div>
+        <div class="queue__row queue__row--faded">
+          <span class="queue__p queue__p--mid">P3</span>
+          <span class="queue__name">Heading levels skip a step</span>
+          <span class="chip chip--attention">Low effort</span>
+          <span class="queue__count">4 pages</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 04 ASSIGN -->
+    <div class="flowRow flowRow--flip">
+      <div class="mock mock--sunken queue">
+        <div class="owner">
+          <span class="owner__avatar owner__avatar--design">MK</span>
+          <span class="owner__meta">
+            <span class="owner__task">Contrast on buttons</span>
+            <span class="owner__who">Design · Maya Kerr</span>
+          </span>
+          <span class="chip chip--mono chip--design">DESIGN</span>
+        </div>
+        <div class="owner">
+          <span class="owner__avatar owner__avatar--content">RA</span>
+          <span class="owner__meta">
+            <span class="owner__task">Alt text on 9 images</span>
+            <span class="owner__who">Content · Rae Okafor</span>
+          </span>
+          <span class="chip chip--mono chip--content">CONTENT</span>
+        </div>
+        <div class="owner">
+          <span class="owner__avatar owner__avatar--dev">JT</span>
+          <span class="owner__meta">
+            <span class="owner__task">Heading structure</span>
+            <span class="owner__who">Development · Jordan Tran</span>
+          </span>
+          <span class="chip chip--mono chip--dev">DEV</span>
+        </div>
+      </div>
+
+      <div>
+        <p class="flowRow__n">04 · Assign</p>
+        <h2 class="h2 h2--row flowRow__h2">Route every fix to the right owner.</h2>
+        <p class="flowRow__body">
+          Using the W3C ARRM role model, limena sends each barrier to the person who owns it, design, content, or
+          development, and pushes it to Linear, Jira, or GitHub with the context attached.
+        </p>
+        <blockquote class="quote">
+          <p>"Nothing sat in a shared inbox. Every finding had a name on it."</p>
+          <cite>Engineering Manager</cite>
+        </blockquote>
+      </div>
+    </div>
+
+    <!-- 05 VERIFY -->
+    <div class="flowRow">
+      <div>
+        <p class="flowRow__n">05 · Verify</p>
+        <h2 class="h2 h2--row flowRow__h2">Confirm the fix, and that it stays fixed.</h2>
+        <p class="flowRow__body">
+          limena re-checks every fix at release and flags the moment a barrier returns. Manual expert testing is tracked
+          alongside automated checks, so nothing is marked done on faith.
+        </p>
+        <ul class="ticks">
+          <li><CheckCircle size={18} color="var(--green)" /><span>Regression detection at every release</span></li>
+          <li><CheckCircle size={18} color="var(--green)" /><span>Manual and automated results in one record</span></li>
+        </ul>
+      </div>
+
+      <div class="release">
+        <p class="release__head">Release check · v2.14</p>
+        <ul class="release__list">
+          <li class="release__item">
+            <CheckCircle size={17} color="var(--green-light)" />
+            Contrast on buttons
+            <span class="release__verdict">Verified</span>
+          </li>
+          <li class="release__item">
+            <CheckCircle size={17} color="var(--green-light)" />
+            Alt text on 9 images
+            <span class="release__verdict">Verified</span>
+          </li>
+          <li class="release__item release__item--caught">
+            <svg width="17" height="17" viewBox="0 0 16 16" fill="none" aria-hidden="true" style="flex:none;">
+              <path d="M8 4v5M8 11.5v.5" stroke="var(--fail-on-dark)" stroke-width="2" stroke-linecap="round"></path>
+              <circle cx="8" cy="8" r="7" stroke="var(--fail-on-dark)" stroke-width="1.5"></circle>
+            </svg>
+            New: link contrast regressed
+            <span class="release__verdict release__verdict--caught">Caught</span>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- 06 IMPROVE -->
+    <div class="flowRow flowRow--flip">
+      <div class="mock mock--sunken">
+        <div class="trend__head">
+          <span class="trend__label">Open barriers over time</span>
+          <span class="trend__delta">↓ 74%</span>
+        </div>
+        <p class="trend__title">From 59 to 15 across four releases</p>
+        <svg viewBox="0 0 380 130" width="100%" style="display:block;" role="img" aria-label="Open barriers fell from 59 in Q1 to 15 now, across four releases.">
+          <line x1="30" y1="12" x2="30" y2="104" stroke="rgba(22,38,28,0.12)" stroke-width="1"></line>
+          <line x1="30" y1="104" x2="370" y2="104" stroke="rgba(22,38,28,0.12)" stroke-width="1"></line>
+          <polyline
+            points="55,22 135,54 235,82 350,96"
+            fill="none"
+            stroke="var(--green)"
+            stroke-width="3"
+            stroke-linecap="round"
+            stroke-linejoin="round"></polyline>
+          <circle cx="55" cy="22" r="4" fill="var(--green)"></circle>
+          <circle cx="135" cy="54" r="4" fill="var(--green)"></circle>
+          <circle cx="235" cy="82" r="4" fill="var(--green)"></circle>
+          <circle cx="350" cy="96" r="5" fill="var(--green)"></circle>
+          <text x="55" y="122" text-anchor="middle" font-family="JetBrains Mono" font-size="10" fill="#5F6862">Q1</text>
+          <text x="135" y="122" text-anchor="middle" font-family="JetBrains Mono" font-size="10" fill="#5F6862">Q2</text>
+          <text x="235" y="122" text-anchor="middle" font-family="JetBrains Mono" font-size="10" fill="#5F6862">Q3</text>
+          <text x="350" y="122" text-anchor="middle" font-family="JetBrains Mono" font-size="10" fill="#5F6862">now</text>
+        </svg>
+      </div>
+
+      <div>
+        <p class="flowRow__n">06 · Improve and govern</p>
+        <h2 class="h2 h2--row flowRow__h2">Prove progress, and steer it.</h2>
+        <p class="flowRow__body">
+          Maturity scoring, trend history, and an evidence repository roll up across every product. Generate a VPAT or a
+          compliance report from live data, not a one-time snapshot.
+        </p>
+        <blockquote class="quote">
+          <p>"For the first time, leadership could see accessibility trending in the right direction."</p>
+          <cite>Director of Digital</cite>
+        </blockquote>
+      </div>
+    </div>
+  </section>
+
+  <!-- AI STRIP -->
+  <section class="band band--dark">
+    <div class="ai">
+      <p class="eyebrow ai__eyebrow">AI, with judgment left to people</p>
+      <h2 class="ai__h2">AI runs the busywork. Your team keeps the calls.</h2>
+      <div class="ai__grid">
+        {
+          aiSteps.map((s) => (
+            <div class="ai__cell">
+              <div class="ai__n">{s.n}</div>
+              <div class="ai__title">{s.title}</div>
+              <div class="ai__body">{s.body}</div>
+            </div>
+          ))
+        }
+      </div>
+      <p class="ai__note">
+        limena never marks accessibility "passed" on AI alone. AI does the reading, sorting, and routing; people make the
+        calls that need judgment. Conformance decisions and manual testing stay with your specialists.
+      </p>
+    </div>
+  </section>
+
+  <!-- PLATFORM AND CONTROL -->
+  <section class="band band--paper">
+    <div class="band__inner">
+      <div class="lead lead--center">
+        <p class="eyebrow">Built for the whole organization</p>
+        <h2 class="h2">Everything a program needs to run.</h2>
+      </div>
+      <div class="grid3">
+        {
+          platformCards.map((c) => (
+            <div class="card featureCard">
+              <h3 class="featureCard__title">{c.title}</h3>
+              <p class="featureCard__body">{c.body}</p>
+            </div>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <CtaBand
+    heading="Operationalize accessibility this week."
+    body="Start a 14-day trial on any plan, or see where you stand with a free scan."
+    primaryLabel="Start free trial"
+    primaryHref="/pricing"
+    secondaryLabel="Run a free scan"
+    secondaryHref="/scan"
+  />
+</Base>
+
+<style>
+  /* ---------- Hero ---------- */
+
+  .hero {
+    padding-bottom: 72px;
+  }
+
+  .hero__inner {
+    max-width: var(--content-narrow);
+    margin: 0 auto;
+    text-align: center;
+  }
+
+  .hero__eyebrow {
+    font-size: 13px;
+    letter-spacing: 0.14em;
+    margin-bottom: 20px;
+  }
+
+  .hero__h1 {
+    font-size: 62px;
+    font-weight: 800;
+    letter-spacing: -0.035em;
+    line-height: 1;
+    margin-bottom: 22px;
+    color: var(--paper);
+    text-wrap: balance;
+  }
+
+  .hero__lede {
+    font-size: 20px;
+    line-height: 1.55;
+    color: var(--on-dark-sage);
+    margin: 0 auto 40px;
+    max-width: 56ch;
+    text-wrap: pretty;
+  }
+
+  .hero__stall {
+    max-width: 64ch;
+    margin: 0 auto;
+    padding-top: 34px;
+    border-top: 1px solid var(--on-dark-border);
+  }
+
+  .hero__stall .eyebrow {
+    font-size: 13px;
+    margin-bottom: 14px;
+  }
+
+  .hero__stallBody {
+    font-size: 19px;
+    line-height: 1.55;
+    color: var(--on-dark-mist);
+    text-wrap: pretty;
+  }
+
+  /* ---------- Workflow rows ---------- */
+
+  .flow {
+    max-width: 1160px;
+    margin: 0 auto;
+    padding: 8px var(--gutter) 24px;
+  }
+
+  .flowRow {
+    display: grid;
+    grid-template-columns: 0.9fr 1.1fr;
+    gap: 60px;
+    align-items: center;
+    border-top: 1px solid rgba(22, 38, 28, 0.14);
+    padding: 60px 0;
+  }
+
+  .flowRow--flip {
+    grid-template-columns: 1.1fr 0.9fr;
+  }
+
+  .flowRow__n {
+    font-family: var(--mono);
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--green-hover);
+    margin-bottom: 14px;
+  }
+
+  .flowRow__h2 {
+    line-height: 1.08;
+    margin-bottom: 14px;
+  }
+
+  .flowRow__body {
+    font-size: 16px;
+    line-height: 1.6;
+    color: var(--ink-500);
+    margin-bottom: 18px;
+  }
+
+  .ticks {
+    display: flex;
+    flex-direction: column;
+    gap: 9px;
+  }
+
+  .ticks li {
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+    font-size: 15px;
+    line-height: 1.45;
+    color: var(--ink-700);
+  }
+
+  .quote {
+    margin: 0;
+    border-left: 2px solid var(--green);
+    padding-left: 16px;
+  }
+
+  .quote p {
+    font-size: 15px;
+    line-height: 1.5;
+    color: var(--ink-700);
+    font-style: italic;
+  }
+
+  .quote cite {
+    display: block;
+    font-style: normal;
+    font-size: 15px;
+    color: var(--muted);
+    margin-top: 6px;
+  }
+
+  /* ---------- Mocks ---------- */
+
+  .mock--sunken {
+    background: var(--sunken);
+    border: 1px solid rgba(22, 38, 28, 0.08);
+    border-radius: var(--r-card);
+    padding: 26px;
+  }
+
+  .urlBar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    height: 46px;
+    padding: 0 15px;
+    background: var(--white);
+    border: 1px solid rgba(22, 38, 28, 0.16);
+    border-radius: var(--r-control-sm);
+    margin-bottom: 16px;
+    font-size: 15px;
+  }
+
+  .crawl {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .crawl li {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 14px;
+    color: var(--ink-500);
+  }
+
+  .crawl__pending {
+    color: var(--muted);
+  }
+
+  .crawl__dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    flex: none;
+  }
+  .crawl__dot--done {
+    background: var(--green);
+  }
+  .crawl__dot--pending {
+    background: #c3c9c3;
+  }
+
+  /* ---------- Finding card ---------- */
+
+  .findingCard {
+    background: var(--white);
+    border: 1px solid var(--border-strong);
+    border-radius: var(--r-card);
+    padding: 26px;
+    box-shadow: 0 16px 34px -24px rgba(22, 38, 28, 0.3);
+  }
+
+  .findingCard__head {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 14px;
+  }
+
+  .verdict {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    height: 26px;
+    padding: 0 11px;
+    border-radius: var(--r-pill);
+    font-size: 13px;
+    font-weight: 600;
+    flex: none;
+  }
+
+  .verdict--fail {
+    background: var(--fail-tint);
+    color: var(--fail-text);
+  }
+
+  .findingCard__title {
+    font-size: 18px;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+  }
+
+  .findingCard__body {
+    font-size: 15px;
+    line-height: 1.6;
+    color: var(--ink-500);
+    margin-bottom: 14px;
+  }
+
+  .fixBox {
+    background: var(--green-tint);
+    border-radius: var(--r-control-sm);
+    padding: 14px 16px;
+    margin-bottom: 14px;
+  }
+
+  .fixBox__label {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--green-hover);
+    margin-bottom: 5px;
+  }
+
+  .fixBox__body {
+    font-size: 14px;
+    line-height: 1.5;
+    color: var(--ink-700);
+  }
+
+  /* The dark strip is what makes a finding a business decision rather than a
+     rule violation. It is the one element every finding card must carry. */
+  .impactStrip {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: var(--evergreen);
+    border-radius: var(--r-control-sm);
+    padding: 12px 14px;
+    margin-bottom: 14px;
+    font-size: 13px;
+    line-height: 1.4;
+    color: var(--on-dark-mist);
+  }
+
+  .impactStrip strong {
+    color: var(--paper);
+  }
+
+  .chips {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    height: 22px;
+    padding: 0 9px;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 500;
+    white-space: nowrap;
+  }
+
+  .chip--neutral {
+    background: #e3e1d9;
+    color: var(--ink-500);
+  }
+  .chip--green {
+    background: #d7ece0;
+    color: var(--green-hover);
+  }
+  .chip--fail {
+    background: var(--fail-tint);
+    color: var(--fail-text);
+    font-weight: 600;
+  }
+  .chip--attention {
+    background: var(--attention-tint);
+    color: var(--attention-text);
+    font-weight: 600;
+  }
+  .chip--mono {
+    font-family: var(--mono);
+    font-size: 10px;
+    font-weight: 600;
+    border-radius: 7px;
+  }
+  .chip--design {
+    background: var(--chip-design-bg);
+    color: var(--chip-design-ink);
+  }
+  .chip--dev {
+    background: var(--chip-dev-bg);
+    color: var(--chip-dev-ink);
+  }
+  .chip--content {
+    background: var(--chip-content-bg);
+    color: var(--chip-content-ink);
+  }
+
+  /* ---------- Ranked queue and owners ---------- */
+
+  .queue {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 22px;
+  }
+
+  .queue__row,
+  .owner {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 11px;
+    padding: 14px 16px;
+  }
+
+  .queue__row--faded {
+    opacity: 0.75;
+  }
+
+  .queue__p {
+    font-family: var(--mono);
+    font-size: 12px;
+    font-weight: 600;
+    flex: none;
+  }
+  .queue__p--high {
+    color: var(--fail-text);
+  }
+  .queue__p--mid {
+    color: var(--attention-text);
+  }
+
+  .queue__name {
+    flex: 1;
+    font-size: 15px;
+    font-weight: 600;
+  }
+
+  .queue__count {
+    font-size: 13px;
+    color: var(--muted);
+    white-space: nowrap;
+  }
+
+  .owner__avatar {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    color: var(--white);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: 700;
+    flex: none;
+  }
+  .owner__avatar--design {
+    background: var(--chip-design-ink);
+  }
+  .owner__avatar--content {
+    background: #5c645c;
+  }
+  .owner__avatar--dev {
+    background: var(--chip-dev-ink);
+  }
+
+  .owner__meta {
+    flex: 1;
+  }
+
+  .owner__task {
+    display: block;
+    font-size: 14px;
+    font-weight: 600;
+  }
+
+  .owner__who {
+    display: block;
+    font-size: 12px;
+    color: var(--muted);
+  }
+
+  /* ---------- Release check ---------- */
+
+  .release {
+    background: var(--evergreen);
+    border-radius: var(--r-card);
+    padding: 28px;
+  }
+
+  .release__head {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--green-light);
+    margin-bottom: 16px;
+  }
+
+  .release__list {
+    display: flex;
+    flex-direction: column;
+    gap: 11px;
+  }
+
+  .release__item {
+    display: flex;
+    align-items: center;
+    gap: 11px;
+    font-size: 14px;
+    color: var(--on-dark-mist);
+  }
+
+  .release__item--caught {
+    color: var(--paper);
+    background: rgba(178, 74, 51, 0.18);
+    border: 1px solid rgba(178, 74, 51, 0.4);
+    border-radius: 9px;
+    padding: 10px 12px;
+  }
+
+  .release__verdict {
+    margin-left: auto;
+    color: var(--green-light);
+    font-weight: 600;
+  }
+
+  .release__verdict--caught {
+    color: var(--fail-on-dark);
+  }
+
+  /* ---------- Trend ---------- */
+
+  .trend__head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    margin-bottom: 6px;
+  }
+
+  .trend__label {
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  .trend__delta {
+    font-size: 13px;
+    color: var(--green-hover);
+    font-weight: 600;
+  }
+
+  .trend__title {
+    font-size: 16px;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    margin-bottom: 18px;
+  }
+
+  /* ---------- AI strip ---------- */
+
+  .ai {
+    max-width: 1080px;
+    margin: 0 auto;
+  }
+
+  .ai__eyebrow {
+    font-size: 13px;
+    letter-spacing: 0.14em;
+    margin-bottom: 18px;
+  }
+
+  .ai__h2 {
+    font-size: 38px;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    line-height: 1.06;
+    margin-bottom: 40px;
+    color: var(--paper);
+    max-width: 20ch;
+  }
+
+  .ai__grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    border-top: 1px solid var(--on-dark-border);
+  }
+
+  .ai__cell {
+    padding: 26px 28px;
+    border-right: 1px solid var(--on-dark-border);
+  }
+
+  .ai__cell:first-child {
+    padding-left: 0;
+  }
+
+  .ai__cell:last-child {
+    padding-right: 0;
+    border-right: none;
+  }
+
+  .ai__n {
+    font-family: var(--mono);
+    font-size: 13px;
+    color: var(--green-light);
+    margin-bottom: 10px;
+  }
+
+  .ai__title {
+    font-size: 19px;
+    font-weight: 700;
+    color: var(--paper);
+    margin-bottom: 6px;
+  }
+
+  .ai__body {
+    font-size: 14.5px;
+    line-height: 1.5;
+    color: var(--on-dark-sage);
+  }
+
+  .ai__note {
+    font-size: 15px;
+    line-height: 1.6;
+    color: var(--on-dark-sage);
+    margin-top: 36px;
+    max-width: 60ch;
+  }
+
+  /* ---------- Feature cards ---------- */
+
+  .lead {
+    max-width: 60ch;
+    margin: 0 auto 44px;
+  }
+
+  .lead--center {
+    text-align: center;
+  }
+
+  .lead .eyebrow {
+    display: block;
+    font-size: 13px;
+    letter-spacing: 0.14em;
+    margin-bottom: 16px;
+  }
+
+  .grid3 {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 18px;
+  }
+
+  .featureCard {
+    padding: 28px;
+  }
+
+  .featureCard__title {
+    font-size: 18px;
+    font-weight: 700;
+    letter-spacing: -0.015em;
+    margin-bottom: 8px;
+  }
+
+  .featureCard__body {
+    font-size: 15px;
+    line-height: 1.55;
+    color: var(--ink-500);
+  }
+
+  /* ---------- Responsive ---------- */
+
+  @media (max-width: 1000px) {
+    .hero__h1 {
+      font-size: 40px;
+    }
+    .hero__lede {
+      font-size: 18px;
+    }
+    .flowRow,
+    .flowRow--flip {
+      grid-template-columns: 1fr;
+      gap: 36px;
+      padding: 44px 0;
+    }
+    /* The mock is the second child in a normal row and the first in a flipped
+       one; stacked, copy always leads. */
+    .flowRow--flip > :first-child {
+      order: 2;
+    }
+    .ai__grid {
+      grid-template-columns: 1fr;
+    }
+    .ai__cell {
+      padding: 22px 0;
+      border-right: none;
+      border-bottom: 1px solid var(--on-dark-border);
+    }
+    .ai__cell:last-child {
+      border-bottom: none;
+    }
+    .ai__h2 {
+      font-size: 28px;
+    }
+    .grid3 {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+
+  @media (max-width: 700px) {
+    .grid3 {
+      grid-template-columns: 1fr;
+    }
+    .hero__h1 {
+      font-size: 33px;
+    }
+    .queue__row,
+    .owner {
+      flex-wrap: wrap;
+    }
+    .queue__name,
+    .owner__meta {
+      flex-basis: 100%;
+      order: -1;
+    }
+  }
+</style>

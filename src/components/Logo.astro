@@ -1,0 +1,22 @@
+---
+// The limena mark: a circle clipped at the horizon line. The half above the
+// line is solid, the half below is a 16% ghost. It is the limen, the threshold
+// itself, which is the story told on /about.
+interface Props {
+  size?: number;
+  /** Mark colours flip on dark bands. */
+  tone?: 'ink' | 'onDark';
+  /** Rendered more than once per page, so the clipPath id must be unique. */
+  id?: string;
+}
+const { size = 30, tone = 'ink', id = 'mark' } = Astro.props;
+const line = tone === 'onDark' ? '#F4F1EA' : '#16261C';
+const disc = tone === 'onDark' ? '#74C79A' : '#2C7A52';
+---
+
+<svg viewBox="0 0 80 80" width={size} height={size} style="flex:none;" aria-hidden="true" focusable="false">
+  <clipPath id={id}><rect x="0" y="0" width="80" height="47"></rect></clipPath>
+  <circle cx="40" cy="42" r="18" fill={disc} opacity="0.16"></circle>
+  <circle cx="40" cy="42" r="18" fill={disc} clip-path={`url(#${id})`}></circle>
+  <line x1="11" y1="47" x2="69" y2="47" stroke={line} stroke-width="3" stroke-linecap="round"></line>
+</svg>

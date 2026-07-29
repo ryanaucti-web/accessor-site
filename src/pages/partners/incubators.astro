@@ -1,0 +1,484 @@
+---
+import Base from '../../layouts/Base.astro';
+import ProductHero from '../../components/product/ProductHero.astro';
+import FrictionBand from '../../components/product/FrictionBand.astro';
+import ProductRow from '../../components/product/ProductRow.astro';
+import OutcomeBand from '../../components/product/OutcomeBand.astro';
+import CtaBand from '../../components/CtaBand.astro';
+import CheckCircle from '../../components/ui/CheckCircle.astro';
+
+const stats = [
+  { num: '9', label: 'companies baselined', delta: 'week one', ok: true },
+  { num: '6', label: 'would fail a questionnaire', delta: 'today' },
+  { num: '3', label: 'selling to public sector', delta: 'VPAT needed' },
+  { num: '~5 min', label: 'median fix at this stage', delta: 'one component each', ok: true },
+];
+
+const cohort = [
+  {
+    name: 'Ledgerpoint',
+    meta: 'Fintech · selling to credit unions',
+    avatar: { initials: 'LP', role: 'dev' as const },
+    bar: 78,
+    verdict: 'fail' as const,
+    verdictLabel: 'Not ready',
+    count: '31',
+  },
+  {
+    name: 'Corvid Health',
+    meta: 'Patient intake · public health pilots',
+    avatar: { initials: 'CH', role: 'dev' as const },
+    bar: 66,
+    verdict: 'fail' as const,
+    verdictLabel: 'Not ready',
+    count: '24',
+  },
+  {
+    name: 'Studyloop',
+    meta: 'Edtech · university procurement',
+    avatar: { initials: 'SL', role: 'design' as const },
+    bar: 44,
+    verdict: 'attention' as const,
+    count: '17',
+  },
+  {
+    name: 'Northwind Ops',
+    meta: 'Internal tooling · enterprise pilots',
+    avatar: { initials: 'NO', role: 'design' as const },
+    bar: 32,
+    verdict: 'attention' as const,
+    count: '11',
+  },
+  {
+    name: 'Perch',
+    meta: 'Consumer app · design-system first',
+    avatar: { initials: 'PE', role: 'content' as const },
+    bar: 8,
+    verdict: 'pass' as const,
+    verdictLabel: 'Ready',
+    count: '2',
+  },
+  {
+    name: 'Marrow Labs',
+    meta: 'Dev tools · not yet started',
+    avatar: { initials: 'ML', role: 'content' as const },
+    bar: 0,
+    verdict: 'attention' as const,
+    verdictLabel: 'No test yet',
+    count: '—',
+  },
+];
+
+const frictions = [
+  {
+    title: 'Nobody mentions it until procurement',
+    d: 'M12 3l8 4v6c0 4-3.5 7-8 8-4.5-1-8-4-8-8V7l8-4z',
+    body: 'Accessibility never comes up in a seed round or a product review. It comes up in a compliance questionnaire, at the point the deal is nearly closed.',
+  },
+  {
+    title: 'Founders build on top of the barrier',
+    d: 'M4 5h7v7H4zM13 12h7v7h-7z',
+    body: 'A component with no focus state gets adopted across the product in a fortnight. By the time anyone checks, it is in forty places instead of one.',
+  },
+  {
+    title: 'No cohort-wide visibility',
+    d: 'M9 8a3 3 0 100-6 3 3 0 000 6zM3 20c0-3.3 2.7-5 6-5s6 1.7 6 5M17 11a2.5 2.5 0 100-5 2.5 2.5 0 000 5zM21 20c0-2.5-1.8-4-4-4',
+    body: 'You cannot tell which companies in the portfolio are carrying this risk, so you cannot coach the ones who need it most.',
+  },
+];
+
+const curve = [
+  { stage: 'Pre-seed', val: '1×', h: 14, tone: 'pass' },
+  { stage: 'Seed', val: '4×', h: 38, tone: 'pass' },
+  { stage: 'Series A', val: '12×', h: 72, tone: 'attention' },
+  { stage: 'Series B', val: '30×', h: 118, tone: 'fail' },
+];
+
+const graduate = [
+  {
+    title: 'A live VPAT for their product',
+    note: 'Generated from current results, not written the night before a deal',
+  },
+  {
+    title: 'Accessibility in their release process',
+    note: 'A CI check that fails new barriers, set up while the codebase is small',
+  },
+  {
+    title: 'A founder who can answer the question',
+    note: 'In a procurement call, without escalating to a consultant',
+  },
+  {
+    title: 'A record that predates the deal',
+    note: 'Evidence the standard held over time, which is what buyers actually want',
+  },
+];
+
+const terms = [
+  { label: 'One agreement for the cohort', note: 'Priced on cohort size, not per company signing separately' },
+  { label: 'A workspace per company', note: 'Their data stays theirs, isolated from the rest of the portfolio' },
+  { label: 'A programme-wide view for you', note: 'Who has tested, who is improving, who has not started' },
+  { label: 'Graduation path', note: 'Companies move onto a direct plan as they raise, history intact' },
+  {
+    label: 'Alumni continuity',
+    note: 'Portfolio companies keep partner rates for a defined period after the programme',
+  },
+];
+
+const outcomes = [
+  'Every company baselined in week one, so you know who is carrying the risk before they meet a buyer.',
+  'Barriers caught while a product is small enough that a fix is a five-minute change.',
+  'Founders who can answer an enterprise accessibility questionnaire without escalating to a consultant.',
+  'A differentiator for the programme itself, and a reason alumni stay on partner terms.',
+];
+---
+
+<Base
+  title="limena for incubators and accelerators"
+  description="Your founders will hit an enterprise accessibility questionnaire the first time they sell upmarket. It is far cheaper to build it in during the programme."
+  active="partners"
+>
+  <ProductHero
+    backHref="/partners"
+    backLabel="Partners"
+    title="For incubators and accelerators"
+    lede="Your founders will hit an enterprise accessibility questionnaire the first time they sell upmarket. It is far cheaper to build it in during the programme than to retrofit it during a deal."
+    panelTitle="Cohort 12 · accessibility baseline"
+    panelMeta="9 companies · week 3"
+    panelStatus="6 not ready to sell"
+    stats={stats}
+    rows={cohort}
+  />
+
+  <FrictionBand
+    heading="The bill arrives during their first big deal."
+    lede="A founder reaches procurement with an enterprise or public sector buyer, is asked for a VPAT, and has neither the document nor the product to back one."
+    items={frictions}
+  />
+
+  <ProductRow
+    first
+    eyebrow="01 · Timing is the whole argument"
+    heading="A barrier costs almost nothing at week three."
+    body={[
+      'A pre-seed product has one designer, a handful of components, and no legacy. Fixing a focus style is a five-minute change to something nobody has built on yet.',
+      'The same barrier at Series B is a design system migration across four surfaces.',
+    ]}
+  >
+    <div class="curve">
+      <div class="curve__head">
+        <span class="curve__title">Cost to fix one barrier</span>
+        <span class="curve__meta">by company stage</span>
+      </div>
+
+      <ul class="curve__bars">
+        {
+          curve.map((c) => (
+            <li class="curve__col">
+              <span class="curve__val">{c.val}</span>
+              <div class={`curve__bar curve__bar--${c.tone}`} style={`height:${c.h}px`} />
+              <span class="curve__stage">{c.stage}</span>
+            </li>
+          ))
+        }
+      </ul>
+
+      <p class="curve__note">
+        Relative effort, not dollars. The point is the shape: the cheapest moment to fix accessibility is while a founder
+        still owns every line of the product.
+      </p>
+    </div>
+  </ProductRow>
+
+  <ProductRow
+    flip
+    eyebrow="02 · What they leave with"
+    heading="Founders graduate able to answer the question."
+    body={[
+      'Not a certificate. A live conformance record, a habit of checking at release, and a product built accessible rather than remediated later.',
+      'For a founder selling into government, healthcare, or education, that is the difference between being shortlisted and being disqualified before pricing.',
+    ]}
+  >
+    <div class="grad">
+      <div class="grad__head">
+        <span class="grad__title">Graduating with a conformance record</span>
+        <span class="grad__flag">Demo day ready</span>
+      </div>
+      <ul>
+        {
+          graduate.map((g) => (
+            <li class="grad__row">
+              <CheckCircle size={17} />
+              <span class="grad__main">
+                <span class="grad__name">{g.title}</span>
+                <span class="grad__note">{g.note}</span>
+              </span>
+            </li>
+          ))
+        }
+      </ul>
+      <p class="grad__foot">
+        <strong>This is a programme differentiator.</strong> Very few accelerators can say their founders leave able to answer
+        an enterprise accessibility questionnaire on day one.
+      </p>
+    </div>
+  </ProductRow>
+
+  <ProductRow
+    last
+    eyebrow="03 · How it runs in a programme"
+    heading="Programme-level, not nine separate accounts."
+    body={[
+      'One agreement covering the cohort. Each company gets its own workspace, and you get a view across all of them so you know who is ignoring it.',
+      'When a company raises and outgrows the programme, its workspace moves onto a direct plan with its history intact.',
+    ]}
+  >
+    <div class="terms">
+      <p class="terms__label">Programme terms</p>
+      <ul>
+        {
+          terms.map((t) => (
+            <li class="terms__row">
+              <span class="terms__name">{t.label}</span>
+              <span class="terms__note">{t.note}</span>
+            </li>
+          ))
+        }
+      </ul>
+      <a href="/contact" class="btn btn--primary terms__cta">Talk to us about your cohort</a>
+    </div>
+  </ProductRow>
+
+  <OutcomeBand heading="Built accessible, not remediated later." outcomes={outcomes} />
+
+  <CtaBand
+    heading="Baseline your next cohort in week one."
+    body="Nine free tests, one afternoon. You will know immediately which companies would fail an enterprise questionnaire today."
+    primaryLabel="Talk to us about your cohort"
+    primaryHref="/contact"
+    secondaryLabel="Test a portfolio site free"
+    secondaryHref="/scan"
+  />
+</Base>
+
+<style>
+  /* ---------- Cost curve ---------- */
+
+  .curve {
+    background: var(--white);
+    border: 1px solid var(--border-strong);
+    border-radius: var(--r-card);
+    box-shadow: var(--shadow);
+    padding: 24px;
+  }
+
+  .curve__head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 24px;
+  }
+
+  .curve__title {
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  .curve__meta {
+    font-size: 12.5px;
+    color: var(--muted);
+  }
+
+  .curve__bars {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 18px;
+    align-items: end;
+    padding-bottom: 4px;
+    border-bottom: 1px solid rgba(22, 38, 28, 0.1);
+  }
+
+  .curve__col {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .curve__val {
+    font-family: var(--mono);
+    font-size: 14px;
+    font-weight: 600;
+  }
+
+  .curve__bar {
+    width: 100%;
+    max-width: 90px;
+    border-radius: 6px 6px 0 0;
+  }
+
+  .curve__bar--pass {
+    background: var(--green-soft);
+    border-top: 3px solid var(--green);
+  }
+  .curve__bar--attention {
+    background: var(--attention-tint);
+    border-top: 3px solid var(--attention);
+  }
+  .curve__bar--fail {
+    background: var(--fail-tint);
+    border-top: 3px solid var(--fail);
+  }
+
+  .curve__stage {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--ink-700);
+  }
+
+  .curve__note {
+    margin-top: 16px;
+    font-size: 13.5px;
+    line-height: 1.55;
+    color: var(--ink-500);
+  }
+
+  /* ---------- Graduation ---------- */
+
+  .grad {
+    background: var(--white);
+    border: 1px solid var(--border-strong);
+    border-radius: var(--r-card);
+    box-shadow: var(--shadow);
+    overflow: hidden;
+  }
+
+  .grad__head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 14px 20px;
+    background: var(--sunken);
+    border-bottom: 1px solid rgba(22, 38, 28, 0.08);
+  }
+
+  .grad__title {
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  .grad__flag {
+    display: inline-flex;
+    align-items: center;
+    height: 22px;
+    padding: 0 9px;
+    background: var(--green-soft);
+    color: var(--green-hover);
+    border-radius: 7px;
+    font-family: var(--mono);
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+
+  .grad__row {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    padding: 15px 20px;
+    border-bottom: 1px solid rgba(22, 38, 28, 0.06);
+  }
+
+  .grad__row :global(svg) {
+    margin-top: 3px;
+  }
+
+  .grad__main {
+    flex: 1;
+  }
+
+  .grad__name {
+    display: block;
+    font-size: 14.5px;
+    font-weight: 600;
+  }
+
+  .grad__note {
+    display: block;
+    font-size: 13px;
+    line-height: 1.5;
+    color: var(--muted);
+    margin-top: 2px;
+  }
+
+  .grad__foot {
+    padding: 16px 20px;
+    background: var(--green-tint);
+    font-size: 14px;
+    line-height: 1.55;
+    color: var(--ink-700);
+  }
+
+  /* ---------- Programme terms ---------- */
+
+  .terms {
+    background: var(--evergreen);
+    border-radius: var(--r-card);
+    padding: 28px;
+    box-shadow: 0 2px 8px rgba(22, 38, 28, 0.16), 0 30px 60px -34px rgba(22, 38, 28, 0.5);
+  }
+
+  .terms__label {
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    color: var(--green-light);
+    margin-bottom: 20px;
+  }
+
+  .terms__row {
+    padding-bottom: 14px;
+    margin-bottom: 14px;
+    border-bottom: 1px solid rgba(244, 241, 234, 0.12);
+  }
+
+  .terms__name {
+    display: block;
+    font-size: 14.5px;
+    font-weight: 600;
+    color: var(--paper);
+  }
+
+  .terms__note {
+    display: block;
+    font-size: 13px;
+    line-height: 1.5;
+    color: var(--on-dark-sage);
+    margin-top: 3px;
+  }
+
+  .terms__cta {
+    margin-top: 6px;
+  }
+
+  @media (max-width: 700px) {
+    .curve__bars {
+      gap: 10px;
+    }
+    .curve__stage {
+      font-size: 11.5px;
+    }
+  }
+</style>

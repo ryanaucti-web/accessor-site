@@ -1,0 +1,114 @@
+---
+/** One alternating copy/mock row. Copy is 0.42fr and the mock 0.58fr; `flip`
+ *  swaps both the ratio and the order so consecutive rows zig-zag. */
+
+interface Props {
+  eyebrow: string;
+  heading: string;
+  /** One or two short paragraphs. The second is inked darker, as an emphasis. */
+  body: string[];
+  flip?: boolean;
+  /** Extra top padding on the first row of a page. */
+  first?: boolean;
+  last?: boolean;
+}
+
+const { eyebrow, heading, body, flip = false, first = false, last = false } = Astro.props;
+---
+
+<section class={`prow ${flip ? 'prow--flip' : ''} ${first ? 'prow--first' : ''} ${last ? 'prow--last' : ''}`}>
+  <div class="prow__grid">
+    <div class="prow__copy">
+      <p class="prow__eyebrow">{eyebrow}</p>
+      <h2 class="h2 h2--row prow__h2">{heading}</h2>
+      {body.map((p, i) => <p class={`prow__body ${i > 0 ? 'prow__body--emph' : ''}`}>{p}</p>)}
+      <slot name="extra" />
+    </div>
+    <div class="prow__mock">
+      <slot />
+    </div>
+  </div>
+</section>
+
+<style>
+  .prow {
+    max-width: 1160px;
+    margin: 0 auto;
+    padding: 88px var(--gutter) 0;
+  }
+
+  .prow--first {
+    padding-top: 96px;
+  }
+
+  .prow--last {
+    padding-bottom: 96px;
+  }
+
+  .prow__grid {
+    display: grid;
+    grid-template-columns: 0.42fr 0.58fr;
+    gap: 56px;
+    align-items: center;
+  }
+
+  .prow--flip .prow__grid {
+    grid-template-columns: 0.58fr 0.42fr;
+  }
+
+  .prow--flip .prow__copy {
+    order: 2;
+  }
+
+  .prow--flip .prow__mock {
+    order: 1;
+  }
+
+  .prow__eyebrow {
+    font-family: var(--mono);
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--green-hover);
+    margin-bottom: 14px;
+  }
+
+  .prow__h2 {
+    line-height: 1.08;
+    margin-bottom: 16px;
+  }
+
+  .prow__body {
+    font-size: 16.5px;
+    line-height: 1.6;
+    color: var(--ink-500);
+  }
+
+  .prow__body + .prow__body {
+    margin-top: 14px;
+  }
+
+  .prow__body--emph {
+    color: var(--ink-700);
+  }
+
+  @media (max-width: 1000px) {
+    .prow,
+    .prow--first {
+      padding: 56px 24px 0;
+    }
+    .prow--last {
+      padding-bottom: 56px;
+    }
+    .prow__grid,
+    .prow--flip .prow__grid {
+      grid-template-columns: 1fr;
+      gap: 36px;
+    }
+    .prow--flip .prow__copy,
+    .prow--flip .prow__mock {
+      order: initial;
+    }
+  }
+</style>

@@ -1,0 +1,195 @@
+---
+import Base from '../../layouts/Base.astro';
+import ProductHero from '../../components/product/ProductHero.astro';
+import FrictionBand from '../../components/product/FrictionBand.astro';
+import ProductRow from '../../components/product/ProductRow.astro';
+import RankedPanel from '../../components/product/RankedPanel.astro';
+import FindingCard from '../../components/product/FindingCard.astro';
+import EvidencePanel from '../../components/product/EvidencePanel.astro';
+import OutcomeBand from '../../components/product/OutcomeBand.astro';
+import CtaBand from '../../components/CtaBand.astro';
+
+const stats = [
+  { num: '2', label: 'care paths blocked', delta: 'booking, refills' },
+  { num: '47', label: 'open findings', delta: 'across 5 surfaces' },
+  { num: '1,612', label: 'documents affected', delta: '2 export templates' },
+  { num: '6', label: 'need a specialist', delta: 'queued for review', ok: true },
+];
+
+const surfaces = [
+  {
+    name: 'Appointment booking',
+    meta: 'Date picker unusable with a screen reader',
+    src: 'FORM',
+    verdict: 'fail' as const,
+    count: '9',
+  },
+  { name: 'Prescription refill', meta: 'Errors announced only in colour', src: 'FORM', verdict: 'fail' as const, count: '6' },
+  {
+    name: 'Patient portal home',
+    meta: 'Heading order, some contrast',
+    src: 'WEB',
+    verdict: 'attention' as const,
+    count: '14',
+  },
+  {
+    name: 'Results and letters',
+    meta: '1,840 PDFs, untagged tables',
+    src: 'DOCS',
+    verdict: 'attention' as const,
+    count: '18',
+  },
+  {
+    name: 'Clinician EHR view',
+    meta: 'Keyboard operable, labels present',
+    src: 'APP',
+    verdict: 'pass' as const,
+    count: '0',
+  },
+];
+
+const frictions = [
+  {
+    title: 'Situational, not just permanent',
+    d: 'M12 21s-7-4.5-7-10a4 4 0 017-2.6A4 4 0 0119 11c0 5.5-7 10-7 10z',
+    body: 'Post-operative tremor, blurred vision from medication, one hand holding a child. Temporary conditions hit the same barriers as permanent ones, and your users have them by definition.',
+  },
+  {
+    title: 'Someone else is acting',
+    d: 'M9 8a3 3 0 100-6 3 3 0 000 6zM3 20c0-3.3 2.7-5 6-5s6 1.7 6 5M17 11a2.5 2.5 0 100-5 2.5 2.5 0 000 5zM21 20c0-2.5-1.8-4-4-4',
+    body: 'Caregivers and family members use the portal on behalf of someone who cannot. They are often older, less confident, and using assistive technology themselves.',
+  },
+  {
+    title: 'The fallback has a cost',
+    d: 'M12 8v4l3 2M12 3a9 9 0 100 18 9 9 0 000-18z',
+    body: 'When self-serve fails, the patient phones or attends in person. That is measurable operational cost on top of the access failure, and it lands on your call centre.',
+  },
+];
+
+const ranked = [
+  {
+    rank: '01',
+    title: 'Refill form errors are colour only',
+    chip: 'Clinical',
+    tone: 'high' as const,
+    why: 'A rejected refill gives no announced reason. The patient does not know the request failed.',
+  },
+  {
+    rank: '02',
+    title: 'Appointment date picker unusable',
+    chip: 'Clinical',
+    tone: 'high' as const,
+    why: 'Only self-serve route to an appointment. Fallback is an 11 minute call.',
+  },
+  {
+    rank: '03',
+    title: 'Contrast on health library articles',
+    chip: 'Informational',
+    tone: 'neutral' as const,
+    why: 'Content is available elsewhere and reflows fine at 200 percent zoom.',
+  },
+];
+
+const docs = [
+  { label: 'Results letters', count: '940 files', val: 'Untagged', bad: true },
+  { label: 'Discharge summaries', count: '672 files', val: 'Untagged', bad: true },
+  { label: 'Consent forms', count: '184 files', val: 'Partial', bad: true },
+  { label: 'Appointment reminders', count: '44 files', val: 'Pass', ok: true },
+];
+
+const outcomes = [
+  'Every self-serve care path tested as a path, not as a set of unrelated pages.',
+  'Barriers stated as consequences, so clinical operations can weigh them against everything else.',
+  'Patient documents read in full, with fixes traced to the export templates that generate them.',
+  'Specialist judgment recorded against each criterion, so conformance is never claimed on automation alone.',
+];
+---
+
+<Base
+  title="Accessibility for healthcare · limena"
+  description="The person blocked by your patient portal is often the person least able to work around it. Accessibility here is not a conversion problem, it is whether someone gets care."
+  active="usecases"
+>
+  <ProductHero
+    backHref="/use-cases"
+    backLabel="Use cases"
+    title="Accessibility for healthcare"
+    lede="The person blocked by your patient portal is often the person least able to work around it. Accessibility here is not a conversion problem, it is whether someone gets care."
+    panelTitle="Patient-facing estate"
+    panelMeta="5 surfaces · WCAG 2.1 AA"
+    panelStatus="2 care paths blocked"
+    stats={stats}
+    rows={surfaces}
+  />
+
+  <FrictionBand
+    heading="Your users are having their worst week."
+    lede="Nobody arrives at a patient portal casually. They are unwell, medicated, anxious, on a phone in a waiting room, or acting on behalf of someone who cannot act for themselves."
+    items={frictions}
+  />
+
+  <ProductRow
+    first
+    eyebrow="01 · Ranked by care, not severity"
+    heading="The form that stops a refill outranks everything else."
+    body={[
+      'limena scores by what a person cannot complete and whether another route exists. A blocked prescription refill has a clinical consequence. A contrast issue on a health article does not.',
+      'Forms are almost always the surface that matters, and almost always the least tested.',
+    ]}
+  >
+    <RankedPanel head="Fix these first" meta="by care impact" items={ranked} />
+  </ProductRow>
+
+  <ProductRow
+    flip
+    eyebrow="02 · Consequence, not category"
+    heading="What happens to the person who cannot get through."
+    body={[
+      'limena states the fallback: a phone queue, a trip to reception, or nothing. That is the language a clinical operations lead can act on, and it is also what shows up in a complaint.',
+      'Findings that need human judgment are flagged for your specialist rather than passed as automated.',
+    ]}
+  >
+    <FindingCard
+      verdict="Fail"
+      title="Appointment date picker is unusable"
+      error="The calendar is built from unlabelled div elements. A screen reader announces a grid of bare numbers with no month, no day names, and no indication of which dates are available. There is no text field fallback."
+      impact="Booking is the only self-serve route to an appointment. Blocked patients fall back to the phone line, at an average <strong>11 minute assisted call</strong>, or do not book at all."
+      impactLabel="Care impact"
+      impactIcon="care"
+      owner={{
+        initials: 'PW',
+        role: 'dev',
+        name: 'Portal web team',
+        meta: 'Also needs a specialist verdict before sign-off',
+        action: 'Queue for review',
+      }}
+    />
+  </ProductRow>
+
+  <ProductRow
+    last
+    eyebrow="03 · Beyond the portal"
+    heading="Results letters and labeling count too."
+    body={[
+      'Discharge summaries, results letters, consent forms, and digital product labeling are documents, and they are held to the same standard as the portal that delivers them. limena reads every page of every file rather than sampling, because a consent form can fail on the page with the signature block.',
+    ]}
+  >
+    <EvidencePanel
+      head="Document set · patient communications"
+      meta="1,840 files"
+      rows={docs}
+      note="All four trace to two export templates. Fixing those clears 1,612 files on the next generation."
+    />
+  </ProductRow>
+
+  <OutcomeBand heading="Care that does not depend on being able to use a mouse." outcomes={outcomes} />
+
+  <CtaBand
+    heading="Start with appointment booking."
+    body="It is the form most patients have to get through, and the one most likely to be blocking someone today."
+    primaryLabel="Book a demo"
+    primaryHref="/contact"
+    secondaryLabel="Test a page free"
+    secondaryHref="/scan"
+  />
+</Base>

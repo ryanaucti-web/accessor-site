@@ -1,0 +1,54 @@
+---
+import SituationPage from '../../layouts/SituationPage.astro';
+import ReleaseCheck from '../../components/product/ReleaseCheck.astro';
+
+const steps = [
+  {
+    when: 'On merge',
+    title: 'Scan on every release',
+    body: 'Connect your repo or CI and limena re-checks the affected surfaces automatically when you merge to main, no one has to remember to run it.',
+  },
+  {
+    when: 'Instantly',
+    title: 'Catch regressions the moment they land',
+    body: 'If a change reintroduces a barrier, limena flags it against that release and routes it back to the owner, before it reaches production.',
+  },
+  {
+    when: 'In flow',
+    title: 'Fixes live where developers work',
+    body: 'Findings arrive in the tracker with the element and the fix, so accessibility is part of the sprint, not a separate backlog nobody grooms.',
+  },
+  {
+    when: 'Over time',
+    title: 'The line holds, release after release',
+    body: 'Instead of sawtooth progress, conformance stays flat and high, because nothing regresses without being caught.',
+  },
+];
+
+const checks = [
+  { label: 'Checkout flow', verdict: 'Verified' },
+  { label: 'Account settings', verdict: 'Verified' },
+  { label: 'New nav dropdown not keyboard reachable', verdict: 'Blocked release', caught: true },
+];
+---
+
+<SituationPage
+  title="Continuous delivery · limena"
+  description="When you release constantly, a once-a-quarter audit is obsolete the day after it is done. Accessibility has to be verified on the same cadence you deploy."
+  h1="Ship every week without shipping new barriers."
+  lede="When you release constantly, a once-a-quarter audit is obsolete the day after it's done. Accessibility has to be verified on the same cadence you deploy, inside the pipeline."
+  situationHeading="Fixed on Monday, broken by Thursday's deploy."
+  situation={[
+    'A team clears its accessibility findings, then the next feature reintroduces half of them, and nobody notices until the next audit months later. Point-in-time testing can’t keep up with continuous deployment, so progress quietly leaks away between checks.',
+    "You don't need another audit. You need verification wired into the release itself.",
+  ]}
+  stepsHeading="Accessibility, checked at the speed you ship."
+  steps={steps}
+  ctaHeading="Verify accessibility on every deploy."
+>
+  <ReleaseCheck
+    head="Release check · main @ 4f21ac"
+    items={checks}
+    note="Routed to Jordan (Development) with the failing element and fix. Merge held until resolved."
+  />
+</SituationPage>

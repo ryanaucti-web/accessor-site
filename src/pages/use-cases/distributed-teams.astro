@@ -1,0 +1,152 @@
+---
+import SituationPage from '../../layouts/SituationPage.astro';
+
+const steps = [
+  {
+    when: 'Per squad',
+    title: 'Its own space, the same standard',
+    body: 'Every team gets its own programs and findings, scored against one shared WCAG target, so autonomy never means a different bar.',
+  },
+  {
+    when: 'Routing',
+    title: 'Fixes go to the team that owns them',
+    body: "Findings route into each squad's own tracker and roles, so accessibility is handled in the team, not funnelled through one person.",
+  },
+  {
+    when: 'Specialist',
+    title: 'From gatekeeper to coach',
+    body: 'The expert stops reviewing every ticket and instead sets standards, handles the hard calls, and steps in where teams need help.',
+  },
+  {
+    when: 'Leadership',
+    title: 'One view across every team',
+    body: 'Compare squads, spot who needs support, and report org-wide maturity, without pulling status from a dozen places by hand.',
+  },
+];
+
+const squads = [
+  { name: 'Checkout squad', pct: 94, tone: 'pass', note: '2 open · owns fixes' },
+  { name: 'Growth squad', pct: 71, tone: 'attention', note: '9 open · needs support' },
+  { name: 'Platform squad', pct: 88, tone: 'pass', note: '4 open · on track' },
+];
+---
+
+<SituationPage
+  title="Distributed product teams · limena"
+  description="When many squads ship independently, one accessibility specialist cannot gate everything. Teams need to own their own conformance, while leadership still sees the whole picture."
+  h1="Shared visibility, without a central bottleneck."
+  lede="When many squads ship independently, one accessibility specialist can't gate everything. Teams need to own their own conformance, while leadership still sees the whole picture."
+  situationHeading="One specialist, twelve squads, no chance."
+  situation={[
+    'Autonomous teams move fast and each does accessibility differently, or not at all. The lone specialist becomes a queue everyone waits on, reviews pile up, and leadership has no consistent read across squads. Standards exist on paper but not in practice.',
+    "Central control doesn't scale. Shared visibility with distributed ownership does.",
+  ]}
+  stepsHeading="Each squad owns its work. Everyone sees the whole."
+  steps={steps}
+  ctaHeading="Give every team ownership, and yourself the full picture."
+>
+  <div class="sq">
+    <p class="sq__head">Teams · org rollup</p>
+    <div class="sq__grid">
+      {
+        squads.map((s) => (
+          <div class="sq__cell">
+            <p class="sq__name">{s.name}</p>
+            <div class="meter">
+              <div class={`meter__fill meter__fill--${s.tone}`} style={`width:${s.pct}%`} />
+            </div>
+            <p class="sq__note">{s.note}</p>
+          </div>
+        ))
+      }
+    </div>
+    <div class="sq__foot">
+      <span>Organization maturity</span>
+      <span class="sq__score">Operational · 84%</span>
+    </div>
+  </div>
+</SituationPage>
+
+<style>
+  .sq {
+    background: var(--white);
+    border: 1px solid var(--border-strong);
+    border-radius: var(--r-card);
+    padding: 24px;
+    box-shadow: var(--shadow);
+  }
+
+  .sq__head {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 16px;
+  }
+
+  .sq__grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+  }
+
+  .sq__cell {
+    border: 1px solid var(--border);
+    border-radius: var(--r-control);
+    padding: 18px;
+  }
+
+  .sq__name {
+    font-size: 15px;
+    font-weight: 700;
+    margin-bottom: 10px;
+  }
+
+  .sq__note {
+    font-size: 12.5px;
+    color: var(--muted);
+    margin-top: 8px;
+  }
+
+  .meter {
+    height: 6px;
+    border-radius: var(--r-pill);
+    background: #e3e1d9;
+    overflow: hidden;
+  }
+
+  .meter__fill {
+    height: 100%;
+  }
+  .meter__fill--pass {
+    background: var(--green);
+  }
+  .meter__fill--attention {
+    background: var(--attention);
+  }
+
+  .sq__foot {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 1px solid rgba(22, 38, 28, 0.08);
+    font-size: 14px;
+    color: var(--ink-500);
+  }
+
+  .sq__score {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--green-hover);
+  }
+
+  @media (max-width: 700px) {
+    .sq__grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

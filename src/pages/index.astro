@@ -1,0 +1,897 @@
+---
+import Base from '../layouts/Base.astro';
+import CtaBand from '../components/CtaBand.astro';
+import CheckCircle from '../components/ui/CheckCircle.astro';
+import RoleChip from '../components/ui/RoleChip.astro';
+
+const ranked = [
+  {
+    rank: '01',
+    title: 'Checkout button fails contrast',
+    score: 94,
+    severity: 'fail' as const,
+    role: 'design' as const,
+    why: 'On the path of every order. Affects low vision, and there is no other way to pay.',
+  },
+  {
+    rank: '02',
+    title: 'Application form has no labels',
+    score: 81,
+    severity: 'fail' as const,
+    role: 'dev' as const,
+    why: 'Screen reader users cannot complete the form. It is the only way to apply.',
+  },
+  {
+    rank: '03',
+    title: 'Product images missing alt text',
+    score: 46,
+    severity: 'attention' as const,
+    role: 'content' as const,
+    why: 'Affects 214 images, but the product name is available in text nearby.',
+  },
+];
+
+const constraints = [
+  {
+    stat: '312',
+    title: 'Findings in the last report',
+    body: 'A single mid-size site produces hundreds. Most reports rank them by rule, not by who they stop.',
+  },
+  {
+    stat: '2',
+    title: 'Sprints of capacity',
+    body: 'Engineering time is finite and already committed. Accessibility competes with everything else in the backlog.',
+  },
+  {
+    stat: '5',
+    title: 'Teams involved',
+    body: 'Design, content, engineering, QA, compliance. Findings that belong to nobody get fixed by nobody.',
+  },
+];
+
+const capabilities = [
+  {
+    n: '01',
+    title: 'Discover',
+    body: 'Test websites, web apps, and documents on a cadence you set, and at every release. limena maps the product first, so nothing gets missed because someone forgot a page.',
+    tags: ['Websites and web apps', 'Word, Excel, PowerPoint, PDF', 'Every page, not a sample'],
+  },
+  {
+    n: '02',
+    title: 'Understand',
+    body: 'Each finding is explained in plain language: what is wrong, who it affects, and how to fix it. Written so a content editor and an engineer both know what to do.',
+    tags: ['AI explanations', 'Who it affects', 'Suggested fix'],
+  },
+  {
+    n: '03',
+    title: 'Prioritize',
+    body: 'Findings are ranked by reach and severity, not raw counts, so the barrier on your checkout outranks a hundred cosmetic issues. Designed to incorporate traffic, journey, and organizational context as those inputs come online.',
+    tags: ['Reach and severity', 'Business impact model', 'Duplicate barriers grouped'],
+  },
+  {
+    n: '04',
+    title: 'Act',
+    body: 'Every finding gets an owner using the W3C ARRM roles and lands in Linear, Jira, or GitHub. limena re-tests at release and flags the moment something regresses.',
+    tags: ['Ownership routing', 'Tracker sync', 'Regression detection'],
+  },
+];
+
+const evidence = [
+  {
+    title: 'A live VPAT',
+    body: 'Generated from current test results, not a snapshot that went stale the week after it was signed.',
+  },
+  {
+    title: 'Proof each fix held',
+    body: 'Every verified fix is recorded with the release it shipped in, so progress is auditable.',
+  },
+  {
+    title: 'Maturity over time',
+    body: 'Where the program sits and how it has moved, in one view leadership can read.',
+  },
+  {
+    title: 'Answers on request',
+    body: 'Procurement questionnaires and legal reviews pull from evidence you already have.',
+  },
+];
+
+const roadmap = [
+  {
+    label: 'Available today',
+    tone: 'now',
+    items: [
+      'Website and web app testing',
+      'Word, Excel, PowerPoint, PDF',
+      'AI plain-language explanations',
+      'Reach and severity prioritization',
+      'ARRM ownership routing',
+      'Regression detection at release',
+      'Live VPAT and evidence',
+    ],
+  },
+  {
+    label: 'In build',
+    tone: 'build',
+    items: [
+      'Traffic and analytics context',
+      'Journey-aware prioritization',
+      'Deeper platform integrations',
+      'Executive dashboards',
+    ],
+  },
+  {
+    label: 'Where this goes',
+    tone: 'later',
+    items: [
+      'Accessibility across every digital touchpoint',
+      'Internal and employee-facing apps',
+      'AI recommendations, not just explanations',
+      'Enterprise governance and portfolio rollups',
+    ],
+  },
+];
+
+const why = [
+  {
+    title: 'Explanations, not error codes',
+    body: 'AI turns each violation into something the person who has to fix it can act on.',
+    d: 'M12 3v2M12 19v2M5 12H3M21 12h-2M7 7L5.5 5.5M18.5 18.5L17 17M17 7l1.5-1.5M5.5 18.5L7 17M12 8a4 4 0 100 8 4 4 0 000-8z',
+  },
+  {
+    title: 'Built for teams',
+    body: 'Unlimited seats and role-based routing, because accessibility is not one person’s job.',
+    d: 'M9 8a3 3 0 100-6 3 3 0 000 6zM3 20c0-3.3 2.7-5 6-5s6 1.7 6 5M17 11a2.5 2.5 0 100-5 2.5 2.5 0 000 5zM21 20c0-2.5-1.8-4-4-4',
+  },
+  {
+    title: 'Evidence by default',
+    body: 'The record builds itself as work happens, so you are never assembling proof under pressure.',
+    d: 'M6 3h9l4 4v14H6zM14 3v5h5M9 13h6M9 17h4',
+  },
+  {
+    title: 'Verified, not assumed',
+    body: 'limena re-tests at release and tells you when a fix regresses, instead of trusting a closed ticket.',
+    d: 'M4 12a8 8 0 018-8 8 8 0 016.9 4M20 12a8 8 0 01-8 8 8 8 0 01-6.9-4M18 3v5h-5M6 21v-5h5',
+  },
+  {
+    title: 'No overlays, ever',
+    body: 'Accessibility is built into the product, not painted over it with a widget at runtime.',
+    d: 'M5 5l14 14M12 3a9 9 0 100 18 9 9 0 000-18z',
+  },
+  {
+    title: 'Ready for enterprise',
+    body: 'SAML SSO, audit history, data residency options, and an API for your own pipeline.',
+    d: 'M5 11h14v10H5zM8.5 11V8a3.5 3.5 0 017 0v3',
+  },
+];
+---
+
+<Base
+  title="limena · accessibility intelligence"
+  description="limena combines accessibility testing, AI, and business context so your team can prioritize the fixes that improve real experiences, not just close tickets."
+>
+  <!-- HERO -->
+  <section class="band band--dark hero">
+    <div class="band__inner hero__grid">
+      <div>
+        <span class="hero__badge">Accessibility intelligence</span>
+        <h1 class="hero__h1">Know which accessibility issues matter most.</h1>
+        <p class="hero__lede">
+          limena combines accessibility testing, AI, and business context so your team can prioritize the fixes that
+          improve real experiences, not just close tickets.
+        </p>
+        <div class="hero__actions">
+          <a href="/contact" class="btn btn--primary hero__btn">Book a demo</a>
+          <a href="/platform" class="btn btn--ghost hero__btn">See how it works</a>
+        </div>
+      </div>
+
+      <!-- Ranked decision panel -->
+      <div class="panel">
+        <div class="panel__head">
+          <span class="panel__title">Fix these first</span>
+          <span class="panel__meta">312 findings, ranked</span>
+        </div>
+        {
+          ranked.map((r) => (
+            <div class="panel__row">
+              <div class="panel__rowTop">
+                <span class="panel__rank">{r.rank}</span>
+                <span class="panel__name">{r.title}</span>
+                <RoleChip role={r.role} />
+              </div>
+              <div class="panel__scoreRow">
+                <div class="bar">
+                  <div class={`bar__fill bar__fill--${r.severity}`} style={`width:${r.score}%`}></div>
+                </div>
+                <span class="panel__score">{r.score}</span>
+              </div>
+              <div class="panel__why">{r.why}</div>
+            </div>
+          ))
+        }
+        <div class="panel__foot">
+          <CheckCircle size={14} />
+          <span>Ranked by reach and severity, then routed to an owner</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- THE REAL CONSTRAINT -->
+  <section class="band band--banded rule-bottom">
+    <div class="band__inner inner--wide">
+      <div class="lead">
+        <p class="eyebrow">The real constraint</p>
+        <h2 class="h2 lead__h2">Finding issues was never the hard part.</h2>
+        <p class="lede">
+          Every team can generate a report. What no report tells you is which of those hundreds of findings actually
+          stands between a person and the thing they came to do.
+        </p>
+      </div>
+
+      <div class="grid3">
+        {
+          constraints.map((c) => (
+            <div class="card statCard">
+              <div class="statCard__stat">{c.stat}</div>
+              <div class="statCard__title">{c.title}</div>
+              <div class="statCard__body">{c.body}</div>
+            </div>
+          ))
+        }
+      </div>
+
+      <blockquote class="pullquote">
+        <p>The question isn't what's broken. It's what to fix first.</p>
+      </blockquote>
+    </div>
+  </section>
+
+  <!-- CAPABILITIES -->
+  <section class="band band--paper band--half">
+    <div class="band__inner inner--wide">
+      <div class="lead lead--center">
+        <p class="eyebrow">The platform</p>
+        <h2 class="h2">From finding to decision to done.</h2>
+      </div>
+
+      <div class="capList">
+        {
+          capabilities.map((c) => (
+            <div class="cap">
+              <div>
+                <div class="cap__n">{c.n}</div>
+                <h3 class="cap__title">{c.title}</h3>
+              </div>
+              <div>
+                <p class="body cap__body">{c.body}</p>
+                <div class="cap__tags">
+                  {c.tags.map((t) => (
+                    <span class="tag">{t}</span>
+                  ))}
+                </div>
+              </div>
+            </div>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- EVIDENCE -->
+  <section class="band band--dark">
+    <div class="band__inner inner--wide evidence">
+      <div>
+        <p class="eyebrow">Evidence, continuously</p>
+        <h2 class="h2 evidence__h2">Always ready to show your work.</h2>
+        <p class="evidence__p evidence__p--sage">
+          Most organizations rebuild their accessibility case from scratch every time someone asks: a procurement
+          questionnaire, a legal review, a board update.
+        </p>
+        <p class="evidence__p evidence__p--mist">
+          limena captures the evidence as the work happens, so conformance is a live state you can show, not a document
+          you scramble to assemble.
+        </p>
+      </div>
+
+      <ul class="evidence__list">
+        {
+          evidence.map((e) => (
+            <li class="evidence__item">
+              <CheckCircle size={18} color="var(--green-light)" />
+              <div>
+                <div class="evidence__itemTitle">{e.title}</div>
+                <div class="evidence__itemBody">{e.body}</div>
+              </div>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+
+  <!-- WHERE THIS GOES -->
+  <section class="band band--paper band--half">
+    <div class="band__inner inner--wide">
+      <div class="lead">
+        <p class="eyebrow">Where this goes</p>
+        <h2 class="h2 lead__h2">Accessibility is becoming operational.</h2>
+        <p class="lede">
+          Organizations don't need another scanner. They need to understand accessibility across every digital
+          touchpoint, decide what to do about it, and keep improving. Here is what is real today and where limena is
+          heading.
+        </p>
+      </div>
+
+      <div class="grid3">
+        {
+          roadmap.map((r) => (
+            <div class={`roadmap roadmap--${r.tone}`}>
+              <div class="roadmap__head">
+                <span class={`roadmap__dot roadmap__dot--${r.tone}`} aria-hidden="true" />
+                <span class={`roadmap__label roadmap__label--${r.tone}`}>{r.label}</span>
+              </div>
+              <ul>
+                {r.items.map((i) => (
+                  <li class="roadmap__item">{i}</li>
+                ))}
+              </ul>
+            </div>
+          ))
+        }
+      </div>
+
+      <p class="footnote">
+        Available today is what you can buy and run now. The other two columns describe direction, not committed
+        delivery dates.
+      </p>
+    </div>
+  </section>
+
+  <!-- WHY LIMENA -->
+  <section class="band band--banded rule-top">
+    <div class="band__inner inner--wide">
+      <div class="lead lead--center">
+        <h2 class="h2">Why teams choose limena</h2>
+      </div>
+      <div class="grid3">
+        {
+          why.map((w) => (
+            <div class="card whyCard">
+              <div class="whyCard__icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                  <path
+                    d={w.d}
+                    stroke="var(--green-hover)"
+                    stroke-width="1.8"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                </svg>
+              </div>
+              <h3 class="whyCard__title">{w.title}</h3>
+              <p class="whyCard__body">{w.body}</p>
+            </div>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <CtaBand />
+</Base>
+
+<style>
+  .inner--wide {
+    max-width: 1160px;
+  }
+
+  .band--half {
+    padding-bottom: 48px;
+  }
+
+  .rule-top {
+    border-top: 1px solid rgba(22, 38, 28, 0.06);
+  }
+  .rule-bottom {
+    border-bottom: 1px solid rgba(22, 38, 28, 0.06);
+  }
+
+  /* ---------- Hero ---------- */
+
+  .hero__grid {
+    display: grid;
+    grid-template-columns: 1.05fr 0.95fr;
+    gap: 64px;
+    align-items: center;
+  }
+
+  .hero__badge {
+    display: inline-flex;
+    align-items: center;
+    height: 30px;
+    padding: 0 14px;
+    background: rgba(116, 199, 154, 0.14);
+    border: 1px solid rgba(116, 199, 154, 0.3);
+    color: var(--green-light);
+    border-radius: var(--r-pill);
+    font-family: var(--mono);
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 26px;
+  }
+
+  .hero__h1 {
+    font-size: 64px;
+    letter-spacing: -0.04em;
+    line-height: 0.98;
+    margin-bottom: 24px;
+    color: var(--paper);
+    text-wrap: balance;
+  }
+
+  .hero__lede {
+    font-size: 20px;
+    line-height: 1.55;
+    color: var(--on-dark-sage);
+    margin-bottom: 34px;
+    max-width: 52ch;
+    text-wrap: pretty;
+  }
+
+  .hero__actions {
+    display: flex;
+    gap: 14px;
+    flex-wrap: wrap;
+  }
+
+  .hero__btn {
+    height: 52px;
+    padding: 0 28px;
+    font-size: 16px;
+    border-radius: var(--r-control);
+  }
+
+  /* ---------- Ranked panel ---------- */
+
+  .panel {
+    background: var(--white);
+    border-radius: var(--r-card);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2), 0 40px 80px -40px rgba(0, 0, 0, 0.6);
+    overflow: hidden;
+    color: var(--evergreen);
+  }
+
+  .panel__head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 14px 20px;
+    border-bottom: 1px solid rgba(22, 38, 28, 0.08);
+    background: var(--sunken);
+  }
+
+  .panel__title {
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  .panel__meta {
+    font-size: 12.5px;
+    color: var(--muted);
+  }
+
+  .panel__row {
+    padding: 16px 20px;
+    border-bottom: 1px solid rgba(22, 38, 28, 0.06);
+  }
+
+  .panel__rowTop {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 7px;
+  }
+
+  .panel__rank {
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--fail-text);
+    flex: none;
+  }
+
+  .panel__name {
+    flex: 1;
+    font-size: 15px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+  }
+
+  .panel__scoreRow {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+  }
+
+  .bar {
+    flex: 1;
+    height: 5px;
+    border-radius: var(--r-pill);
+    background: #e3e1d9;
+    overflow: hidden;
+  }
+
+  .bar__fill {
+    height: 100%;
+  }
+  .bar__fill--fail {
+    background: var(--fail);
+  }
+  .bar__fill--attention {
+    background: var(--attention);
+  }
+  .bar__fill--pass {
+    background: var(--pass);
+  }
+
+  .panel__score {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--muted);
+    flex: none;
+  }
+
+  .panel__why {
+    font-size: 13px;
+    line-height: 1.45;
+    color: var(--ink-500);
+  }
+
+  .panel__foot {
+    padding: 13px 20px;
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    background: var(--green-tint);
+    font-size: 12.5px;
+    font-weight: 600;
+    color: var(--green-hover);
+  }
+
+  /* ---------- Lead blocks ---------- */
+
+  .lead {
+    max-width: 64ch;
+    margin-bottom: 44px;
+  }
+
+  .lead--center {
+    text-align: center;
+    max-width: 60ch;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .lead .eyebrow {
+    display: block;
+    margin-bottom: 16px;
+  }
+
+  .lead__h2 {
+    margin-bottom: 18px;
+  }
+
+  .grid3 {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 18px;
+  }
+
+  .statCard {
+    padding: 26px;
+    border-radius: var(--r-card-sm);
+  }
+
+  .statCard__stat {
+    font-size: 34px;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    line-height: 1;
+    margin-bottom: 12px;
+  }
+
+  .statCard__title {
+    font-size: 15.5px;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    margin-bottom: 6px;
+  }
+
+  .statCard__body {
+    font-size: 14.5px;
+    line-height: 1.5;
+    color: var(--ink-500);
+  }
+
+  .pullquote {
+    margin: 40px 0 0;
+    border-left: 3px solid var(--green);
+    padding-left: 24px;
+  }
+
+  .pullquote p {
+    font-size: 26px;
+    font-weight: 700;
+    letter-spacing: -0.025em;
+    line-height: 1.3;
+    max-width: 34ch;
+  }
+
+  /* ---------- Capabilities ---------- */
+
+  .capList {
+    border-bottom: 1px solid rgba(22, 38, 28, 0.14);
+  }
+
+  .cap {
+    display: grid;
+    grid-template-columns: 0.34fr 0.66fr;
+    gap: 44px;
+    align-items: baseline;
+    border-top: 1px solid rgba(22, 38, 28, 0.14);
+    padding: 34px 0;
+  }
+
+  .cap__n {
+    font-family: var(--mono);
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    color: var(--green-hover);
+    margin-bottom: 10px;
+  }
+
+  .cap__title {
+    font-size: 27px;
+    font-weight: 800;
+    letter-spacing: -0.025em;
+    line-height: 1.1;
+  }
+
+  .cap__body {
+    color: var(--ink-700);
+    margin-bottom: 14px;
+  }
+
+  .cap__tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .tag {
+    display: inline-flex;
+    align-items: center;
+    height: 26px;
+    padding: 0 11px;
+    background: var(--rail);
+    color: var(--ink-500);
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 500;
+  }
+
+  /* ---------- Evidence ---------- */
+
+  .evidence {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 64px;
+    align-items: center;
+  }
+
+  .evidence__h2 {
+    color: var(--paper);
+    margin-bottom: 20px;
+  }
+
+  .evidence__p {
+    font-size: 17.5px;
+    line-height: 1.62;
+    max-width: 48ch;
+  }
+
+  .evidence__p--sage {
+    color: var(--on-dark-sage);
+    margin-bottom: 18px;
+  }
+
+  .evidence__p--mist {
+    color: var(--on-dark-mist);
+  }
+
+  .evidence__list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .evidence__item {
+    display: flex;
+    gap: 14px;
+    align-items: flex-start;
+    background: rgba(244, 241, 234, 0.05);
+    border: 1px solid rgba(244, 241, 234, 0.14);
+    border-radius: 13px;
+    padding: 20px 22px;
+  }
+
+  .evidence__itemTitle {
+    font-size: 16px;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    color: var(--paper);
+    margin-bottom: 4px;
+  }
+
+  .evidence__itemBody {
+    font-size: 14.5px;
+    line-height: 1.5;
+    color: var(--on-dark-sage);
+  }
+
+  /* ---------- Roadmap ---------- */
+
+  .roadmap {
+    border-radius: var(--r-card-sm);
+    padding: 26px;
+    background: var(--white);
+  }
+
+  .roadmap--now {
+    border: 1.5px solid var(--green);
+  }
+  .roadmap--build {
+    border: 1px solid var(--border-strong);
+  }
+  .roadmap--later {
+    background: var(--sunken);
+    border: 1px dashed rgba(22, 38, 28, 0.2);
+  }
+
+  .roadmap__head {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    margin-bottom: 16px;
+  }
+
+  .roadmap__dot {
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    flex: none;
+  }
+  .roadmap__dot--now {
+    background: var(--green);
+  }
+  .roadmap__dot--build {
+    background: var(--attention);
+  }
+  .roadmap__dot--later {
+    background: #c3c9c3;
+  }
+
+  .roadmap__label {
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+  }
+  .roadmap__label--now {
+    color: var(--green-hover);
+  }
+  .roadmap__label--build {
+    color: var(--attention-text);
+  }
+  .roadmap__label--later {
+    color: var(--muted);
+  }
+
+  .roadmap__item {
+    font-size: 15px;
+    line-height: 1.45;
+    color: var(--ink-700);
+    padding-bottom: 11px;
+    margin-bottom: 11px;
+    border-bottom: 1px solid rgba(22, 38, 28, 0.07);
+  }
+
+  .roadmap__item:last-child {
+    margin-bottom: 0;
+  }
+
+  .footnote {
+    font-size: 13.5px;
+    color: var(--muted);
+    margin-top: 22px;
+    max-width: 70ch;
+  }
+
+  /* ---------- Why ---------- */
+
+  .whyCard {
+    padding: 26px;
+    border-radius: var(--r-card-sm);
+  }
+
+  .whyCard__icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 11px;
+    background: var(--green-tint);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 16px;
+  }
+
+  .whyCard__title {
+    font-size: 18px;
+    font-weight: 700;
+    letter-spacing: -0.015em;
+    margin-bottom: 7px;
+  }
+
+  .whyCard__body {
+    font-size: 14.5px;
+    line-height: 1.55;
+    color: var(--ink-500);
+  }
+
+  /* ---------- Responsive ---------- */
+
+  @media (max-width: 1000px) {
+    .hero__grid,
+    .evidence,
+    .cap {
+      grid-template-columns: 1fr;
+      gap: 40px;
+    }
+    .cap {
+      gap: 16px;
+      padding: 28px 0;
+    }
+    .hero__h1 {
+      font-size: 42px;
+    }
+    .hero__lede {
+      font-size: 18px;
+    }
+    .grid3 {
+      grid-template-columns: 1fr 1fr;
+    }
+    .pullquote p {
+      font-size: 22px;
+    }
+  }
+
+  @media (max-width: 700px) {
+    .grid3 {
+      grid-template-columns: 1fr;
+    }
+    .hero__h1 {
+      font-size: 34px;
+    }
+  }
+</style>

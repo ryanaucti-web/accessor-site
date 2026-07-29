@@ -1,0 +1,76 @@
+---
+import CheckCircle from '../ui/CheckCircle.astro';
+
+interface Props {
+  heading: string;
+  outcomes: string[];
+}
+
+const { heading, outcomes } = Astro.props;
+---
+
+<section class="band band--dark outcome">
+  <div class="outcome__inner">
+    <h2 class="outcome__h2">{heading}</h2>
+    <ul class="outcome__grid">
+      {
+        outcomes.map((o) => (
+          <li class="outcome__item">
+            <CheckCircle size={17} color="var(--green-light)" />
+            <span>{o}</span>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</section>
+
+<style>
+  .outcome__inner {
+    max-width: var(--content-narrow);
+    margin: 0 auto;
+  }
+
+  .outcome__h2 {
+    font-size: 36px;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    line-height: 1.08;
+    margin-bottom: 34px;
+    color: var(--paper);
+    max-width: 28ch;
+    text-wrap: balance;
+  }
+
+  .outcome__grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+  }
+
+  .outcome__item {
+    display: flex;
+    gap: 13px;
+    align-items: flex-start;
+    background: rgba(244, 241, 234, 0.05);
+    border: 1px solid rgba(244, 241, 234, 0.14);
+    border-radius: 13px;
+    padding: 20px 22px;
+    font-size: 15.5px;
+    line-height: 1.55;
+    color: var(--on-dark-mist);
+  }
+
+  .outcome__item :global(svg) {
+    margin-top: 2px;
+  }
+
+  @media (max-width: 1000px) {
+    .outcome__h2 {
+      font-size: 27px;
+    }
+    .outcome__grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

@@ -1,0 +1,376 @@
+@import './tokens.css';
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--evergreen);
+  font-family: var(--sans);
+  font-size: 16px;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  margin: 0;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+}
+
+p {
+  margin: 0;
+}
+
+ul,
+ol {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+a {
+  color: inherit;
+}
+
+img,
+svg {
+  max-width: 100%;
+}
+
+/* Focus is declared once, globally, and never removed. 3px at 2px offset clears
+   1.4.11 non-text contrast on paper, band, and dark surfaces alike. */
+:focus {
+  outline: none;
+}
+
+:focus-visible {
+  outline: 3px solid var(--green-hover);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+.on-dark :focus-visible,
+[data-surface='dark'] :focus-visible {
+  outline-color: var(--green-light);
+}
+
+.skip-link {
+  position: absolute;
+  left: 16px;
+  top: -100px;
+  z-index: 100;
+  padding: 12px 18px;
+  background: var(--evergreen);
+  color: var(--on-dark);
+  font-size: 15px;
+  font-weight: 600;
+  border-radius: var(--r-control-sm);
+  text-decoration: none;
+  transition: top 140ms ease;
+}
+
+.skip-link:focus {
+  top: 16px;
+}
+
+/* ---------- Band system ----------
+   Rule 1: sections carrying a background run edge to edge. The colour lives on
+   <section>, the width constraint lives on the inner wrapper. Never a rounded
+   card on the page background. */
+
+.band {
+  padding: 96px var(--gutter);
+}
+
+.band--tight {
+  padding: 64px var(--gutter);
+}
+
+.band--paper {
+  background: var(--paper);
+}
+.band--banded {
+  background: var(--band);
+}
+.band--sunken {
+  background: var(--sunken);
+}
+.band--dark {
+  background: var(--evergreen);
+  color: var(--on-dark);
+}
+.band--green {
+  background: var(--green);
+  color: var(--on-dark);
+}
+
+.band__inner {
+  max-width: var(--content);
+  margin: 0 auto;
+}
+
+.band__inner--narrow {
+  max-width: var(--content-narrow);
+}
+
+/* ---------- Type primitives ---------- */
+
+.eyebrow {
+  font-family: var(--mono);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--green-hover);
+}
+
+.band--dark .eyebrow,
+.band--green .eyebrow {
+  color: var(--green-light);
+}
+
+.h1 {
+  font-size: 54px;
+  font-weight: 800;
+  letter-spacing: -0.035em;
+}
+
+.h2 {
+  font-size: 40px;
+  font-weight: 800;
+  letter-spacing: -0.032em;
+}
+
+.h2--row {
+  font-size: 32px;
+  letter-spacing: -0.03em;
+}
+
+.h3 {
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.lede {
+  font-size: 19px;
+  line-height: 1.6;
+  color: var(--ink-500);
+}
+
+.band--dark .lede,
+.band--green .lede {
+  color: var(--on-dark-muted);
+}
+
+.body {
+  font-size: 16.5px;
+  line-height: 1.65;
+  color: var(--ink-500);
+}
+
+.muted {
+  color: var(--muted);
+}
+
+/* ---------- Controls ---------- */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  height: 46px;
+  padding: 0 22px;
+  border: 1px solid transparent;
+  border-radius: var(--r-control-sm);
+  font-family: var(--sans);
+  font-size: 15.5px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  text-decoration: none;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background 140ms ease, border-color 140ms ease, color 140ms ease;
+}
+
+.btn--primary {
+  background: var(--green);
+  color: var(--on-dark);
+}
+.btn--primary:hover {
+  background: var(--green-hover);
+}
+
+.btn--onGreen {
+  background: var(--paper);
+  color: var(--evergreen);
+}
+.btn--onGreen:hover {
+  background: var(--white);
+}
+
+.btn--ghost {
+  background: transparent;
+  border-color: var(--border-strong);
+  color: var(--evergreen);
+}
+.btn--ghost:hover {
+  background: rgba(22, 38, 28, 0.05);
+}
+
+.band--dark .btn--ghost,
+.band--green .btn--ghost {
+  /* Heavier than --on-dark-border: this one is a control edge and has to clear
+     1.4.11, not just read as a hairline. */
+  border-color: rgba(244, 241, 234, 0.38);
+  color: var(--on-dark);
+}
+.band--dark .btn--ghost:hover,
+.band--green .btn--ghost:hover {
+  background: rgba(244, 241, 234, 0.1);
+}
+
+/* ---------- Cards ---------- */
+
+.card {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: var(--r-card);
+  box-shadow: var(--shadow);
+}
+
+.band--dark .card {
+  background: rgba(244, 241, 234, 0.05);
+  border-color: var(--on-dark-border);
+  box-shadow: none;
+}
+
+/* ---------- Product rows ----------
+   0.42fr / 0.58fr, alternating. The mock always sits on the wide side. */
+
+.row {
+  display: grid;
+  grid-template-columns: 0.42fr 0.58fr;
+  gap: 64px;
+  align-items: center;
+}
+
+.row + .row {
+  margin-top: 96px;
+}
+
+.row--flip {
+  grid-template-columns: 0.58fr 0.42fr;
+}
+
+.row--flip .row__copy {
+  order: 2;
+}
+
+.row--flip .row__mock {
+  order: 1;
+}
+
+/* ---------- Status ----------
+   Rule 5: colour plus word plus icon, always all three. */
+
+.status {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: var(--r-pill);
+  font-family: var(--mono);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.status--pass {
+  background: var(--green-tint);
+  color: var(--green-hover);
+}
+.status--attention {
+  background: var(--attention-tint);
+  color: var(--attention-text);
+}
+.status--fail {
+  background: var(--fail-tint);
+  color: var(--fail-text);
+}
+
+/* ---------- Responsive ----------
+   The references are desktop-width with min-width. These breakpoints are the
+   layer the spec listed as missing. */
+
+@media (max-width: 1000px) {
+  .row,
+  .row--flip {
+    grid-template-columns: 1fr;
+    gap: 40px;
+  }
+  .row--flip .row__copy,
+  .row--flip .row__mock {
+    order: initial;
+  }
+  .row + .row {
+    margin-top: 64px;
+  }
+  .h1 {
+    font-size: 40px;
+  }
+  .h2 {
+    font-size: 30px;
+  }
+  .h2--row {
+    font-size: 26px;
+  }
+  .band {
+    padding: 64px 24px;
+  }
+  .band--tight {
+    padding: 48px 24px;
+  }
+  .lede {
+    font-size: 17.5px;
+  }
+}
+
+@media (max-width: 640px) {
+  .h1 {
+    font-size: 33px;
+  }
+  .band {
+    padding: 52px 20px;
+  }
+}

@@ -1,0 +1,142 @@
+---
+/** Dark panel of label/value rows. Used for conformance records, release
+ *  checks, and any "here is the current state, generated live" mock. */
+
+export interface EvidenceRow {
+  label: string;
+  /** Optional middle column, e.g. a file count. */
+  count?: string;
+  val: string;
+  /** true renders the value in green: the number is where it should be. */
+  ok?: boolean;
+  /** Renders a not-ok value in the on-dark fail tint rather than plain paper. */
+  bad?: boolean;
+}
+
+interface Props {
+  head: string;
+  action?: string;
+  /** Plain text at the right of the header, when there is no action to offer. */
+  meta?: string;
+  rows: EvidenceRow[];
+  note?: string;
+}
+
+const { head, action, meta, rows, note } = Astro.props;
+---
+
+<div class="ev">
+  <div class="ev__head">
+    <span class="ev__title">{head}</span>
+    {action && <span class="ev__action">{action}</span>}
+    {meta && <span class="ev__meta">{meta}</span>}
+  </div>
+
+  <ul class="ev__rows">
+    {
+      rows.map((r) => (
+        <li class="ev__row">
+          <span class="ev__label">{r.label}</span>
+          {r.count && <span class="ev__count">{r.count}</span>}
+          <span class={`ev__val ${r.ok ? 'ev__val--ok' : ''} ${r.bad ? 'ev__val--bad' : ''}`}>{r.val}</span>
+        </li>
+      ))
+    }
+  </ul>
+
+  {note && <p class="ev__note">{note}</p>}
+</div>
+
+<style>
+  .ev {
+    background: var(--evergreen);
+    border-radius: var(--r-card);
+    padding: 28px;
+    box-shadow: 0 2px 8px rgba(22, 38, 28, 0.16), 0 30px 60px -34px rgba(22, 38, 28, 0.5);
+  }
+
+  .ev__head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+
+  .ev__title {
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    color: var(--green-light);
+  }
+
+  .ev__action {
+    display: inline-flex;
+    align-items: center;
+    height: 26px;
+    padding: 0 11px;
+    background: rgba(116, 199, 154, 0.16);
+    color: var(--green-light);
+    border-radius: var(--r-pill);
+    font-size: 12px;
+    font-weight: 600;
+    flex: none;
+  }
+
+  .ev__rows {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .ev__row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid rgba(244, 241, 234, 0.12);
+  }
+
+  .ev__label {
+    flex: 1;
+    font-size: 14px;
+    color: var(--on-dark-mist);
+  }
+
+  .ev__val {
+    font-size: 14px;
+    font-weight: 700;
+    flex: none;
+    color: var(--paper);
+  }
+
+  .ev__val--ok {
+    color: var(--green-light);
+  }
+
+  .ev__val--bad {
+    color: var(--fail-on-dark);
+  }
+
+  .ev__meta {
+    font-size: 12.5px;
+    color: var(--on-dark-sage);
+    flex: none;
+  }
+
+  .ev__count {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--on-dark-sage);
+    flex: none;
+  }
+
+  .ev__note {
+    margin-top: 18px;
+    font-size: 13.5px;
+    line-height: 1.5;
+    color: var(--on-dark-sage);
+  }
+</style>

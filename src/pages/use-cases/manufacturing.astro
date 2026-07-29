@@ -1,0 +1,182 @@
+---
+import Base from '../../layouts/Base.astro';
+import ProductHero from '../../components/product/ProductHero.astro';
+import FrictionBand from '../../components/product/FrictionBand.astro';
+import ProductRow from '../../components/product/ProductRow.astro';
+import RankedPanel from '../../components/product/RankedPanel.astro';
+import FindingCard from '../../components/product/FindingCard.astro';
+import ReleaseCheck from '../../components/product/ReleaseCheck.astro';
+import OutcomeBand from '../../components/product/OutcomeBand.astro';
+import CtaBand from '../../components/CtaBand.astro';
+
+const stats = [
+  { num: '64', label: 'open findings', delta: '↓ 38 this quarter', ok: true },
+  { num: '2', label: 'systems failing', delta: 'LMS and spec sheets' },
+  { num: '91%', label: 'checks passing', delta: '↑ 9 pts', ok: true },
+  { num: '6', label: 'release cadences', delta: 'weekly to annual' },
+];
+
+const systems = [
+  {
+    name: 'Technician LMS',
+    meta: 'Vendor platform · mandatory training',
+    bar: 72,
+    verdict: 'fail' as const,
+    count: '6',
+  },
+  { name: 'Spec and safety sheets', meta: '2,400 PDFs · quarterly', bar: 58, verdict: 'fail' as const, count: '31' },
+  {
+    name: 'Dealer portal',
+    meta: 'Weekly releases · 340 pages',
+    bar: 34,
+    verdict: 'attention' as const,
+    count: '18',
+  },
+  { name: 'Parts catalogue', meta: 'Monthly · 12k SKU pages', bar: 18, verdict: 'attention' as const, count: '9' },
+  { name: 'Warranty claim flow', meta: 'Quarterly releases', bar: 4, verdict: 'pass' as const, count: '0' },
+  { name: 'Corporate site', meta: 'Monthly releases', bar: 2, verdict: 'pass' as const, count: '0' },
+];
+
+const frictions = [
+  {
+    title: 'No single owner',
+    d: 'M9 8a3 3 0 100-6 3 3 0 000 6zM3 20c0-3.3 2.7-5 6-5s6 1.7 6 5M17 11a2.5 2.5 0 100-5 2.5 2.5 0 000 5zM21 20c0-2.5-1.8-4-4-4',
+    body: 'The portal belongs to sales ops, the LMS to HR, spec sheets to marketing, internal tools to IT. An audit lands on whoever commissioned it.',
+  },
+  {
+    title: 'Staggered releases',
+    d: 'M4 12a8 8 0 018-8 8 8 0 016.9 4M20 12a8 8 0 01-8 8 8 8 0 01-6.9-4M18 3v5h-5M6 21v-5h5',
+    body: 'Weekly here, twice a year there, vendor platforms whenever they decide. A point-in-time report is stale for most of the estate immediately.',
+  },
+  {
+    title: 'Vendor-built systems',
+    d: 'M5 11h14v10H5zM8.5 11V8a3.5 3.5 0 017 0v3',
+    body: 'Much of the estate is not yours to fix. You need the finding, the criterion, and something you can hand to the vendor.',
+  },
+];
+
+const ranked = [
+  {
+    rank: '01',
+    title: 'Focus trapped in course player',
+    chip: 'LMS',
+    tone: 'high' as const,
+    why: 'Blocks safety certification for 1,240 technicians. No alternative route to completion.',
+  },
+  {
+    rank: '02',
+    title: 'Claim form fields unlabelled',
+    chip: 'DEALER',
+    tone: 'high' as const,
+    why: 'Dealers cannot submit warranty claims with a screen reader. Revenue-affecting and externally visible.',
+  },
+  {
+    rank: '03',
+    title: 'Safety sheet tables untagged',
+    chip: 'DOCS',
+    tone: 'attention' as const,
+    why: '2,400 files, one export setting. Hazard data is unreadable in order.',
+  },
+];
+
+const checks = [
+  { label: 'Contrast on primary actions', verdict: 'Verified' },
+  { label: 'Form labels on claim flow', verdict: 'Verified' },
+  { label: 'Heading structure', verdict: 'Verified' },
+  { label: 'New: focus order in parts filter', verdict: 'Caught', caught: true },
+];
+
+const outcomes = [
+  'One conformance position covering every system, so a customer questionnaire gets a single answer.',
+  'Internal tools and mandatory training assessed where the employment obligation actually sits.',
+  'Vendor platforms held to the same standard, with findings you can attach to a support ticket.',
+  'Regressions caught the week a vendor ships, not at the next annual review.',
+];
+---
+
+<Base
+  title="Accessibility for manufacturers · limena"
+  description="Dealer portals, spec sheets, technician training, internal tools. Six systems, six owners, six release cycles, one obligation."
+  active="usecases"
+>
+  <ProductHero
+    backHref="/use-cases"
+    backLabel="Use cases"
+    title="Accessibility for manufacturers"
+    lede="Dealer portals, spec sheets, technician training, internal tools. Six systems, six owners, six release cycles, one obligation."
+    panelTitle="Estate overview"
+    panelMeta="6 systems · 14,900 pages"
+    panelStatus="2 need attention"
+    panelStatusTone="attention"
+    stats={stats}
+    rows={systems}
+  />
+
+  <FrictionBand
+    heading="Why one audit never holds here."
+    lede="The estate grew by acquisition, not design. Different vendors built it, different teams own it, and nothing ships on the same schedule."
+    items={frictions}
+  />
+
+  <ProductRow
+    first
+    eyebrow="01 · One priority order"
+    heading="Ranked across systems, not within them."
+    body={[
+      'A keyboard trap in mandatory safety training outranks fifty contrast issues on a brochure page. limena scores by who is blocked and from what, so the estate has one queue instead of six local ones.',
+    ]}
+  >
+    <RankedPanel head="Fix these first" meta="64 open · all systems" items={ranked} />
+  </ProductRow>
+
+  <ProductRow
+    flip
+    eyebrow="02 · Employees, not just customers"
+    heading="The exposure nobody looked at."
+    body={[
+      'Internal tools and mandatory training carry employment obligations, not consumer regulation. It is a different class of risk and usually the least examined surface you own.',
+      'When the system is vendor-built, limena packages the finding with the criterion cited so you can send it straight to them.',
+    ]}
+  >
+    <FindingCard
+      verdict="Fail"
+      title="Focus is trapped in the course player"
+      error="A keyboard user who enters the video player cannot leave it without a mouse. The module cannot be completed, and completion is what issues the certificate."
+      impact="Blocks safety certification for 1,240 technicians. Non-completion is an employment and regulatory exposure, not a UX defect."
+      impactIcon="shield"
+      owner={{
+        initials: 'HR',
+        role: 'content',
+        name: 'Learning systems, HR',
+        meta: 'Vendor platform · finding pack ready to send',
+        action: 'Export for vendor',
+      }}
+    />
+  </ProductRow>
+
+  <ProductRow
+    last
+    eyebrow="03 · Held through every release"
+    heading="Each system on its own cadence."
+    body={[
+      'One system ships weekly, another twice a year, a vendor platform whenever they decide. limena re-tests on each schedule, so when an update breaks focus order you hear about it that week rather than at the next audit.',
+    ]}
+  >
+    <ReleaseCheck
+      head="Release check · dealer portal v8.2"
+      items={checks}
+      note="The regression traces to a vendor component update. limena flagged it before the dealer network saw it."
+    />
+  </ProductRow>
+
+  <OutcomeBand heading="One answer for the whole estate, not six." outcomes={outcomes} />
+
+  <CtaBand
+    heading="Start with the dealer portal."
+    body="Usually the surface with the most external eyes and the least clear ownership. We will show you where it stands."
+    primaryLabel="Book a demo"
+    primaryHref="/contact"
+    secondaryLabel="Test a page free"
+    secondaryHref="/scan"
+  />
+</Base>

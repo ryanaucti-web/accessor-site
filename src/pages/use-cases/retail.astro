@@ -1,0 +1,417 @@
+---
+import Base from '../../layouts/Base.astro';
+import ProductHero from '../../components/product/ProductHero.astro';
+import FrictionBand from '../../components/product/FrictionBand.astro';
+import ProductRow from '../../components/product/ProductRow.astro';
+import FindingCard from '../../components/product/FindingCard.astro';
+import ReleaseCheck from '../../components/product/ReleaseCheck.astro';
+import OutcomeBand from '../../components/product/OutcomeBand.astro';
+import CtaBand from '../../components/CtaBand.astro';
+
+const stats = [
+  { num: '8,940', label: 'open findings', delta: 'mostly product pages' },
+  { num: '11', label: 'on the order path', delta: 'where it counts' },
+  { num: '$412k', label: 'revenue at risk', delta: 'from 4 barriers' },
+  { num: '3', label: 'fixes clear 96%', delta: 'shared components', ok: true },
+];
+
+// Heights are relative to the tallest bar, so the shape reads as "volume sits
+// where it does not matter". Counts are on the bars, not in a legend.
+const funnel = [
+  { step: 'Home', count: '340', h: 30, tone: 'attention', tag: 'attention' },
+  { step: 'Category', count: '2,100', h: 56, tone: 'attention', tag: 'attention' },
+  { step: 'Product', count: '6,489', h: 96, tone: 'attention', tag: 'attention' },
+  { step: 'Cart', count: '8', h: 22, tone: 'fail', tag: 'blocking' },
+  { step: 'Checkout', count: '3', h: 18, tone: 'fail', tag: 'blocking' },
+];
+
+const frictions = [
+  {
+    title: 'The most-sued sector',
+    d: 'M12 3l8 4v6c0 4-3.5 7-8 8-4.5-1-8-4-8-8V7l8-4z',
+    body: 'Retail draws more web accessibility claims than any other industry. Demand letters cite the cart and checkout, because that is where exclusion is easiest to prove.',
+  },
+  {
+    title: 'Scale hides the signal',
+    d: 'M4 5h7v7H4zM13 12h7v7h-7z',
+    body: 'Twelve thousand product pages generate thousands of low-consequence findings that bury the eleven on the order path. Counts point you at the wrong work.',
+  },
+  {
+    title: 'Weekly campaign churn',
+    d: 'M12 8v4l3 2M12 3a9 9 0 100 18 9 9 0 000-18z',
+    body: 'Promo templates and seasonal pages ship constantly and are gone in weeks. Nothing gets a proper review, and each one can break the funnel.',
+  },
+];
+
+const ranked = [
+  {
+    rank: '01',
+    title: 'Card fields have no labels',
+    money: '$310k',
+    instances: '3 fields',
+    why: 'Payment step of every order. No alternative route to pay.',
+    pct: 96,
+    tone: 'fail',
+  },
+  {
+    rank: '02',
+    title: 'Cart quantity control unreachable',
+    money: '$78k',
+    instances: '8 instances',
+    why: 'Keyboard users cannot change quantity or remove an item.',
+    pct: 42,
+    tone: 'fail',
+  },
+  {
+    rank: '03',
+    title: 'Product images missing alt text',
+    money: '$24k',
+    instances: '6,489 images',
+    why: 'High volume, but the product name sits in text alongside.',
+    pct: 12,
+    tone: 'attention',
+  },
+];
+
+const checks = [
+  { label: 'Contrast on add-to-cart', verdict: 'Verified' },
+  { label: 'Card field labels', verdict: 'Verified' },
+  { label: 'Cart keyboard operation', verdict: 'Verified' },
+  { label: 'New: countdown timer traps focus', verdict: 'Blocked', caught: true },
+];
+
+const outcomes = [
+  'Barriers priced in revenue, so accessibility competes for sprint capacity on the same terms as everything else.',
+  'The eleven findings on the order path separated from the eight thousand that can wait.',
+  'Component-level fixes, so one change clears thousands of instances across the catalogue.',
+  'Campaign templates verified before they ship, through the quarter when traffic is highest.',
+];
+---
+
+<Base
+  title="Accessibility for retail · limena"
+  description="Retail is the most-sued sector for web accessibility, and the barriers that matter sit on the four pages between a customer and a completed order."
+  active="usecases"
+>
+  <ProductHero
+    backHref="/use-cases"
+    backLabel="Use cases"
+    title="Accessibility for retail"
+    lede="Retail is the most-sued sector for web accessibility, and the barriers that matter sit on the four pages between a customer and a completed order."
+    panelTitle="Purchase journey"
+    panelMeta="5 steps · 12,400 pages"
+    panelStatus="Checkout blocked"
+    stats={stats}
+  >
+    <div class="funnel">
+      <p class="funnel__label">Barriers by journey step</p>
+      <ul class="funnel__bars">
+        {
+          funnel.map((f) => (
+            <li class="funnel__col">
+              <span class="funnel__count">{f.count}</span>
+              <div class={`funnel__bar funnel__bar--${f.tone}`} style={`height:${f.h}px`} />
+              <span class="funnel__step">{f.step}</span>
+              <span class={`funnel__tag funnel__tag--${f.tone}`}>{f.tag}</span>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </ProductHero>
+
+  <FrictionBand
+    heading="In retail, a barrier is a lost order."
+    lede="Every other sector argues about the cost of accessibility. Retail can measure it, which cuts both ways."
+    items={frictions}
+  />
+
+  <ProductRow
+    first
+    eyebrow="01 · Priced, not counted"
+    heading="The barrier on checkout outranks 8,000 on product pages."
+    body={[
+      'A missing alt attribute on a lifestyle image is not the same problem as an unlabelled card field, even though a scanner counts them the same way.',
+      'limena ranks by the traffic on the page and whether an alternative route exists. On checkout, there is none.',
+    ]}
+  >
+    <div class="money">
+      <div class="money__head">
+        <span class="money__title">Fix these first</span>
+        <span class="money__meta">8,940 open · ranked</span>
+      </div>
+      {
+        ranked.map((r) => (
+          <div class="money__row">
+            <div class="money__top">
+              <span class="money__rank">{r.rank}</span>
+              <span class="money__name">{r.title}</span>
+              <span class="money__value">{r.money}</span>
+            </div>
+            <div class="money__meterRow">
+              <div class="meter">
+                <div class={`meter__fill meter__fill--${r.tone}`} style={`width:${r.pct}%`} />
+              </div>
+              <span class="money__instances">{r.instances}</span>
+            </div>
+            <p class="money__why">{r.why}</p>
+          </div>
+        ))
+      }
+    </div>
+  </ProductRow>
+
+  <ProductRow
+    flip
+    eyebrow="02 · A number, not a severity"
+    heading="Something a merchandising lead can act on."
+    body={[
+      '"WCAG 3.3.2, serious" does not compete for sprint capacity. "$310k a year on the payment step" does.',
+      'limena turns each barrier into reach and revenue using your own session and order figures, then routes it to the squad that owns the component.',
+    ]}
+  >
+    <FindingCard
+      verdict="Fail"
+      title="Card fields have no labels"
+      error="The payment fields use placeholder text instead of labels. A screen reader announces three unnamed inputs, and the placeholder disappears as soon as the customer starts typing."
+      impact="On the payment step of every order. 1.4M sessions a year reach this page, and there is no alternative way to pay. Estimated revenue at risk: <strong>$310k a year</strong>."
+      impactIcon="cart"
+      fix='<label for="cc-num">Card number</label>'
+      owner={{
+        initials: 'JT',
+        role: 'dev',
+        name: 'Jordan Tran, checkout squad',
+        meta: 'One component · clears 3 fields on every order',
+        action: 'PR #412',
+      }}
+    />
+  </ProductRow>
+
+  <ProductRow
+    last
+    eyebrow="03 · Through peak"
+    heading="Campaign pages ship faster than anyone can test them."
+    body={[
+      'Seasonal templates, promo banners, and countdown timers go live weekly through Q4 and get retired in January. limena tests each release, so a campaign template does not quietly break the cart during your highest-traffic month.',
+    ]}
+  >
+    <ReleaseCheck
+      head="Release check · holiday campaign"
+      items={checks}
+      note="The countdown timer traps focus before the cart button. Caught in CI, two days before Black Friday traffic."
+    />
+  </ProductRow>
+
+  <OutcomeBand heading="Accessibility that competes for sprint capacity." outcomes={outcomes} />
+
+  <CtaBand
+    heading="Start with your checkout."
+    body="Four pages, the ones every order passes through. We will tell you what is blocking them and what it is worth."
+    primaryLabel="Book a demo"
+    primaryHref="/contact"
+    secondaryLabel="Test a page free"
+    secondaryHref="/scan"
+  />
+</Base>
+
+<style>
+  /* ---------- Funnel ---------- */
+
+  .funnel {
+    padding: 24px;
+  }
+
+  .funnel__label {
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 20px;
+  }
+
+  .funnel__bars {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 16px;
+    align-items: end;
+  }
+
+  .funnel__col {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .funnel__count {
+    font-family: var(--mono);
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--evergreen);
+  }
+
+  .funnel__bar {
+    width: 100%;
+    max-width: 120px;
+    border-radius: 6px 6px 0 0;
+  }
+
+  .funnel__bar--attention {
+    background: var(--attention-tint);
+    border-top: 3px solid var(--attention);
+  }
+
+  .funnel__bar--fail {
+    background: var(--fail-tint);
+    border-top: 3px solid var(--fail);
+  }
+
+  .funnel__step {
+    font-size: 13.5px;
+    font-weight: 600;
+  }
+
+  .funnel__tag {
+    font-family: var(--mono);
+    font-size: 10px;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 7px;
+  }
+
+  .funnel__tag--attention {
+    background: var(--rail);
+    color: var(--muted);
+  }
+
+  .funnel__tag--fail {
+    background: var(--fail-tint);
+    color: var(--fail-text);
+  }
+
+  /* ---------- Revenue-ranked queue ---------- */
+
+  .money {
+    background: var(--white);
+    border: 1px solid var(--border-strong);
+    border-radius: var(--r-card);
+    box-shadow: var(--shadow);
+    overflow: hidden;
+  }
+
+  .money__head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 14px 20px;
+    background: var(--sunken);
+    border-bottom: 1px solid rgba(22, 38, 28, 0.08);
+  }
+
+  .money__title {
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  .money__meta {
+    font-size: 12.5px;
+    color: var(--muted);
+  }
+
+  .money__row {
+    padding: 15px 20px;
+    border-bottom: 1px solid rgba(22, 38, 28, 0.06);
+  }
+
+  .money__row:last-child {
+    border-bottom: none;
+  }
+
+  .money__top {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 8px;
+  }
+
+  .money__rank {
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--fail-text);
+    flex: none;
+  }
+
+  .money__name {
+    flex: 1;
+    font-size: 14.5px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+  }
+
+  .money__value {
+    font-family: var(--mono);
+    font-size: 13.5px;
+    font-weight: 600;
+    color: var(--evergreen);
+    flex: none;
+  }
+
+  .money__meterRow {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 8px;
+  }
+
+  .meter {
+    flex: 1;
+    height: 5px;
+    border-radius: var(--r-pill);
+    background: #e3e1d9;
+    overflow: hidden;
+  }
+
+  .meter__fill {
+    height: 100%;
+  }
+  .meter__fill--fail {
+    background: var(--fail);
+  }
+  .meter__fill--attention {
+    background: var(--attention);
+  }
+
+  .money__instances {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--muted);
+    flex: none;
+  }
+
+  .money__why {
+    font-size: 13px;
+    line-height: 1.45;
+    color: var(--ink-500);
+  }
+
+  @media (max-width: 700px) {
+    .funnel__bars {
+      gap: 8px;
+    }
+    .funnel__step,
+    .funnel__count {
+      font-size: 11.5px;
+    }
+    .funnel__tag {
+      display: none;
+    }
+  }
+</style>

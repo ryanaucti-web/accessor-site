@@ -1,0 +1,109 @@
+---
+import Base from '../layouts/Base.astro';
+
+const links = [
+  { label: 'The platform', href: '/platform' },
+  { label: 'Use cases', href: '/use-cases' },
+  { label: 'Partners', href: '/partners' },
+  { label: 'Pricing', href: '/pricing' },
+  { label: 'Free scan', href: '/scan' },
+  { label: 'About', href: '/about' },
+];
+---
+
+<Base title="Page not found · limena" description="That page does not exist. Here is where everything else lives.">
+  <section class="band band--dark nf">
+    <div class="nf__inner">
+      <p class="eyebrow nf__eyebrow">404</p>
+      <h1 class="nf__h1">That page crossed the threshold and kept going.</h1>
+      <p class="nf__lede">
+        It does not exist, or it moved. Nothing is broken on your side. Here is where the rest of the site lives.
+      </p>
+
+      <nav class="nf__links" aria-label="Main sections">
+        {
+          links.map((l) => (
+            <a href={l.href} class="nf__link">
+              {l.label}
+            </a>
+          ))
+        }
+      </nav>
+
+      <a href="/" class="btn btn--primary nf__home">Back to the home page</a>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .nf {
+    padding-top: 120px;
+    padding-bottom: 120px;
+  }
+
+  .nf__inner {
+    max-width: 720px;
+    margin: 0 auto;
+    text-align: center;
+  }
+
+  .nf__eyebrow {
+    display: block;
+    font-size: 13px;
+    letter-spacing: 0.14em;
+    margin-bottom: 20px;
+  }
+
+  .nf__h1 {
+    font-size: 44px;
+    font-weight: 800;
+    letter-spacing: -0.035em;
+    line-height: 1.06;
+    color: var(--paper);
+    margin-bottom: 18px;
+    text-wrap: balance;
+  }
+
+  .nf__lede {
+    font-size: 18px;
+    line-height: 1.6;
+    color: var(--on-dark-sage);
+    margin-bottom: 34px;
+  }
+
+  .nf__links {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 34px;
+  }
+
+  .nf__link {
+    display: inline-flex;
+    align-items: center;
+    height: 38px;
+    padding: 0 16px;
+    border: 1px solid var(--on-dark-border);
+    border-radius: var(--r-pill);
+    color: var(--on-dark-mist);
+    font-size: 14.5px;
+    font-weight: 500;
+    text-decoration: none;
+  }
+
+  .nf__link:hover {
+    background: rgba(244, 241, 234, 0.1);
+    color: var(--paper);
+  }
+
+  @media (max-width: 1000px) {
+    .nf {
+      padding-top: 72px;
+      padding-bottom: 72px;
+    }
+    .nf__h1 {
+      font-size: 30px;
+    }
+  }
+</style>

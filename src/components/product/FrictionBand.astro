@@ -1,0 +1,121 @@
+---
+/** The band that names the structural problem this page exists to answer.
+ *  Always #EDEAE0, always three cards. */
+
+export interface Friction {
+  title: string;
+  body: string;
+  /** SVG path data drawn on a 24x24 grid. */
+  d: string;
+}
+
+interface Props {
+  heading: string;
+  lede?: string;
+  items: Friction[];
+}
+
+const { heading, lede, items } = Astro.props;
+---
+
+<section class="band band--banded friction">
+  <div class="friction__inner">
+    <h2 class="friction__h2">{heading}</h2>
+    {lede && <p class="friction__lede">{lede}</p>}
+    <div class="friction__grid">
+      {
+        items.map((f) => (
+          <div class="fcard">
+            <div class="fcard__icon">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d={f.d} stroke="var(--green-hover)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+              </svg>
+            </div>
+            <h3 class="fcard__title">{f.title}</h3>
+            <p class="fcard__body">{f.body}</p>
+          </div>
+        ))
+      }
+    </div>
+  </div>
+</section>
+
+<style>
+  .friction {
+    border-bottom: 1px solid rgba(22, 38, 28, 0.06);
+  }
+
+  .friction__inner {
+    max-width: 1160px;
+    margin: 0 auto;
+  }
+
+  .friction__h2 {
+    font-size: 36px;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    line-height: 1.06;
+    margin-bottom: 14px;
+    max-width: 34ch;
+    text-wrap: balance;
+  }
+
+  .friction__lede {
+    font-size: 17.5px;
+    line-height: 1.6;
+    color: var(--ink-500);
+    margin-bottom: 40px;
+    max-width: 62ch;
+    text-wrap: pretty;
+  }
+
+  .friction__grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 18px;
+  }
+
+  .fcard {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: var(--r-card-sm);
+    padding: 26px;
+  }
+
+  .fcard__icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 11px;
+    background: var(--green-tint);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 16px;
+  }
+
+  .fcard__title {
+    font-size: 18px;
+    font-weight: 700;
+    letter-spacing: -0.015em;
+    margin-bottom: 8px;
+  }
+
+  .fcard__body {
+    font-size: 14.5px;
+    line-height: 1.55;
+    color: var(--ink-500);
+  }
+
+  @media (max-width: 1000px) {
+    .friction__h2 {
+      font-size: 27px;
+    }
+    .friction__lede {
+      font-size: 16.5px;
+      margin-bottom: 28px;
+    }
+    .friction__grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

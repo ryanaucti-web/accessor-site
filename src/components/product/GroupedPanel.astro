@@ -1,0 +1,131 @@
+---
+/** A ranked or grouped queue: header strip, then rows carrying a headline, a
+ *  mono chip, and a line of supporting detail. Used wherever a page needs to
+ *  show "many findings collapse to a few fixes". */
+
+export interface GroupedItem {
+  fix: string;
+  chip: string;
+  source: string;
+  tone?: 'green' | 'fail' | 'attention' | 'neutral';
+}
+
+interface Props {
+  head: string;
+  meta: string;
+  items: GroupedItem[];
+}
+
+const { head, meta, items } = Astro.props;
+---
+
+<div class="gp">
+  <div class="gp__head">
+    <span class="gp__title">{head}</span>
+    <span class="gp__meta">{meta}</span>
+  </div>
+  {
+    items.map((g) => (
+      <div class="gp__row">
+        <div class="gp__rowTop">
+          <span class="gp__fix">{g.fix}</span>
+          <span class={`gp__chip gp__chip--${g.tone ?? 'green'}`}>{g.chip}</span>
+        </div>
+        <div class="gp__source">{g.source}</div>
+      </div>
+    ))
+  }
+</div>
+
+<style>
+  .gp {
+    background: var(--white);
+    border: 1px solid var(--border-strong);
+    border-radius: var(--r-card);
+    box-shadow: var(--shadow);
+    overflow: hidden;
+  }
+
+  .gp__head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 14px 20px;
+    background: var(--sunken);
+    border-bottom: 1px solid rgba(22, 38, 28, 0.08);
+  }
+
+  .gp__title {
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  .gp__meta {
+    font-size: 12.5px;
+    color: var(--muted);
+  }
+
+  .gp__row {
+    padding: 15px 20px;
+    border-bottom: 1px solid rgba(22, 38, 28, 0.06);
+  }
+
+  .gp__row:last-child {
+    border-bottom: none;
+  }
+
+  .gp__rowTop {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 6px;
+  }
+
+  .gp__fix {
+    flex: 1;
+    font-size: 14.5px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+  }
+
+  .gp__chip {
+    display: inline-flex;
+    align-items: center;
+    height: 22px;
+    padding: 0 10px;
+    border-radius: 7px;
+    font-family: var(--mono);
+    font-size: 10.5px;
+    font-weight: 600;
+    flex: none;
+    white-space: nowrap;
+  }
+
+  .gp__chip--green {
+    background: var(--green-soft);
+    color: var(--green-hover);
+  }
+  .gp__chip--fail {
+    background: var(--fail-tint);
+    color: var(--fail-text);
+  }
+  .gp__chip--attention {
+    background: var(--attention-tint);
+    color: var(--attention-text);
+  }
+  .gp__chip--neutral {
+    background: var(--rail);
+    color: var(--ink-500);
+  }
+
+  .gp__source {
+    font-size: 13px;
+    line-height: 1.45;
+    color: var(--ink-500);
+  }
+</style>

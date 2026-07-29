@@ -1,0 +1,138 @@
+---
+import SituationPage from '../../layouts/SituationPage.astro';
+
+const steps = [
+  {
+    when: 'One roof',
+    title: 'Every product in one workspace',
+    body: 'Add each site, app, or client as its own program, all scored against the same WCAG target, all visible from a single portfolio view.',
+  },
+  {
+    when: 'At a glance',
+    title: 'Compare and rank by risk',
+    body: 'See which products are conformant and which need attention, so effort goes where the exposure is greatest, not wherever someone shouted loudest.',
+  },
+  {
+    when: 'Your brand',
+    title: 'White-label reporting per client',
+    body: 'Give every client a branded report and dashboard drawn from live data, without rebuilding it by hand each month.',
+  },
+  {
+    when: 'Leadership',
+    title: 'One number for the whole portfolio',
+    body: 'Roll every program up into a single maturity view, so "how accessible are we?" has an answer you can trust on demand.',
+  },
+];
+
+const products = [
+  { name: 'aucti.ca', status: 'Conformant', tone: 'pass', score: '98%' },
+  { name: 'members.aucti.ca', status: 'Needs attention', tone: 'attention', score: '88%' },
+  { name: 'itsryan.ca', status: 'At risk', tone: 'fail', score: '72%' },
+  { name: 'shop.northwind.example', status: 'Conformant', tone: 'pass', score: '95%' },
+];
+---
+
+<SituationPage
+  title="Many products, one standard · limena"
+  description="Portfolios and agencies do not have an accessibility problem on one site. They have it on dozens, each with a different owner, cadence, and level of risk."
+  h1="Every product to the same bar, from one workspace."
+  lede="Portfolios and agencies don't have an accessibility problem on one site. They have it on dozens, each with a different owner, cadence, and level of risk. Operating them one at a time doesn't scale."
+  situationHeading="Twenty products, twenty spreadsheets."
+  situation={[
+    'Each product gets scanned on its own schedule, if at all. Findings live in scattered exports, no two teams report the same way, and leadership has no single answer to "how accessible are we?" A client asks for status and it takes a week to assemble.',
+    "The barrier isn't any one site. It's the absence of one system holding them all to the same standard.",
+  ]}
+  stepsHeading="One standard, applied everywhere at once."
+  steps={steps}
+  ctaHeading="Hold every product to one bar."
+>
+  <div class="pf">
+    <p class="pf__head">Portfolio · 4 of 22 products</p>
+    <ul class="pf__list">
+      {
+        products.map((p) => (
+          <li class="pf__row">
+            <span class="pf__name">{p.name}</span>
+            <span class={`pf__status pf__status--${p.tone}`}>{p.status}</span>
+            <span class="pf__score">{p.score}</span>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</SituationPage>
+
+<style>
+  .pf {
+    background: var(--white);
+    border: 1px solid var(--border-strong);
+    border-radius: var(--r-card);
+    padding: 24px;
+    box-shadow: var(--shadow);
+  }
+
+  .pf__head {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 16px;
+  }
+
+  .pf__list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .pf__row {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    border: 1px solid var(--border);
+    border-radius: 11px;
+    padding: 14px 16px;
+  }
+
+  .pf__name {
+    flex: 1;
+    font-size: 15px;
+    font-weight: 600;
+    min-width: 0;
+    word-break: break-word;
+  }
+
+  .pf__status {
+    display: inline-flex;
+    align-items: center;
+    height: 24px;
+    padding: 0 10px;
+    border-radius: var(--r-pill);
+    font-size: 12px;
+    font-weight: 600;
+    flex: none;
+  }
+
+  .pf__status--pass {
+    background: var(--green-soft);
+    color: var(--green-hover);
+  }
+  .pf__status--attention {
+    background: var(--attention-tint);
+    color: var(--attention-text);
+  }
+  .pf__status--fail {
+    background: var(--fail-tint);
+    color: var(--fail-text);
+  }
+
+  .pf__score {
+    font-family: var(--mono);
+    font-size: 13px;
+    color: var(--muted);
+    width: 44px;
+    text-align: right;
+    flex: none;
+  }
+</style>

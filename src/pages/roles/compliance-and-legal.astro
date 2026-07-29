@@ -1,0 +1,714 @@
+---
+import Base from '../../layouts/Base.astro';
+import ProductHero from '../../components/product/ProductHero.astro';
+import FrictionBand from '../../components/product/FrictionBand.astro';
+import ProductRow from '../../components/product/ProductRow.astro';
+import OutcomeBand from '../../components/product/OutcomeBand.astro';
+import CtaBand from '../../components/CtaBand.astro';
+
+const stats = [
+  { num: '48', label: 'of 56 criteria supported', delta: 'across 4 products' },
+  { num: '18', label: 'verified by a person', delta: 'named and dated', ok: true },
+  { num: '4', label: 'not evaluated', delta: 'stated, not guessed' },
+  { num: 'Today', label: 'last regenerated', delta: 'never stale', ok: true },
+];
+
+const criteria = [
+  {
+    ref: '1.1.1',
+    name: 'Non-text Content',
+    meta: 'Alt text present and meaningful · reviewed 12 Jul',
+    method: 'AUTO + HUMAN',
+    methodTone: 'human',
+    verdict: 'pass',
+    label: 'Supports',
+  },
+  {
+    ref: '1.4.3',
+    name: 'Contrast (Minimum)',
+    meta: '3 components below ratio · remediation in progress',
+    method: 'AUTOMATED',
+    methodTone: 'auto',
+    verdict: 'attention',
+    label: 'Partial',
+  },
+  {
+    ref: '2.1.1',
+    name: 'Keyboard',
+    meta: 'Full traversal confirmed by tester · 08 Jul',
+    method: 'HUMAN',
+    methodTone: 'human',
+    verdict: 'pass',
+    label: 'Supports',
+  },
+  {
+    ref: '1.4.13',
+    name: 'Content on Hover or Focus',
+    meta: 'Requires manual assessment · specialist unassigned',
+    method: 'PENDING',
+    methodTone: 'none',
+    verdict: 'none',
+    label: 'Not evaluated',
+  },
+  {
+    ref: '3.3.2',
+    name: 'Labels or Instructions',
+    meta: 'All fields labelled · verified in v8.2',
+    method: 'AUTOMATED',
+    methodTone: 'auto',
+    verdict: 'pass',
+    label: 'Supports',
+  },
+];
+
+const frictions = [
+  {
+    title: 'The claim outlives the test',
+    d: 'M12 8v4l3 2M12 3a9 9 0 100 18 9 9 0 000-18z',
+    body: 'An accessibility statement is written once and published indefinitely. The product ships weekly, so the document is inaccurate within a month and still in circulation a year later.',
+  },
+  {
+    title: 'Tools overstate certainty',
+    d: 'M12 3l8 4v6c0 4-3.5 7-8 8-4.5-1-8-4-8-8V7l8-4z',
+    body: 'Automated testing cannot evaluate every criterion. A report showing a clean pass across all of WCAG is asserting more than it can support, and you are the one signing it.',
+  },
+  {
+    title: 'No record of the judgment',
+    d: 'M9 8a3 3 0 100-6 3 3 0 000 6zM3 20c0-3.3 2.7-5 6-5s6 1.7 6 5M17 11a2.5 2.5 0 100-5 2.5 2.5 0 000 5zM21 20c0-2.5-1.8-4-4-4',
+    body: 'Someone decided a given implementation was sufficient. If nobody recorded who or when, that decision cannot be defended when it is questioned.',
+  },
+];
+
+const trail = [
+  {
+    event: 'Automated check',
+    date: '29 Jul 2026',
+    detail: 'Error messages present and programmatically associated on all 14 forms.',
+    kind: 'auto',
+  },
+  {
+    event: 'Flagged for judgment',
+    date: '24 Jul 2026',
+    detail: 'Whether wording is sufficiently clear cannot be machine-evaluated.',
+    kind: 'flag',
+  },
+  {
+    event: 'Specialist verdict',
+    date: '22 Jul 2026',
+    detail: 'Reviewed by M. Kerr (CPACC). Original wording rejected as insufficient.',
+    kind: 'human',
+  },
+  {
+    event: 'Remediation shipped',
+    date: '18 Jul 2026',
+    detail: 'Error copy rewritten with recovery guidance. Released in v8.1.',
+    kind: 'ship',
+  },
+  {
+    event: 'Re-verified',
+    date: '12 Jul 2026',
+    detail: 'Confirmed at release. Re-checked on every deploy since.',
+    kind: 'auto',
+  },
+];
+
+const methods = [
+  { label: 'Machine-verified', count: '30 criteria', note: 'Deterministic checks re-run on every release.', tone: 'auto' },
+  { label: 'Verified by a person', count: '18 criteria', note: 'Judgment recorded with the reviewer and date.', tone: 'human' },
+  { label: 'Not evaluated', count: '8 criteria', note: 'Stated openly rather than assumed to pass.', tone: 'none' },
+];
+
+const exports = [
+  { name: 'VPAT 2.5 · WCAG edition', note: 'Every criterion with method and verdict', fmt: 'PDF · DOCX' },
+  { name: 'Accessibility statement', note: 'Public-facing, with known limitations listed', fmt: 'HTML' },
+  { name: 'Procurement response pack', note: 'Evidence per criterion, ready to attach', fmt: 'PDF' },
+  { name: 'Remediation history', note: 'What was found, fixed, and when', fmt: 'CSV' },
+];
+
+const outcomes = [
+  'Every criterion carries its evaluation method, verdict, reviewer, and date.',
+  'Machine-verified and human-judged claims separated, so the attestation never overstates what is known.',
+  'Not evaluated stated openly rather than quietly recorded as a pass.',
+  'Questionnaires and statements generated from live results, so nothing stale stays in circulation.',
+];
+---
+
+<Base
+  title="limena for compliance and legal"
+  description="You are asked to attest to something you cannot see. limena keeps a live, dated record of what was tested, what was decided, and who decided it."
+  active="usecases"
+>
+  <ProductHero
+    backHref="/use-cases"
+    backLabel="Use cases"
+    title="For compliance and legal"
+    lede="You are asked to attest to something you cannot see. limena keeps a live, dated record of what was tested, what was decided, and who decided it."
+    panelTitle="Conformance position"
+    panelMeta="WCAG 2.2 AA · EN 301 549 · ACA"
+    panelStatus="Partially conformant"
+    panelStatusTone="attention"
+    stats={stats}
+  >
+    {
+      criteria.map((c) => (
+        <div class="crit">
+          <span class="crit__ref">{c.ref}</span>
+          <span class="crit__main">
+            <span class="crit__name">{c.name}</span>
+            <span class="crit__meta">{c.meta}</span>
+          </span>
+          <span class={`crit__method crit__method--${c.methodTone}`}>{c.method}</span>
+          <span class={`crit__badge crit__badge--${c.verdict}`}>{c.label}</span>
+        </div>
+      ))
+    }
+  </ProductHero>
+
+  <FrictionBand
+    heading="You are signing for someone else's work."
+    lede="The attestation carries your name, but the testing, the judgment, and the remediation all happened somewhere you have no visibility into."
+    items={frictions}
+  />
+
+  <ProductRow
+    first
+    flip
+    eyebrow="01 · Defensible, not asserted"
+    heading="Every claim has a person and a date behind it."
+    body={[
+      'For each criterion limena records what was tested, by what method, who made the judgment call, when the fix shipped, and when it was last re-verified.',
+      'If a claim is ever challenged, the answer is a record rather than a recollection.',
+    ]}
+  >
+    <div class="trail">
+      <div class="trail__head">
+        <span class="trail__ref">3.3.1</span>
+        <span class="trail__name">Error Identification</span>
+        <span class="trail__badge">Supports</span>
+      </div>
+
+      <div class="trail__body">
+        <p class="trail__label">Audit trail</p>
+        <ol class="trail__list">
+          {
+            trail.map((t) => (
+              <li class="tstep">
+                <span class={`tstep__dot tstep__dot--${t.kind}`} aria-hidden="true" />
+                <span class="tstep__body">
+                  <span class="tstep__top">
+                    <span class="tstep__event">{t.event}</span>
+                    <span class="tstep__date">{t.date}</span>
+                  </span>
+                  <span class="tstep__detail">{t.detail}</span>
+                </span>
+              </li>
+            ))
+          }
+        </ol>
+      </div>
+    </div>
+  </ProductRow>
+
+  <ProductRow
+    eyebrow="02 · The limit is stated"
+    heading="Nothing is claimed on automation alone."
+    body={[
+      'Automated testing can only evaluate part of WCAG. A tool that reports a clean pass across every criterion is overstating what it knows, and that overstatement ends up in your attestation.',
+      'limena separates what was machine-verified from what a person judged, and marks the rest Not evaluated rather than guessing.',
+    ]}
+  >
+    <div class="split">
+      <p class="split__label">How each criterion was evaluated</p>
+
+      <div class="split__bar" role="img" aria-label="Of 56 criteria: 30 machine-verified, 18 verified by a person, 8 not evaluated.">
+        <span class="split__seg split__seg--auto" style="flex:30"></span>
+        <span class="split__seg split__seg--human" style="flex:18"></span>
+        <span class="split__seg split__seg--none" style="flex:8"></span>
+      </div>
+
+      <ul class="split__rows">
+        {
+          methods.map((m) => (
+            <li class="split__row">
+              <span class={`split__dot split__dot--${m.tone}`} aria-hidden="true" />
+              <span class="split__main">
+                <span class="split__top">
+                  <span class="split__name">{m.label}</span>
+                  <span class="split__count">{m.count}</span>
+                </span>
+                <span class="split__note">{m.note}</span>
+              </span>
+            </li>
+          ))
+        }
+      </ul>
+
+      <p class="split__foot">
+        The VPAT states this split explicitly, so a reviewer knows exactly what the claim rests on.
+      </p>
+    </div>
+  </ProductRow>
+
+  <ProductRow
+    last
+    flip
+    eyebrow="03 · When it is asked for"
+    heading="A questionnaire stops being a project."
+    body={[
+      'Procurement questionnaires, accessibility statements, and VPAT requests all pull from the same live record. There is no interval where the document is stale but still in circulation.',
+      'If a complaint arrives, the same record shows what was known, when, and what was done about it.',
+    ]}
+  >
+    <div class="exports">
+      <div class="exports__head">
+        <span class="exports__title">Export</span>
+        <span class="exports__meta">generated from live results</span>
+      </div>
+      <ul>
+        {
+          exports.map((e) => (
+            <li class="exports__row">
+              <span class="exports__main">
+                <span class="exports__name">{e.name}</span>
+                <span class="exports__note">{e.note}</span>
+              </span>
+              <span class="exports__fmt">{e.fmt}</span>
+            </li>
+          ))
+        }
+      </ul>
+      <p class="exports__foot">
+        Last regenerated today. No version of this document is older than the results it describes.
+      </p>
+    </div>
+  </ProductRow>
+
+  <OutcomeBand heading="An attestation you would be comfortable defending." outcomes={outcomes} />
+
+  <CtaBand
+    heading="Bring your current accessibility statement."
+    body="We will show you which claims in it are currently supported by evidence, and which are not."
+    primaryLabel="Book a demo"
+    primaryHref="/contact"
+    secondaryLabel="Test a page free"
+    secondaryHref="/scan"
+  />
+</Base>
+
+<style>
+  /* ---------- Criterion rows ---------- */
+
+  .crit {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 24px;
+    border-bottom: 1px solid rgba(22, 38, 28, 0.06);
+  }
+
+  .crit:last-child {
+    border-bottom: none;
+  }
+
+  .crit__ref {
+    font-family: var(--mono);
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--muted);
+    flex: none;
+    width: 46px;
+  }
+
+  .crit__main {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .crit__name {
+    display: block;
+    font-size: 14.5px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+  }
+
+  .crit__meta {
+    display: block;
+    font-size: 12.5px;
+    color: var(--muted);
+    margin-top: 2px;
+  }
+
+  .crit__method {
+    font-family: var(--mono);
+    font-size: 10px;
+    font-weight: 600;
+    padding: 3px 8px;
+    border-radius: 7px;
+    flex: none;
+    white-space: nowrap;
+  }
+
+  .crit__method--auto {
+    background: var(--green-soft);
+    color: var(--green-hover);
+  }
+  .crit__method--human {
+    background: var(--chip-design-bg);
+    color: var(--chip-design-ink);
+  }
+  .crit__method--none {
+    background: var(--rail);
+    color: var(--muted);
+  }
+
+  .crit__badge {
+    display: inline-flex;
+    align-items: center;
+    height: 23px;
+    padding: 0 10px;
+    border-radius: var(--r-pill);
+    font-size: 12px;
+    font-weight: 600;
+    flex: none;
+    white-space: nowrap;
+  }
+
+  .crit__badge--pass {
+    background: var(--green-soft);
+    color: var(--green-hover);
+  }
+  .crit__badge--attention {
+    background: var(--attention-tint);
+    color: var(--attention-text);
+  }
+  .crit__badge--none {
+    background: var(--rail);
+    color: var(--ink-500);
+  }
+
+  /* ---------- Audit trail ---------- */
+
+  .trail {
+    background: var(--white);
+    border: 1px solid var(--border-strong);
+    border-radius: var(--r-card);
+    box-shadow: var(--shadow);
+    overflow: hidden;
+  }
+
+  .trail__head {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px 22px;
+    border-bottom: 1px solid rgba(22, 38, 28, 0.08);
+  }
+
+  .trail__ref {
+    font-family: var(--mono);
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--muted);
+    flex: none;
+  }
+
+  .trail__name {
+    flex: 1;
+    font-size: 16px;
+    font-weight: 700;
+    letter-spacing: -0.015em;
+  }
+
+  .trail__badge {
+    display: inline-flex;
+    align-items: center;
+    height: 23px;
+    padding: 0 10px;
+    background: var(--green-soft);
+    color: var(--green-hover);
+    border-radius: var(--r-pill);
+    font-size: 12px;
+    font-weight: 600;
+  }
+
+  .trail__body {
+    padding: 20px 22px;
+  }
+
+  .trail__label {
+    font-family: var(--mono);
+    font-size: 10.5px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 16px;
+  }
+
+  .tstep {
+    display: flex;
+    gap: 14px;
+    position: relative;
+    padding-bottom: 18px;
+  }
+
+  .tstep:last-child {
+    padding-bottom: 0;
+  }
+
+  /* The connector runs behind the dots, stopping at the last step. */
+  .tstep:not(:last-child)::before {
+    content: '';
+    position: absolute;
+    left: 5px;
+    top: 14px;
+    bottom: 0;
+    width: 1px;
+    background: rgba(22, 38, 28, 0.14);
+  }
+
+  .tstep__dot {
+    width: 11px;
+    height: 11px;
+    border-radius: 50%;
+    flex: none;
+    margin-top: 4px;
+    position: relative;
+    z-index: 1;
+    border: 2px solid var(--white);
+  }
+
+  .tstep__dot--auto {
+    background: var(--green);
+  }
+  .tstep__dot--human {
+    background: var(--chip-design-ink);
+  }
+  .tstep__dot--flag {
+    background: var(--attention);
+  }
+  .tstep__dot--ship {
+    background: var(--chip-dev-ink);
+  }
+
+  .tstep__body {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .tstep__top {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 10px;
+  }
+
+  .tstep__event {
+    font-size: 14.5px;
+    font-weight: 600;
+  }
+
+  .tstep__date {
+    font-family: var(--mono);
+    font-size: 11.5px;
+    color: var(--muted);
+    flex: none;
+  }
+
+  .tstep__detail {
+    display: block;
+    font-size: 13.5px;
+    line-height: 1.5;
+    color: var(--ink-500);
+    margin-top: 3px;
+  }
+
+  /* ---------- Evaluation split ---------- */
+
+  .split {
+    background: var(--white);
+    border: 1px solid var(--border-strong);
+    border-radius: var(--r-card);
+    box-shadow: var(--shadow);
+    padding: 24px;
+  }
+
+  .split__label {
+    font-family: var(--mono);
+    font-size: 10.5px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 14px;
+  }
+
+  .split__bar {
+    display: flex;
+    height: 12px;
+    border-radius: var(--r-pill);
+    overflow: hidden;
+    margin-bottom: 20px;
+  }
+
+  .split__seg--auto {
+    background: var(--green);
+  }
+  .split__seg--human {
+    background: var(--chip-design-ink);
+  }
+  .split__seg--none {
+    background: #c3c9c3;
+  }
+
+  .split__rows {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .split__row {
+    display: flex;
+    gap: 12px;
+  }
+
+  .split__dot {
+    width: 11px;
+    height: 11px;
+    border-radius: 50%;
+    flex: none;
+    margin-top: 4px;
+  }
+
+  .split__dot--auto {
+    background: var(--green);
+  }
+  .split__dot--human {
+    background: var(--chip-design-ink);
+  }
+  .split__dot--none {
+    background: #c3c9c3;
+  }
+
+  .split__main {
+    flex: 1;
+  }
+
+  .split__top {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 10px;
+  }
+
+  .split__name {
+    font-size: 14.5px;
+    font-weight: 600;
+  }
+
+  .split__count {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--muted);
+    flex: none;
+  }
+
+  .split__note {
+    display: block;
+    font-size: 13.5px;
+    line-height: 1.5;
+    color: var(--ink-500);
+    margin-top: 3px;
+  }
+
+  .split__foot {
+    margin-top: 18px;
+    padding-top: 16px;
+    border-top: 1px solid rgba(22, 38, 28, 0.08);
+    font-size: 13px;
+    line-height: 1.55;
+    color: var(--muted);
+  }
+
+  /* ---------- Exports ---------- */
+
+  .exports {
+    background: var(--evergreen);
+    border-radius: var(--r-card);
+    padding: 28px;
+    box-shadow: 0 2px 8px rgba(22, 38, 28, 0.16), 0 30px 60px -34px rgba(22, 38, 28, 0.5);
+  }
+
+  .exports__head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+
+  .exports__title {
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    color: var(--green-light);
+  }
+
+  .exports__meta {
+    font-size: 12.5px;
+    color: var(--on-dark-sage);
+  }
+
+  .exports__row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding-bottom: 12px;
+    margin-bottom: 12px;
+    border-bottom: 1px solid rgba(244, 241, 234, 0.12);
+  }
+
+  .exports__main {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .exports__name {
+    display: block;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--paper);
+  }
+
+  .exports__note {
+    display: block;
+    font-size: 12.5px;
+    color: var(--on-dark-sage);
+    margin-top: 2px;
+  }
+
+  .exports__fmt {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--green-light);
+    flex: none;
+  }
+
+  .exports__foot {
+    font-size: 13.5px;
+    line-height: 1.5;
+    color: var(--on-dark-sage);
+  }
+
+  @media (max-width: 700px) {
+    .crit {
+      flex-wrap: wrap;
+      gap: 8px 12px;
+    }
+    .crit__main {
+      flex-basis: calc(100% - 60px);
+    }
+  }
+</style>

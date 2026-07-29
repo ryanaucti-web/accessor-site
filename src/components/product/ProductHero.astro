@@ -1,0 +1,439 @@
+---
+/** Dark hero with a product dashboard lifting off the bottom edge.
+ *  Every use-case, role, and partner page opens with this. The dashboard is
+ *  square-cornered at the bottom and translated 1px down so it reads as rising
+ *  out of the dark band rather than floating on it. */
+
+export interface HeroStat {
+  num: string;
+  label: string;
+  delta: string;
+  /** true tints the delta green: it is a good number, not just a number. */
+  ok?: boolean;
+}
+
+export interface HeroRow {
+  name: string;
+  meta: string;
+  /** Leading avatar, for rows that stand for a team rather than a surface. */
+  avatar?: { initials: string; role: 'design' | 'dev' | 'content' };
+  /** Small mono tag: PDF, DOCX, Checkout, /apply, and so on. */
+  src?: string;
+  /** `strong` marks the tag as the consequential class on this page, e.g. a
+   *  statutory service among vendor ones. */
+  srcTone?: 'default' | 'strong';
+  /** Severity bar, used instead of a tag when the row is about how bad, not
+   *  what kind. Percentage of the track, tinted by verdict. */
+  bar?: number;
+  verdict: 'pass' | 'attention' | 'fail';
+  verdictLabel?: string;
+  /** Omit on rows where the trailing number would say nothing. */
+  count?: string;
+}
+
+interface Props {
+  backHref: string;
+  backLabel: string;
+  title: string;
+  lede: string;
+  panelTitle: string;
+  panelMeta: string;
+  panelStatus: string;
+  panelStatusTone?: 'pass' | 'attention' | 'fail';
+  stats: HeroStat[];
+  /** Omit and pass markup through the default slot when a page needs a
+   *  different dashboard body, such as a funnel chart. */
+  rows?: HeroRow[];
+}
+
+const {
+  backHref,
+  backLabel,
+  title,
+  lede,
+  panelTitle,
+  panelMeta,
+  panelStatus,
+  panelStatusTone = 'fail',
+  stats,
+  rows,
+} = Astro.props;
+
+const verdictLabels = { pass: 'Pass', attention: 'Attention', fail: 'Fail' } as const;
+---
+
+<section class="band--dark phero">
+  <div class="phero__copy">
+    <a href={backHref} class="phero__back">← {backLabel}</a>
+    <h1 class="phero__h1">{title}</h1>
+    <p class="phero__lede">{lede}</p>
+  </div>
+
+  <div class="phero__dashWrap">
+    <div class="dash">
+      <div class="dash__bar">
+        <div class="dash__barLeft">
+          <span class="dash__title">{panelTitle}</span>
+          <span class="dash__meta">{panelMeta}</span>
+        </div>
+        <span class={`pill pill--${panelStatusTone}`}>{panelStatus}</span>
+      </div>
+
+      <div class="dash__stats">
+        {
+          stats.map((s) => (
+            <div class="stat">
+              <div class="stat__num">{s.num}</div>
+              <div class="stat__label">{s.label}</div>
+              <div class={`stat__delta ${s.ok ? 'stat__delta--ok' : ''}`}>{s.delta}</div>
+            </div>
+          ))
+        }
+      </div>
+
+      <div class="dash__rows">
+        <slot />
+        {
+          (rows ?? []).map((r) => (
+            <div class="drow">
+              {r.avatar && <span class={`drow__avatar drow__avatar--${r.avatar.role}`}>{r.avatar.initials}</span>}
+              <div class="drow__main">
+                <div class="drow__name">{r.name}</div>
+                <div class="drow__meta">{r.meta}</div>
+              </div>
+              {r.src && <span class={`drow__src drow__src--${r.srcTone ?? 'default'}`}>{r.src}</span>}
+              {r.bar !== undefined && (
+                <span class="drow__bar">
+                  <span class={`drow__barFill drow__barFill--${r.verdict}`} style={`width:${r.bar}%`} />
+                </span>
+              )}
+              <span class={`pill pill--sm pill--${r.verdict}`}>{r.verdictLabel ?? verdictLabels[r.verdict]}</span>
+              {r.count && <span class="drow__count">{r.count}</span>}
+            </div>
+          ))
+        }
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .phero {
+    background: var(--evergreen);
+  }
+
+  .phero__copy {
+    max-width: 1160px;
+    margin: 0 auto;
+    padding: 80px var(--gutter) 0;
+  }
+
+  .phero__back {
+    display: inline-block;
+    font-family: var(--mono);
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--green-light);
+    text-decoration: none;
+    margin-bottom: 20px;
+  }
+
+  .phero__back:hover {
+    color: var(--paper);
+  }
+
+  .phero__h1 {
+    font-size: 54px;
+    font-weight: 800;
+    letter-spacing: -0.035em;
+    line-height: 1.02;
+    margin-bottom: 18px;
+    color: var(--paper);
+    max-width: 26ch;
+    text-wrap: balance;
+  }
+
+  .phero__lede {
+    font-size: 19px;
+    line-height: 1.55;
+    color: var(--on-dark-sage);
+    margin-bottom: 48px;
+    max-width: 56ch;
+    text-wrap: pretty;
+  }
+
+  .phero__dashWrap {
+    max-width: 1160px;
+    margin: 0 auto;
+    padding: 0 var(--gutter);
+    transform: translateY(1px);
+  }
+
+  .dash {
+    background: var(--app-paper);
+    border: 1px solid rgba(22, 38, 28, 0.14);
+    border-radius: var(--r-card) var(--r-card) 0 0;
+    box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.18), var(--shadow-lift);
+    overflow: hidden;
+    color: var(--evergreen);
+  }
+
+  .dash__bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 16px 24px;
+    background: var(--paper);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .dash__barLeft {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  .dash__title {
+    font-size: 15.5px;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+  }
+
+  .dash__meta {
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    color: var(--muted);
+    text-transform: uppercase;
+  }
+
+  .pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    height: 28px;
+    padding: 0 12px;
+    border-radius: var(--r-pill);
+    font-size: 13px;
+    font-weight: 600;
+    white-space: nowrap;
+    flex: none;
+  }
+
+  .pill--sm {
+    height: 23px;
+    padding: 0 10px;
+    font-size: 12px;
+  }
+
+  .pill--pass {
+    background: var(--green-soft);
+    color: var(--green-hover);
+  }
+  .pill--attention {
+    background: var(--attention-tint);
+    color: var(--attention-text);
+  }
+  .pill--fail {
+    background: var(--fail-tint);
+    color: var(--fail-text);
+  }
+
+  .dash__stats {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    background: var(--white);
+    border-bottom: 1px solid rgba(22, 38, 28, 0.08);
+  }
+
+  .stat {
+    padding: 22px 24px;
+    border-right: 1px solid rgba(22, 38, 28, 0.08);
+  }
+
+  .stat:last-child {
+    border-right: none;
+  }
+
+  .stat__num {
+    font-size: 30px;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    line-height: 1;
+  }
+
+  .stat__label {
+    font-size: 12.5px;
+    color: var(--muted);
+    margin-top: 5px;
+  }
+
+  .stat__delta {
+    font-size: 12px;
+    font-weight: 600;
+    margin-top: 4px;
+    color: var(--muted);
+  }
+
+  .stat__delta--ok {
+    color: var(--green-hover);
+  }
+
+  .dash__rows {
+    background: var(--white);
+  }
+
+  .drow {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 24px;
+    border-bottom: 1px solid rgba(22, 38, 28, 0.06);
+  }
+
+  .drow:last-child {
+    border-bottom: none;
+  }
+
+  .drow__avatar {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    color: var(--white);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11.5px;
+    font-weight: 700;
+    flex: none;
+  }
+
+  .drow__avatar--design {
+    background: var(--chip-design-ink);
+  }
+  .drow__avatar--dev {
+    background: var(--chip-dev-ink);
+  }
+  .drow__avatar--content {
+    background: #5c645c;
+  }
+
+  .drow__main {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .drow__name {
+    font-size: 14.5px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+  }
+
+  .drow__meta {
+    font-size: 12.5px;
+    color: var(--muted);
+    margin-top: 2px;
+  }
+
+  .drow__src {
+    display: inline-flex;
+    align-items: center;
+    height: 21px;
+    padding: 0 9px;
+    border-radius: 7px;
+    font-family: var(--mono);
+    font-size: 10px;
+    font-weight: 600;
+    flex: none;
+    white-space: nowrap;
+  }
+
+  .drow__src--default {
+    background: var(--rail);
+    color: var(--ink-500);
+  }
+
+  .drow__src--strong {
+    background: var(--evergreen);
+    color: var(--paper);
+  }
+
+  .drow__bar {
+    display: block;
+    width: 120px;
+    height: 5px;
+    border-radius: var(--r-pill);
+    background: #e3e1d9;
+    overflow: hidden;
+    flex: none;
+  }
+
+  .drow__barFill {
+    display: block;
+    height: 100%;
+  }
+  .drow__barFill--fail {
+    background: var(--fail);
+  }
+  .drow__barFill--attention {
+    background: var(--attention);
+  }
+  .drow__barFill--pass {
+    background: var(--pass);
+  }
+
+  .drow__count {
+    font-size: 13px;
+    color: var(--muted);
+    flex: none;
+    width: 74px;
+    text-align: right;
+  }
+
+  @media (max-width: 1000px) {
+    .phero__copy {
+      padding: 56px 24px 0;
+    }
+    .phero__dashWrap {
+      padding: 0 24px;
+    }
+    .phero__h1 {
+      font-size: 38px;
+    }
+    .phero__lede {
+      font-size: 17.5px;
+      margin-bottom: 36px;
+    }
+    .dash__stats {
+      grid-template-columns: 1fr 1fr;
+    }
+    .stat:nth-child(2n) {
+      border-right: none;
+    }
+    .stat:nth-child(-n + 2) {
+      border-bottom: 1px solid rgba(22, 38, 28, 0.08);
+    }
+  }
+
+  @media (max-width: 640px) {
+    .phero__h1 {
+      font-size: 30px;
+    }
+    .drow {
+      flex-wrap: wrap;
+      gap: 8px 12px;
+    }
+    .drow__main {
+      flex-basis: 100%;
+    }
+    .drow__count {
+      width: auto;
+      margin-left: auto;
+    }
+  }
+</style>

@@ -1,0 +1,340 @@
+---
+import Base from '../../layouts/Base.astro';
+import ProductHero from '../../components/product/ProductHero.astro';
+import FrictionBand from '../../components/product/FrictionBand.astro';
+import ProductRow from '../../components/product/ProductRow.astro';
+import FindingCard from '../../components/product/FindingCard.astro';
+import ReleaseCheck from '../../components/product/ReleaseCheck.astro';
+import OutcomeBand from '../../components/product/OutcomeBand.astro';
+import CtaBand from '../../components/CtaBand.astro';
+
+const stats = [
+  { num: '2', label: 'money-movement blockers', delta: 'no alternative route' },
+  { num: '2.1M', label: 'authentications a month', delta: 'all pass through it' },
+  { num: '26', label: 'releases a year', delta: 'web plus two apps' },
+  { num: '2', label: 'template fixes clear 2.3M docs', delta: 'in the generator', ok: true },
+];
+
+const surfaces = [
+  {
+    name: 'Authentication and step-up',
+    meta: 'Code field times out with no warning',
+    src: 'MONEY',
+    srcTone: 'strong' as const,
+    bar: 82,
+    verdict: 'fail' as const,
+    count: '6',
+  },
+  {
+    name: 'Transfers and payments',
+    meta: 'Confirmation errors announced in colour only',
+    src: 'MONEY',
+    srcTone: 'strong' as const,
+    bar: 68,
+    verdict: 'fail' as const,
+    count: '9',
+  },
+  {
+    name: 'Statements and tax slips',
+    meta: '2.4M generated PDFs a month, untagged',
+    src: 'DOCS',
+    bar: 52,
+    verdict: 'attention' as const,
+    count: '18',
+  },
+  {
+    name: 'Mobile app',
+    meta: 'Biweekly releases, iOS and Android',
+    src: 'APP',
+    bar: 34,
+    verdict: 'attention' as const,
+    count: '14',
+  },
+  {
+    name: 'Account opening',
+    meta: 'Verified at last release',
+    src: 'MONEY',
+    srcTone: 'strong' as const,
+    bar: 6,
+    verdict: 'pass' as const,
+    count: '0',
+  },
+  {
+    name: 'Public site and rates',
+    meta: 'Monthly releases',
+    src: 'MARKETING',
+    bar: 3,
+    verdict: 'pass' as const,
+    count: '0',
+  },
+];
+
+const frictions = [
+  {
+    title: 'Security controls create the barriers',
+    d: 'M5 11h14v10H5zM8.5 11V8a3.5 3.5 0 017 0v3',
+    body: 'Timeouts, CAPTCHAs, and step-up prompts are where most exclusion in banking happens, and teams treat the security requirement as the end of the discussion.',
+  },
+  {
+    title: 'The release cadence outruns audits',
+    d: 'M4 12a8 8 0 018-8 8 8 0 016.9 4M20 12a8 8 0 01-8 8 8 8 0 01-6.9-4M18 3v5h-5M6 21v-5h5',
+    body: 'Twenty-six releases a year. An annual report is describing a product that has since changed four times over.',
+  },
+  {
+    title: 'Complaints arrive as legal letters',
+    d: 'M12 3l8 4v6c0 4-3.5 7-8 8-4.5-1-8-4-8-8V7l8-4z',
+    body: 'Financial services is a favoured target for accessibility claims, and being unable to reach your own account is the easiest exclusion to demonstrate.',
+  },
+];
+
+const checks = [
+  { label: 'Contrast on primary actions', verdict: 'Verified' },
+  { label: 'Transfer flow keyboard operable', verdict: 'Verified' },
+  { label: 'Statement download labelled', verdict: 'Verified' },
+  { label: 'New: step-up prompt has no label', verdict: 'Blocked', caught: true },
+];
+
+const docs = [
+  { kind: 'PDF', name: 'Monthly statements', note: 'Tables not marked up, no document language', verdict: 'fail' },
+  { kind: 'PDF', name: 'Trade confirmations', note: 'Untagged, reading order follows layout', verdict: 'fail' },
+  { kind: 'PDF', name: 'Tax slips', note: 'Same generator as statements', verdict: 'fail' },
+  { kind: 'WEB', name: 'Secure message centre', note: 'Tagged, language set', verdict: 'pass' },
+];
+
+const verdictLabels = { pass: 'Pass', attention: 'Attention', fail: 'Fail' } as const;
+
+const outcomes = [
+  'Money-movement surfaces separated from marketing pages, so the work starts where customers are actually locked out.',
+  'Security controls assessed against what WCAG actually permits, rather than treated as exempt.',
+  'Every release verified and new barriers blocked in CI, so the conformance position is current.',
+  'Statements and tax slips fixed in the generator, clearing millions of documents with two changes.',
+];
+---
+
+<Base
+  title="Accessibility for financial services · limena"
+  description="A blocked transfer screen means someone cannot reach their own money. That is a different category of failure from a marketing page, and it ships every two weeks."
+  active="usecases"
+>
+  <ProductHero
+    backHref="/use-cases"
+    backLabel="Use cases"
+    title="Accessibility for financial services"
+    lede="A blocked transfer screen means someone cannot reach their own money. That is a different category of failure from a marketing page, and it ships every two weeks."
+    panelTitle="Regulated surfaces"
+    panelMeta="6 surfaces · biweekly releases"
+    panelStatus="2 money-movement blockers"
+    stats={stats}
+    rows={surfaces}
+  />
+
+  <FrictionBand
+    heading="Regulated, adversarial, and shipping fortnightly."
+    lede="Three things collide here that rarely collide elsewhere: a legal duty to serve, a release cadence that outruns any audit, and security controls that themselves create barriers."
+    items={frictions}
+  />
+
+  <ProductRow
+    first
+    flip
+    eyebrow="01 · Security is not an exemption"
+    heading="The hardest barriers are inside your controls."
+    body={[
+      'Timeouts, CAPTCHAs, and step-up authentication exist for good reason, and they are where most exclusion in banking actually happens. Teams assume the security requirement settles the argument.',
+      'It usually does not. WCAG anticipates these cases, and limena tells you which accommodation the standard expects rather than leaving it as a standoff.',
+    ]}
+  >
+    <FindingCard
+      verdict="Fail"
+      title="One-time code field times out silently"
+      error="The verification step expires after 60 seconds with no announced warning and no way to request more time. Anyone using a screen reader, switch access, or simply typing slowly is locked out of their own transfer."
+      impact="On every transfer and payment. <strong>2.1M authentications a month</strong>, no alternative route. Blocked customers call the contact centre at roughly <strong>$14 a call</strong>, or move their money elsewhere."
+      impactIcon="shield"
+      fix="Warn at 20 seconds remaining, announce it politely, and offer an extension. WCAG 2.2.1 permits a timeout where it is essential for security, provided the person can extend it."
+      owner={{
+        initials: 'AU',
+        role: 'dev',
+        name: 'Authentication squad',
+        meta: 'Needs a security review alongside the accessibility fix',
+        action: 'JIRA-8841',
+      }}
+    />
+  </ProductRow>
+
+  <ProductRow
+    eyebrow="02 · Faster than any audit"
+    heading="An annual audit describes a product you no longer run."
+    body={[
+      'Twenty-six releases a year across web and two native apps. By the time an audit report is formatted, the transfer flow it examined has shipped four more times.',
+      'limena verifies at each release and blocks new barriers in CI, so the conformance position is current rather than historical.',
+    ]}
+  >
+    <ReleaseCheck
+      head="Release check · mobile v11.4"
+      items={checks}
+      note="A new step-up prompt shipped without a label. Caught before the release reached customers, not at the next annual review."
+    />
+  </ProductRow>
+
+  <ProductRow
+    last
+    flip
+    eyebrow="03 · The paper trail"
+    heading="Statements are a product surface too."
+    body={[
+      'Monthly statements, trade confirmations, and tax slips are generated at volume and almost always untagged, which means a customer who banks fine cannot read what they were sent.',
+      'limena reads every page of every template and traces the failures back to the generator, so millions of documents are fixed by one change.',
+    ]}
+  >
+    <div class="gen">
+      <div class="gen__head">
+        <span class="gen__title">Generated documents</span>
+        <span class="gen__meta">2.4M / month</span>
+      </div>
+      <ul>
+        {
+          docs.map((d) => (
+            <li class="gen__row">
+              <span class="gen__kind">{d.kind}</span>
+              <span class="gen__main">
+                <span class="gen__name">{d.name}</span>
+                <span class="gen__note">{d.note}</span>
+              </span>
+              <span class={`gen__badge gen__badge--${d.verdict}`}>{verdictLabels[d.verdict]}</span>
+            </li>
+          ))
+        }
+      </ul>
+      <p class="gen__foot">
+        <strong>Two template changes clear 2.3M documents a month.</strong> Statements are generated, so the fix is in the
+        generator, not in the files.
+      </p>
+    </div>
+  </ProductRow>
+
+  <OutcomeBand heading="Nobody locked out of their own money." outcomes={outcomes} />
+
+  <CtaBand
+    heading="Start with authentication."
+    body="Every customer passes through it, and it is where security controls and accessibility most often collide."
+    primaryLabel="Book a demo"
+    primaryHref="/contact"
+    secondaryLabel="Test a page free"
+    secondaryHref="/scan"
+  />
+</Base>
+
+<style>
+  .gen {
+    background: var(--white);
+    border: 1px solid var(--border-strong);
+    border-radius: var(--r-card);
+    box-shadow: var(--shadow);
+    overflow: hidden;
+  }
+
+  .gen__head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 14px 20px;
+    background: var(--sunken);
+    border-bottom: 1px solid rgba(22, 38, 28, 0.08);
+  }
+
+  .gen__title {
+    font-size: 14.5px;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+  }
+
+  .gen__meta {
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  .gen__row {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 20px;
+    border-bottom: 1px solid rgba(22, 38, 28, 0.06);
+  }
+
+  .gen__kind {
+    display: inline-flex;
+    align-items: center;
+    height: 21px;
+    padding: 0 9px;
+    background: var(--rail);
+    color: var(--ink-500);
+    border-radius: 7px;
+    font-family: var(--mono);
+    font-size: 10px;
+    font-weight: 600;
+    flex: none;
+  }
+
+  .gen__main {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .gen__name {
+    display: block;
+    font-size: 14.5px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+  }
+
+  .gen__note {
+    display: block;
+    font-size: 12.5px;
+    color: var(--muted);
+    margin-top: 2px;
+  }
+
+  .gen__badge {
+    display: inline-flex;
+    align-items: center;
+    height: 23px;
+    padding: 0 10px;
+    border-radius: var(--r-pill);
+    font-size: 12px;
+    font-weight: 600;
+    flex: none;
+  }
+
+  .gen__badge--fail {
+    background: var(--fail-tint);
+    color: var(--fail-text);
+  }
+  .gen__badge--pass {
+    background: var(--green-soft);
+    color: var(--green-hover);
+  }
+
+  .gen__foot {
+    padding: 16px 20px;
+    background: var(--green-tint);
+    font-size: 14px;
+    line-height: 1.55;
+    color: var(--ink-700);
+  }
+
+  @media (max-width: 640px) {
+    .gen__row {
+      flex-wrap: wrap;
+      gap: 8px 12px;
+    }
+    .gen__main {
+      flex-basis: 100%;
+      order: -1;
+    }
+  }
+</style>

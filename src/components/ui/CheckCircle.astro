@@ -1,0 +1,12 @@
+---
+interface Props {
+  size?: number;
+  color?: string;
+}
+const { size = 16, color = 'var(--green-hover)' } = Astro.props;
+---
+
+<svg width={size} height={size} viewBox="0 0 16 16" fill="none" style="flex:none;" aria-hidden="true" focusable="false">
+  <circle cx="8" cy="8" r="7" stroke={color} stroke-width="1.5"></circle>
+  <path d="M5 8.2l2 2 4-4.2" stroke={color} stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>

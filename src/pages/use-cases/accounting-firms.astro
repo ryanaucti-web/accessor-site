@@ -1,0 +1,338 @@
+---
+import Base from '../../layouts/Base.astro';
+import ProductHero from '../../components/product/ProductHero.astro';
+import FrictionBand from '../../components/product/FrictionBand.astro';
+import ProductRow from '../../components/product/ProductRow.astro';
+import GroupedPanel from '../../components/product/GroupedPanel.astro';
+import FindingCard from '../../components/product/FindingCard.astro';
+import EvidencePanel from '../../components/product/EvidencePanel.astro';
+import OutcomeBand from '../../components/product/OutcomeBand.astro';
+import CtaBand from '../../components/CtaBand.astro';
+import CheckCircle from '../../components/ui/CheckCircle.astro';
+
+const stats = [
+  { num: '306', label: 'files with findings', delta: 'of 318 read' },
+  { num: '4', label: 'root causes', delta: 'template level', ok: true },
+  { num: '38', label: 'clients affected', delta: '3 public sector' },
+  { num: '1', label: 'fix clears 214', delta: 'statement template', ok: true },
+];
+
+const rows = [
+  {
+    name: 'Financial statements',
+    meta: 'Tables not marked up, no document language',
+    src: 'PDF',
+    verdict: 'fail' as const,
+    count: '214',
+  },
+  {
+    name: 'Corporate tax returns',
+    meta: 'Untagged, reading order follows layout',
+    src: 'PDF',
+    verdict: 'fail' as const,
+    count: '61',
+  },
+  {
+    name: 'Engagement letters',
+    meta: 'Headings styled by hand, not with styles',
+    src: 'DOCX',
+    verdict: 'attention' as const,
+    count: '34',
+  },
+  {
+    name: 'Working papers',
+    meta: 'Merged cells break row association',
+    src: 'XLSX',
+    verdict: 'attention' as const,
+    count: '9',
+  },
+  {
+    name: 'Client onboarding pack',
+    meta: 'Tagged, language set, tables marked up',
+    src: 'PDF',
+    verdict: 'pass' as const,
+    count: 'clear',
+  },
+];
+
+const frictions = [
+  {
+    title: 'Volume, not pages',
+    d: 'M6 3h9l4 4v14H6zM14 3v5h5M9 13h6M9 17h4',
+    body: 'A product team governs a handful of templates. A firm ships thousands of individual documents a year, each its own artifact.',
+  },
+  {
+    title: 'Seasonal peaks',
+    d: 'M12 8v4l3 2M12 3a9 9 0 100 18 9 9 0 000-18z',
+    body: 'Output spikes hard at year end and through tax season. Whatever the process is, it has to survive the busiest six weeks.',
+  },
+  {
+    title: 'Partner-owned work',
+    d: 'M9 8a3 3 0 100-6 3 3 0 000 6zM3 20c0-3.3 2.7-5 6-5s6 1.7 6 5M17 11a2.5 2.5 0 100-5 2.5 2.5 0 000 5zM21 20c0-2.5-1.8-4-4-4',
+    body: 'Each partner owns their clients and their templates. There is rarely one person who can change a document standard firm-wide.',
+  },
+];
+
+const vsChecker = [
+  {
+    title: 'A checker runs when someone clicks it',
+    body: 'Nobody runs Full Check on 214 statements at quarter end. limena checks every file on a cadence, whether anyone remembered or not.',
+  },
+  {
+    title: 'Word cannot see the export',
+    body: 'Your source document can pass Word’s checker and still land as an untagged PDF, because the tags are lost at export. Only checking the finished file catches that.',
+  },
+  {
+    title: 'One file cannot show you a pattern',
+    body: 'Acrobat tells you this statement is untagged. It cannot tell you 214 are, and that they all came from one template.',
+  },
+  {
+    title: 'A report is not a record',
+    body: 'Full Check output lives on someone’s laptop. It does not route to the template owner, confirm the fix held, or attach to an RFP.',
+  },
+];
+
+const grouped = [
+  {
+    fix: 'Enable tagged export, mark header rows',
+    chip: '214 files',
+    source: 'Statement template · practice ops owns it',
+  },
+  { fix: 'Set document language on export', chip: '275 files', source: 'Export preset, applies across templates' },
+  { fix: 'Use heading styles, not manual formatting', chip: '34 files', source: 'Engagement letter template' },
+  { fix: 'Unmerge cells in the summary tab', chip: '9 files', source: 'Working paper workbook' },
+];
+
+const evidence = [
+  { label: 'WCAG 2.1 AA, Level A', val: '30 of 32' },
+  { label: 'WCAG 2.1 AA, Level AA', val: '18 of 24' },
+  { label: 'Documents evaluated in full', val: '318 of 318', ok: true },
+  { label: 'Last generated', val: 'Today', ok: true },
+];
+
+const outcomes = [
+  'A conformance record you attach to a proposal, generated from live results rather than assembled the week the RFP lands.',
+  'Templates fixed at the source, so remediation is paid for once instead of per engagement.',
+  'A client portal your clients can actually use, including the ones using a screen reader.',
+  'Evidence the standard held through year end, not just on the day someone checked.',
+];
+---
+
+<Base
+  title="Accessibility for accounting firms · limena"
+  description="Your exposure is not the website. It is the thousands of statements, returns, and reports you send clients every year, almost none of them tagged."
+  active="usecases"
+>
+  <ProductHero
+    backHref="/use-cases"
+    backLabel="Use cases"
+    title="Accessibility for accounting firms"
+    lede="Your exposure is not the website. It is the thousands of statements, returns, and reports you send clients every year, almost none of them tagged."
+    panelTitle="Client deliverables · Q4 close"
+    panelMeta="318 files · every page read"
+    panelStatus="Not yet conformant"
+    stats={stats}
+    rows={rows}
+  />
+
+  <FrictionBand
+    heading="Why this is harder for a practice than a product team."
+    lede="Complex financial tables are the hardest accessibility problem in documents, and they are what your practice produces all day."
+    items={frictions}
+  />
+
+  <!-- The objection this page has to clear before anything else lands. -->
+  <section class="band band--banded acrobat">
+    <div class="acrobat__inner">
+      <div>
+        <p class="eyebrow acrobat__eyebrow">The obvious question</p>
+        <h2 class="acrobat__h2">Doesn't Acrobat already check this?</h2>
+        <p class="acrobat__body">
+          Yes, and well. Acrobat's Full Check and PAC are thorough on a finished PDF, and Word's checker is good on a
+          document you are still writing. limena aligns with those rule sets rather than inventing its own.
+        </p>
+        <p class="acrobat__body acrobat__body--emph">
+          The gap is not detection on one file. It is everything that only becomes visible across three hundred of them.
+        </p>
+      </div>
+
+      <div class="acrobat__list">
+        {
+          vsChecker.map((v) => (
+            <div class="vsCard">
+              <p class="vsCard__title">{v.title}</p>
+              <p class="vsCard__body">{v.body}</p>
+            </div>
+          ))
+        }
+        <div class="vsNote">
+          <CheckCircle size={17} />
+          <span>
+            Keep using Acrobat on the file in front of you. limena tells you which template to change so the next three
+            hundred come out right.
+          </span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <ProductRow
+    first
+    eyebrow="01 · One fix, not 214"
+    heading="Traced back to the template that made it."
+    body={[
+      'Most findings in a firm are one problem repeated. limena groups identical barriers back to the export setting or template that produced them.',
+      'So the remediation is a template change, not a file-by-file retrofit of a thousand PDFs.',
+    ]}
+  >
+    <GroupedPanel head="Grouped by source" meta="4 fixes · 306 files" items={grouped} />
+  </ProductRow>
+
+  <ProductRow
+    flip
+    eyebrow="02 · In plain language"
+    heading="Written for the person who owns the template."
+    body={[
+      'Not an error code. What a screen reader actually makes of the file, which clients it reaches, and the one setting that changes it.',
+      'Findings carry an owner, so a tagging issue goes to practice ops and a plain-language issue goes to the partner who writes the covering letter.',
+    ]}
+  >
+    <FindingCard
+      verdict="Fail"
+      title="Statement tables have no structure"
+      error="The balance sheet is laid out visually but not marked up as a table. A screen reader reads it as one continuous stream of numbers, so a client cannot tell a revenue line from a footnote."
+      fix="Enable tagged export in the statement template and mark the header row. One change in the template, applied on next generation."
+      impact="Appears in 214 deliverables across 38 clients, including three public sector engagements whose contracts require conformance evidence."
+      owner={{
+        initials: 'DT',
+        role: 'design',
+        name: 'Document templates, practice ops',
+        meta: 'Owner assigned · due before Q1 filings',
+        action: 'Open template',
+      }}
+    />
+  </ProductRow>
+
+  <ProductRow
+    last
+    eyebrow="03 · Ready when they ask"
+    heading="The answer to the RFP question."
+    body={[
+      'Pressure arrives from a client, not a regulator. Public sector and enterprise engagements increasingly require conformance evidence, and a firm that cannot produce it is off the shortlist before fees are discussed.',
+    ]}
+  >
+    <EvidencePanel
+      head="Conformance record · live"
+      action="Export"
+      rows={evidence}
+      note="Generated from current results, not a snapshot that went stale the week after it was signed."
+    />
+  </ProductRow>
+
+  <OutcomeBand heading="You can answer the question in the RFP." outcomes={outcomes} />
+
+  <CtaBand
+    heading="Bring us one statement template."
+    body="We will tell you what a screen reader makes of it, and how many of your deliverables carry the same issue."
+    primaryLabel="Book a demo"
+    primaryHref="/contact"
+    secondaryLabel="Test a document free"
+    secondaryHref="/scan"
+  />
+</Base>
+
+<style>
+  .acrobat {
+    border-bottom: 1px solid rgba(22, 38, 28, 0.06);
+  }
+
+  .acrobat__inner {
+    max-width: 1160px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 0.44fr 0.56fr;
+    gap: 56px;
+    align-items: start;
+  }
+
+  .acrobat__eyebrow {
+    display: block;
+    margin-bottom: 16px;
+  }
+
+  .acrobat__h2 {
+    font-size: 34px;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    line-height: 1.08;
+    margin-bottom: 18px;
+    text-wrap: balance;
+  }
+
+  .acrobat__body {
+    font-size: 16.5px;
+    line-height: 1.6;
+    color: var(--ink-500);
+  }
+
+  .acrobat__body + .acrobat__body {
+    margin-top: 14px;
+  }
+
+  .acrobat__body--emph {
+    color: var(--ink-700);
+  }
+
+  .acrobat__list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .vsCard {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 13px;
+    padding: 20px 22px;
+  }
+
+  .vsCard__title {
+    font-size: 15.5px;
+    font-weight: 700;
+    letter-spacing: -0.015em;
+    margin-bottom: 6px;
+  }
+
+  .vsCard__body {
+    font-size: 14.5px;
+    line-height: 1.55;
+    color: var(--ink-500);
+  }
+
+  .vsNote {
+    display: flex;
+    gap: 11px;
+    align-items: flex-start;
+    background: var(--white);
+    border: 1px solid rgba(44, 122, 82, 0.3);
+    border-radius: 13px;
+    padding: 18px 22px;
+    font-size: 14.5px;
+    line-height: 1.55;
+    color: var(--ink-700);
+  }
+
+  .vsNote :global(svg) {
+    margin-top: 2px;
+  }
+
+  @media (max-width: 1000px) {
+    .acrobat__inner {
+      grid-template-columns: 1fr;
+      gap: 32px;
+    }
+    .acrobat__h2 {
+      font-size: 26px;
+    }
+  }
+</style>

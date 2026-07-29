@@ -1,0 +1,672 @@
+---
+import Base from '../layouts/Base.astro';
+
+// The form posts wherever this points. It is deliberately a single constant so
+// wiring it to a real handler (Formspree, a Vercel function, your CRM) is one
+// edit. Until it is set, the form does nothing on submit and says so.
+const FORM_ENDPOINT = '';
+
+const expect = [
+  'We test something you own before the call, so we are looking at your findings rather than a demo account.',
+  'You see the whole loop: what was found, how it is explained, who owns it, and how it is verified.',
+  'We tell you plainly if limena is the wrong fit. A one-off audit does not need a platform.',
+  'Thirty minutes, one person from our side, no pre-qualification call first.',
+];
+
+const direct = [
+  { label: 'General', val: 'hello@limena.app' },
+  { label: 'Partnerships', val: 'partners@limena.app' },
+  { label: 'Security', val: 'security@limena.app' },
+];
+
+const roles = [
+  'Accessibility lead',
+  'Product or design',
+  'Engineering',
+  'Compliance or legal',
+  'Agency or partner',
+  'Something else',
+];
+
+const kinds = ['A website', 'A web app', 'Documents', 'Several products', 'Clients, as an agency', 'Not sure yet'];
+
+const routes = [
+  {
+    title: 'Test a page free',
+    body: 'No account. Paste a URL or upload a document and see the readout in about a minute.',
+    cta: 'Run a free test',
+    href: '/scan',
+    d: 'M11 4a7 7 0 100 14 7 7 0 000-14zM16 16l4.5 4.5',
+  },
+  {
+    title: 'See how it works',
+    body: 'The operating loop end to end, with the real product screens rather than marketing diagrams.',
+    cta: 'Open the platform tour',
+    href: '/platform',
+    d: 'M4 6h16M4 12h10M4 18h7',
+  },
+  {
+    title: 'Read the pricing',
+    body: 'Plans, what drives the number, and what each tier actually includes. Published, not gated.',
+    cta: 'View pricing',
+    href: '/pricing',
+    d: 'M4 19V5M4 19h16M8 16v-4M12 16V8M16 16v-6',
+  },
+];
+---
+
+<Base
+  title="Book a demo · limena"
+  description="Bring one product. We run limena against something you actually own and walk through the findings, the owners, and what the first fix clears."
+>
+  <section class="band band--dark contact">
+    <div class="contact__inner">
+      <div>
+        <p class="eyebrow contact__eyebrow">Book a demo</p>
+        <h1 class="contact__h1">Bring one product. We will show you where it stands.</h1>
+        <p class="contact__lede">
+          Not a slide deck. We run limena against something you actually own and walk through the findings, the owners,
+          and what the first fix clears.
+        </p>
+
+        <ul class="expect">
+          {
+            expect.map((e) => (
+              <li class="expect__item">
+                <span class="expect__mark" aria-hidden="true">
+                  ✓
+                </span>
+                <span>{e}</span>
+              </li>
+            ))
+          }
+        </ul>
+
+        <div class="direct">
+          <p class="direct__label">Or reach us directly</p>
+          <ul>
+            {
+              direct.map((d) => (
+                <li class="direct__row">
+                  <span class="direct__name">{d.label}</span>
+                  <a href={`mailto:${d.val}`} class="direct__val">
+                    {d.val}
+                  </a>
+                </li>
+              ))
+            }
+          </ul>
+        </div>
+      </div>
+
+      <!-- FORM -->
+      <div class="formCard">
+        <div class="formCard__head">
+          <h2 class="formCard__title">Tell us what you are governing</h2>
+          <p class="formCard__sub">Two minutes. We reply within one business day.</p>
+        </div>
+
+        <form
+          class="form"
+          method="post"
+          action={FORM_ENDPOINT || undefined}
+          data-endpointless={FORM_ENDPOINT ? undefined : ''}
+          novalidate
+        >
+          <div class="form__pair">
+            <div class="field">
+              <label for="first">First name</label>
+              <input id="first" name="first" type="text" autocomplete="given-name" required />
+            </div>
+            <div class="field">
+              <label for="last">Last name</label>
+              <input id="last" name="last" type="text" autocomplete="family-name" required />
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="email">Work email</label>
+            <input id="email" name="email" type="email" autocomplete="email" placeholder="you@organisation.ca" required />
+          </div>
+
+          <div class="form__pair">
+            <div class="field">
+              <label for="org">Organization</label>
+              <input id="org" name="organization" type="text" autocomplete="organization" required />
+            </div>
+            <div class="field">
+              <label for="role">Your role</label>
+              <select id="role" name="role" required>
+                <option value="">Select one</option>
+                {roles.map((r) => <option value={r}>{r}</option>)}
+              </select>
+            </div>
+          </div>
+
+          <fieldset class="field kinds">
+            <legend>What are you bringing under governance?</legend>
+            <div class="kinds__grid">
+              {
+                kinds.map((k, i) => (
+                  <span class="kind">
+                    <input class="kind__input" id={`kind-${i}`} name="kind" type="checkbox" value={k} />
+                    <label class="kind__label" for={`kind-${i}`}>
+                      {k}
+                    </label>
+                  </span>
+                ))
+              }
+            </div>
+          </fieldset>
+
+          <div class="field">
+            <label for="url">
+              A URL or file we can look at <span class="field__hint">(optional, but it makes the call better)</span>
+            </label>
+            <input id="url" name="url" type="text" inputmode="url" placeholder="aucti.ca" />
+          </div>
+
+          <div class="field">
+            <label for="timing">Anything driving the timing?</label>
+            <textarea
+              id="timing"
+              name="timing"
+              rows="3"
+              placeholder="An audit due, a procurement question, a complaint, or just getting ahead of it."></textarea>
+          </div>
+
+          <button type="submit" class="btn btn--primary form__submit">Book the demo</button>
+
+          <p class="form__note">
+            We use this to prepare for the call, nothing else. No sequences, no reselling your details.
+          </p>
+
+          <!-- Announced politely so a screen reader user hears the outcome
+               without losing their place in the form. -->
+          <p class="form__status" role="status" aria-live="polite"></p>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <!-- OTHER ROUTES -->
+  <section class="band band--paper">
+    <div class="band__inner">
+      <div class="routes__lead">
+        <h2 class="h2">Not ready for a call?</h2>
+        <p class="lede">Reasonable. Here are three ways to see the product without talking to anyone.</p>
+      </div>
+
+      <div class="routes">
+        {
+          routes.map((r) => (
+            <a href={r.href} class="route">
+              <span class="route__icon">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                  <path d={r.d} stroke="var(--green-hover)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+              </span>
+              <h3 class="route__title">{r.title}</h3>
+              <p class="route__body">{r.body}</p>
+              <span class="route__cta">{r.cta} →</span>
+            </a>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .contact__inner {
+    max-width: 1160px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 0.9fr 1.1fr;
+    gap: 64px;
+    align-items: start;
+  }
+
+  .contact__eyebrow {
+    display: block;
+    font-size: 13px;
+    letter-spacing: 0.14em;
+    margin-bottom: 20px;
+  }
+
+  .contact__h1 {
+    font-size: 44px;
+    font-weight: 800;
+    letter-spacing: -0.035em;
+    line-height: 1.06;
+    color: var(--paper);
+    margin-bottom: 18px;
+    text-wrap: balance;
+  }
+
+  .contact__lede {
+    font-size: 18px;
+    line-height: 1.6;
+    color: var(--on-dark-sage);
+    margin-bottom: 30px;
+    max-width: 50ch;
+  }
+
+  .expect {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    margin-bottom: 34px;
+  }
+
+  .expect__item {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    font-size: 15px;
+    line-height: 1.55;
+    color: var(--on-dark-mist);
+  }
+
+  .expect__mark {
+    font-family: var(--mono);
+    font-weight: 700;
+    color: var(--green-light);
+    flex: none;
+  }
+
+  .direct {
+    padding-top: 26px;
+    border-top: 1px solid var(--on-dark-border);
+  }
+
+  .direct__label {
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    color: var(--green-light);
+    margin-bottom: 14px;
+  }
+
+  .direct__row {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    font-size: 14.5px;
+  }
+
+  .direct__row + .direct__row {
+    margin-top: 9px;
+  }
+
+  .direct__name {
+    color: var(--on-dark-sage);
+    flex: none;
+    width: 108px;
+  }
+
+  .direct__val {
+    color: var(--paper);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+
+  /* ---------- Form ---------- */
+
+  .formCard {
+    background: var(--paper);
+    border-radius: var(--r-card);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2), 0 40px 80px -40px rgba(0, 0, 0, 0.6);
+    overflow: hidden;
+    color: var(--evergreen);
+  }
+
+  .formCard__head {
+    padding: 24px 28px;
+    background: var(--white);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .formCard__title {
+    font-size: 20px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    margin-bottom: 4px;
+  }
+
+  .formCard__sub {
+    font-size: 14px;
+    color: var(--muted);
+  }
+
+  .form {
+    padding: 26px 28px 28px;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+  }
+
+  .form__pair {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+  }
+
+  .field {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+    border: none;
+    padding: 0;
+    margin: 0;
+    min-width: 0;
+  }
+
+  .field label,
+  .field legend {
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: -0.005em;
+    padding: 0;
+  }
+
+  .field__hint {
+    font-weight: 400;
+    color: var(--muted);
+  }
+
+  .field input,
+  .field select,
+  .field textarea {
+    width: 100%;
+    padding: 0 14px;
+    border: 1px solid rgba(22, 38, 28, 0.18);
+    border-radius: var(--r-control-sm);
+    font-family: var(--sans);
+    font-size: 15px;
+    color: var(--evergreen);
+    background: var(--white);
+  }
+
+  .field input,
+  .field select {
+    height: 44px;
+  }
+
+  .field textarea {
+    padding: 12px 14px;
+    line-height: 1.5;
+    resize: vertical;
+  }
+
+  .field input:hover,
+  .field select:hover,
+  .field textarea:hover {
+    border-color: rgba(22, 38, 28, 0.32);
+  }
+
+  .field input[aria-invalid='true'],
+  .field select[aria-invalid='true'] {
+    border-color: var(--fail);
+    border-width: 2px;
+  }
+
+  .field__error {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--fail-text);
+  }
+
+  .field__error::before {
+    content: '!';
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 15px;
+    height: 15px;
+    border-radius: 50%;
+    background: var(--fail-text);
+    color: var(--paper);
+    font-family: var(--mono);
+    font-size: 10px;
+    flex: none;
+  }
+
+  .kinds legend {
+    margin-bottom: 9px;
+  }
+
+  .kinds__grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .kind {
+    position: relative;
+  }
+
+  /* The checkbox itself is the accessible control; the label is the chip. It
+     stays in the layout (not display:none) so focus can be drawn on it. */
+  .kind__input {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    opacity: 0;
+  }
+
+  .kind__label {
+    display: inline-flex;
+    align-items: center;
+    height: 34px;
+    padding: 0 14px;
+    border-radius: 9px;
+    background: var(--white);
+    color: var(--ink-500);
+    border: 1px solid rgba(22, 38, 28, 0.14);
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+  }
+
+  .kind__input:checked + .kind__label {
+    background: var(--green-soft);
+    color: var(--green-hover);
+    border-color: rgba(44, 122, 82, 0.35);
+    font-weight: 600;
+  }
+
+  /* Selection is never colour alone: a checked chip also gains a mark. */
+  .kind__input:checked + .kind__label::before {
+    content: '✓';
+    margin-right: 7px;
+    font-family: var(--mono);
+    font-size: 12px;
+  }
+
+  .kind__input:focus-visible + .kind__label {
+    outline: 3px solid var(--green-hover);
+    outline-offset: 2px;
+  }
+
+  .form__submit {
+    height: 48px;
+    margin-top: 4px;
+  }
+
+  .form__note {
+    font-size: 13px;
+    line-height: 1.5;
+    color: var(--muted);
+  }
+
+  .form__status:empty {
+    display: none;
+  }
+
+  .form__status {
+    padding: 12px 14px;
+    border-radius: var(--r-control-sm);
+    background: var(--attention-tint);
+    color: var(--attention-text);
+    font-size: 13.5px;
+    line-height: 1.5;
+    font-weight: 600;
+  }
+
+  /* ---------- Other routes ---------- */
+
+  .routes__lead {
+    max-width: 60ch;
+    margin-bottom: 44px;
+  }
+
+  .routes__lead .h2 {
+    margin-bottom: 14px;
+  }
+
+  .routes {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 18px;
+  }
+
+  .route {
+    display: block;
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: var(--r-card);
+    padding: 30px;
+    text-decoration: none;
+    color: inherit;
+    transition: border-color 140ms ease, transform 140ms ease;
+  }
+
+  .route:hover {
+    border-color: rgba(44, 122, 82, 0.5);
+    transform: translateY(-2px);
+  }
+
+  .route__icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 42px;
+    height: 42px;
+    border-radius: 11px;
+    background: var(--green-tint);
+    margin-bottom: 16px;
+  }
+
+  .route__title {
+    font-size: 20px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    margin-bottom: 8px;
+  }
+
+  .route__body {
+    font-size: 15px;
+    line-height: 1.55;
+    color: var(--ink-500);
+    margin-bottom: 16px;
+  }
+
+  .route__cta {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--green-hover);
+  }
+
+  /* ---------- Responsive ---------- */
+
+  @media (max-width: 1000px) {
+    .contact__inner {
+      grid-template-columns: 1fr;
+      gap: 40px;
+    }
+    .contact__h1 {
+      font-size: 32px;
+    }
+    .routes {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  @media (max-width: 560px) {
+    .form__pair {
+      grid-template-columns: 1fr;
+    }
+    .form {
+      padding: 22px 20px 24px;
+    }
+  }
+</style>
+
+<script>
+  const form = document.querySelector<HTMLFormElement>('.form');
+  const status = document.querySelector<HTMLElement>('.form__status');
+
+  if (form && status) {
+    /** Errors are announced in text next to the field, never by colour alone,
+     *  and the first invalid field takes focus so a keyboard user lands on it. */
+    const showError = (field: HTMLInputElement | HTMLSelectElement, message: string) => {
+      field.setAttribute('aria-invalid', 'true');
+      const wrap = field.closest('.field');
+      if (!wrap) return;
+      let err = wrap.querySelector<HTMLElement>('.field__error');
+      if (!err) {
+        err = document.createElement('p');
+        err.className = 'field__error';
+        err.id = `${field.id}-error`;
+        wrap.appendChild(err);
+      }
+      err.textContent = message;
+      field.setAttribute('aria-describedby', err.id);
+    };
+
+    const clearError = (field: HTMLInputElement | HTMLSelectElement) => {
+      field.removeAttribute('aria-invalid');
+      field.removeAttribute('aria-describedby');
+      field.closest('.field')?.querySelector('.field__error')?.remove();
+    };
+
+    form.addEventListener('submit', (e) => {
+      const fields = Array.from(
+        form.querySelectorAll<HTMLInputElement | HTMLSelectElement>('input[required], select[required]')
+      );
+
+      let firstInvalid: (HTMLInputElement | HTMLSelectElement) | null = null;
+
+      for (const field of fields) {
+        clearError(field);
+        if (field.validity.valid) continue;
+        const label = field.closest('.field')?.querySelector('label')?.textContent?.trim() ?? 'This field';
+        showError(
+          field,
+          field.validity.typeMismatch ? `Enter a valid email address.` : `${label} is required.`
+        );
+        firstInvalid ??= field;
+      }
+
+      if (firstInvalid) {
+        e.preventDefault();
+        status.textContent = 'The form has some missing details. The first one is highlighted below.';
+        firstInvalid.focus();
+        return;
+      }
+
+      // No endpoint wired yet: say so rather than appearing to send.
+      if (form.hasAttribute('data-endpointless')) {
+        e.preventDefault();
+        status.textContent =
+          'This form is not connected to a handler yet. In the meantime, email hello@limena.app and we will pick it up.';
+      }
+    });
+  }
+</script>

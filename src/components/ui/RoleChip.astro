@@ -1,0 +1,35 @@
+---
+interface Props {
+  role: 'design' | 'dev' | 'content';
+}
+const { role } = Astro.props;
+const labels = { design: 'DESIGN', dev: 'DEV', content: 'CONTENT' } as const;
+---
+
+<span class={`roleChip roleChip--${role}`}>{labels[role]}</span>
+
+<style>
+  .roleChip {
+    display: inline-flex;
+    align-items: center;
+    height: 21px;
+    padding: 0 9px;
+    border-radius: 7px;
+    font-family: var(--mono);
+    font-size: 10px;
+    font-weight: 600;
+    flex: none;
+  }
+  .roleChip--design {
+    background: var(--chip-design-bg);
+    color: var(--chip-design-ink);
+  }
+  .roleChip--dev {
+    background: var(--chip-dev-bg);
+    color: var(--chip-dev-ink);
+  }
+  .roleChip--content {
+    background: var(--chip-content-bg);
+    color: var(--chip-content-ink);
+  }
+</style>

@@ -1,0 +1,571 @@
+---
+import Logo from './Logo.astro';
+import { useCaseCategories, partnerCategories } from '../data/nav';
+
+interface Props {
+  active?: 'platform' | 'usecases' | 'partners' | 'pricing' | 'about' | '';
+}
+const { active = '' } = Astro.props;
+
+const menus = [
+  {
+    id: 'usecases',
+    label: 'Use cases',
+    width: 840,
+    cats: useCaseCategories,
+    allHref: '/use-cases',
+    allLabel: 'All use cases',
+  },
+  {
+    id: 'partners',
+    label: 'Partners',
+    width: 780,
+    cats: partnerCategories,
+    allHref: '/partners',
+    allLabel: 'Partner overview',
+  },
+];
+---
+
+<header class="nav">
+  <nav class="nav__bar" aria-label="Primary">
+    <a href="/" class="nav__brand">
+      <Logo size={30} id="navMark" />
+      <span>limena</span>
+    </a>
+
+    <button class="nav__burger" type="button" aria-expanded="false" aria-controls="nav-mobile" data-burger>
+      <span class="nav__burgerBars" aria-hidden="true"></span>
+      <span>Menu</span>
+    </button>
+
+    <div class="nav__items">
+      <a href="/platform" class="nav__link" aria-current={active === 'platform' ? 'page' : undefined}>Platform</a>
+
+      {
+        menus.map((m) => (
+          <div class="nav__menu" data-menu={m.id}>
+            <button
+              type="button"
+              class="nav__trigger"
+              aria-expanded="false"
+              aria-haspopup="true"
+              aria-controls={`panel-${m.id}`}
+              aria-current={active === m.id ? 'page' : undefined}
+              data-trigger
+            >
+              {m.label}
+              <span class="nav__caret" aria-hidden="true">▾</span>
+            </button>
+
+            <div class="nav__panel" id={`panel-${m.id}`} style={`width:${m.width}px`} data-panel hidden>
+              <div class="nav__panelGrid">
+                <div class="nav__rail" role="tablist" aria-orientation="vertical" aria-label={`${m.label} categories`}>
+                  {m.cats.map((c, i) => (
+                    <button
+                      type="button"
+                      class="nav__cat"
+                      role="tab"
+                      id={`tab-${m.id}-${c.key}`}
+                      aria-controls={`pane-${m.id}-${c.key}`}
+                      aria-selected={i === 0 ? 'true' : 'false'}
+                      tabindex={i === 0 ? 0 : -1}
+                      data-cat={c.key}
+                    >
+                      <span class="nav__catLabel">{c.label}</span>
+                      <span class="nav__catArrow" aria-hidden="true">→</span>
+                    </button>
+                  ))}
+                  <div class="nav__railFoot">
+                    <a href={m.allHref} class="nav__allLink">{m.allLabel} →</a>
+                  </div>
+                </div>
+
+                <div class="nav__panes">
+                  {m.cats.map((c, i) => (
+                    <div
+                      class="nav__pane"
+                      role="tabpanel"
+                      id={`pane-${m.id}-${c.key}`}
+                      aria-labelledby={`tab-${m.id}-${c.key}`}
+                      hidden={i !== 0}
+                    >
+                      {c.items.map((item) => (
+                        <a href={item.href} class="nav__item">
+                          <span class="nav__itemName">{item.name}</span>
+                          <span class="nav__itemDesc">{item.desc}</span>
+                        </a>
+                      ))}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        ))
+      }
+
+      <a href="/pricing" class="nav__link" aria-current={active === 'pricing' ? 'page' : undefined}>Pricing</a>
+      <a href="/about" class="nav__link" aria-current={active === 'about' ? 'page' : undefined}>About</a>
+      <a href="/contact" class="btn btn--primary nav__cta">Book a demo</a>
+    </div>
+  </nav>
+
+  <div class="nav__mobile" id="nav-mobile" hidden>
+    <a href="/platform" class="nav__mobileTop">Platform</a>
+    {
+      menus.map((m) => (
+        <section class="nav__mobileGroup">
+          <h2 class="nav__mobileHead">{m.label}</h2>
+          {m.cats.map((c) => (
+            <div>
+              <h3 class="nav__mobileCat">{c.label}</h3>
+              {c.items.map((item) => (
+                <a href={item.href} class="nav__mobileItem">{item.name}</a>
+              ))}
+            </div>
+          ))}
+          <a href={m.allHref} class="nav__allLink">{m.allLabel} →</a>
+        </section>
+      ))
+    }
+    <a href="/pricing" class="nav__mobileTop">Pricing</a>
+    <a href="/about" class="nav__mobileTop">About</a>
+    <a href="/contact" class="btn btn--primary nav__mobileCta">Book a demo</a>
+  </div>
+</header>
+
+<style>
+  .nav {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background: rgba(244, 241, 234, 0.92);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .nav__bar {
+    max-width: var(--content);
+    margin: 0 auto;
+    padding: 16px var(--gutter);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+  }
+
+  .nav__brand {
+    display: flex;
+    align-items: center;
+    gap: 11px;
+    text-decoration: none;
+    color: inherit;
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: -0.025em;
+  }
+
+  .nav__items {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .nav__link,
+  .nav__trigger {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 13px;
+    font-family: var(--sans);
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--ink-500);
+    background: transparent;
+    border: none;
+    border-radius: 8px;
+    text-decoration: none;
+    cursor: pointer;
+  }
+
+  .nav__link:hover,
+  .nav__trigger:hover {
+    color: var(--evergreen);
+  }
+
+  .nav__link[aria-current='page'],
+  .nav__trigger[aria-current='page'] {
+    font-weight: 600;
+    color: var(--evergreen);
+  }
+
+  .nav__trigger[aria-expanded='true'] {
+    background: rgba(22, 38, 28, 0.06);
+  }
+
+  .nav__caret {
+    font-size: 11px;
+    color: var(--muted);
+    display: inline-block;
+    transition: transform 160ms cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .nav__trigger[aria-expanded='true'] .nav__caret {
+    transform: rotate(180deg);
+  }
+
+  .nav__cta {
+    margin-left: 8px;
+    height: 42px;
+    padding: 0 20px;
+  }
+
+  .nav__menu {
+    position: relative;
+  }
+
+  .nav__panel {
+    position: absolute;
+    top: calc(100% + 10px);
+    left: 50%;
+    transform: translateX(-50%);
+    max-width: calc(100vw - 32px);
+    background: var(--white);
+    border: 1px solid var(--border-strong);
+    border-radius: var(--r-card);
+    overflow: hidden;
+    box-shadow: var(--shadow-pop);
+    z-index: 60;
+  }
+
+  /* Bridges the 10px gap between trigger and panel so travelling the mouse
+     down into the menu does not fire pointerleave and close it. */
+  .nav__panel::before {
+    content: '';
+    position: absolute;
+    top: -12px;
+    left: 0;
+    right: 0;
+    height: 12px;
+  }
+
+  .nav__panel[hidden] {
+    display: none;
+  }
+
+  .nav__panelGrid {
+    display: grid;
+    grid-template-columns: 238px 1fr;
+  }
+
+  .nav__rail {
+    background: var(--rail);
+    padding: 24px 22px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .nav__cat {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    width: 100%;
+    padding: 13px 16px;
+    /* All four edges declared, so the UA button border can never survive on one
+       of them (known trap in the build spec). */
+    border: 1px solid transparent;
+    border-radius: var(--r-pill);
+    background: transparent;
+    text-align: left;
+    font-family: var(--sans);
+    cursor: pointer;
+  }
+
+  .nav__cat[aria-selected='true'] {
+    background: var(--evergreen);
+  }
+
+  .nav__catLabel {
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--ink-700);
+  }
+
+  .nav__catArrow {
+    font-size: 14px;
+    flex: none;
+    color: var(--muted);
+  }
+
+  .nav__cat[aria-selected='true'] .nav__catLabel {
+    font-weight: 600;
+    color: var(--paper);
+  }
+
+  .nav__cat[aria-selected='true'] .nav__catArrow {
+    color: var(--green-light);
+  }
+
+  .nav__railFoot {
+    margin-top: auto;
+    padding-top: 18px;
+  }
+
+  .nav__allLink {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--green-hover);
+    text-decoration: none;
+  }
+
+  .nav__allLink:hover {
+    color: var(--evergreen);
+  }
+
+  .nav__panes {
+    padding: 26px 28px;
+  }
+
+  .nav__pane {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 22px 28px;
+    align-content: start;
+  }
+
+  .nav__pane[hidden] {
+    display: none;
+  }
+
+  .nav__item {
+    display: block;
+    text-decoration: none;
+  }
+
+  .nav__item:hover {
+    opacity: 0.7;
+  }
+
+  .nav__itemName {
+    display: block;
+    font-size: 16px;
+    font-weight: 700;
+    letter-spacing: -0.015em;
+    color: var(--evergreen);
+    margin-bottom: 3px;
+  }
+
+  .nav__itemDesc {
+    display: block;
+    font-size: 13.5px;
+    line-height: 1.45;
+    color: var(--ink-500);
+  }
+
+  /* ---------- Mobile ---------- */
+
+  .nav__burger {
+    display: none;
+    align-items: center;
+    gap: 10px;
+    padding: 9px 15px;
+    background: transparent;
+    border: 1px solid var(--border-strong);
+    border-radius: var(--r-control-sm);
+    font-family: var(--sans);
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--evergreen);
+    cursor: pointer;
+  }
+
+  .nav__burgerBars,
+  .nav__burgerBars::before,
+  .nav__burgerBars::after {
+    display: block;
+    width: 16px;
+    height: 2px;
+    background: var(--evergreen);
+    border-radius: 2px;
+  }
+
+  .nav__burgerBars {
+    position: relative;
+  }
+
+  .nav__burgerBars::before,
+  .nav__burgerBars::after {
+    content: '';
+    position: absolute;
+    left: 0;
+  }
+
+  .nav__burgerBars::before {
+    top: -5px;
+  }
+  .nav__burgerBars::after {
+    top: 5px;
+  }
+
+  .nav__mobile {
+    display: none;
+  }
+
+  @media (max-width: 1080px) {
+    .nav__items {
+      display: none;
+    }
+
+    .nav__burger {
+      display: inline-flex;
+    }
+
+    .nav__mobile:not([hidden]) {
+      display: block;
+      max-height: calc(100vh - 74px);
+      overflow-y: auto;
+      padding: 8px 24px 32px;
+      border-top: 1px solid var(--border);
+      background: var(--paper);
+    }
+
+    .nav__mobileTop {
+      display: block;
+      padding: 14px 0;
+      font-size: 18px;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      text-decoration: none;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .nav__mobileGroup {
+      padding: 20px 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .nav__mobileHead {
+      font-size: 18px;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      margin-bottom: 4px;
+    }
+
+    .nav__mobileCat {
+      font-family: var(--mono);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--green-hover);
+      margin: 18px 0 6px;
+    }
+
+    .nav__mobileItem {
+      display: block;
+      padding: 7px 0;
+      font-size: 16px;
+      color: var(--ink-700);
+      text-decoration: none;
+    }
+
+    .nav__mobileCta {
+      margin-top: 24px;
+      width: 100%;
+    }
+  }
+</style>
+
+<script>
+  const nav = document.querySelector('.nav');
+  if (nav) {
+    const menus = Array.from(nav.querySelectorAll<HTMLElement>('[data-menu]'));
+
+    const closeAll = (except?: HTMLElement) => {
+      for (const menu of menus) {
+        if (menu === except) continue;
+        menu.querySelector<HTMLButtonElement>('[data-trigger]')?.setAttribute('aria-expanded', 'false');
+        menu.querySelector<HTMLElement>('[data-panel]')?.setAttribute('hidden', '');
+      }
+    };
+
+    const setOpen = (menu: HTMLElement, open: boolean) => {
+      const trigger = menu.querySelector<HTMLButtonElement>('[data-trigger]');
+      const panel = menu.querySelector<HTMLElement>('[data-panel]');
+      if (!trigger || !panel) return;
+      trigger.setAttribute('aria-expanded', open ? 'true' : 'false');
+      panel.toggleAttribute('hidden', !open);
+      if (open) closeAll(menu);
+    };
+
+    for (const menu of menus) {
+      const trigger = menu.querySelector<HTMLButtonElement>('[data-trigger]')!;
+      const tabs = Array.from(menu.querySelectorAll<HTMLButtonElement>('[data-cat]'));
+
+      // Hover opens, click toggles. Pointer only, so touch gets a clean tap.
+      menu.addEventListener('pointerenter', (e) => {
+        if ((e as PointerEvent).pointerType === 'touch') return;
+        setOpen(menu, true);
+      });
+      menu.addEventListener('pointerleave', (e) => {
+        if ((e as PointerEvent).pointerType === 'touch') return;
+        setOpen(menu, false);
+      });
+
+      trigger.addEventListener('click', () => {
+        setOpen(menu, trigger.getAttribute('aria-expanded') !== 'true');
+      });
+
+      const select = (tab: HTMLButtonElement, focus = false) => {
+        for (const t of tabs) {
+          const on = t === tab;
+          t.setAttribute('aria-selected', on ? 'true' : 'false');
+          t.tabIndex = on ? 0 : -1;
+          const pane = document.getElementById(t.getAttribute('aria-controls')!);
+          pane?.toggleAttribute('hidden', !on);
+        }
+        if (focus) tab.focus();
+      };
+
+      for (const [i, tab] of tabs.entries()) {
+        tab.addEventListener('click', () => select(tab));
+        tab.addEventListener('pointerenter', (e) => {
+          if ((e as PointerEvent).pointerType === 'touch') return;
+          select(tab);
+        });
+        tab.addEventListener('keydown', (e) => {
+          const keys = { ArrowDown: 1, ArrowRight: 1, ArrowUp: -1, ArrowLeft: -1 } as Record<string, number>;
+          const step = keys[e.key];
+          if (!step) return;
+          e.preventDefault();
+          select(tabs[(i + step + tabs.length) % tabs.length], true);
+        });
+      }
+
+      // Escape closes and returns focus to the trigger; tabbing out closes too.
+      menu.addEventListener('keydown', (e) => {
+        if (e.key !== 'Escape') return;
+        setOpen(menu, false);
+        trigger.focus();
+      });
+      menu.addEventListener('focusout', (e) => {
+        if (!menu.contains(e.relatedTarget as Node)) setOpen(menu, false);
+      });
+    }
+
+    document.addEventListener('click', (e) => {
+      if (!nav.contains(e.target as Node)) closeAll();
+    });
+
+    const burger = nav.querySelector<HTMLButtonElement>('[data-burger]');
+    const mobile = document.getElementById('nav-mobile');
+    burger?.addEventListener('click', () => {
+      const open = burger.getAttribute('aria-expanded') !== 'true';
+      burger.setAttribute('aria-expanded', open ? 'true' : 'false');
+      mobile?.toggleAttribute('hidden', !open);
+    });
+  }
+</script>

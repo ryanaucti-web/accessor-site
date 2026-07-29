@@ -1,0 +1,72 @@
+---
+import '../styles/global.css';
+import SiteNav from '../components/SiteNav.astro';
+import SiteFooter from '../components/SiteFooter.astro';
+
+interface Props {
+  title: string;
+  description: string;
+  active?: 'platform' | 'usecases' | 'partners' | 'pricing' | 'about' | '';
+}
+
+const { title, description, active = '' } = Astro.props;
+const canonical = new URL(Astro.url.pathname.replace(/\/$/, '') || '/', Astro.site).href;
+
+// The mark, inlined as the favicon so there is no extra request and no binary
+// asset to keep in sync with the component.
+const favicon =
+  "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 80 80'%3E%3Crect width='80' height='80' fill='%23F4F1EA'/%3E%3Cclippath id='a'%3E%3Crect width='80' height='47'/%3E%3C/clippath%3E%3Ccircle cx='40' cy='42' r='18' fill='%232C7A52' opacity='.16'/%3E%3Ccircle cx='40' cy='42' r='18' fill='%232C7A52' clip-path='url(%23a)'/%3E%3Cline x1='11' y1='47' x2='69' y2='47' stroke='%2316261C' stroke-width='3' stroke-linecap='round'/%3E%3C/svg%3E";
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    <link rel="icon" href={favicon} />
+
+    <meta property="og:site_name" content="limena" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content={canonical} />
+    <meta name="twitter:card" content="summary_large_image" />
+
+    <meta name="theme-color" content="#F4F1EA" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+
+  <body>
+    <a href="#main" class="skip-link">Skip to content</a>
+    <!-- The nav is the first child of the page wrapper, never a sibling above
+         it, or position:sticky stops working past the first viewport. -->
+    <div class="page">
+      <SiteNav active={active} />
+      <main id="main">
+        <slot />
+      </main>
+      <SiteFooter />
+    </div>
+  </body>
+</html>
+
+<style>
+  .page {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  main {
+    flex: 1;
+  }
+</style>

@@ -1,0 +1,416 @@
+---
+import Base from '../../layouts/Base.astro';
+import ProductHero from '../../components/product/ProductHero.astro';
+import FrictionBand from '../../components/product/FrictionBand.astro';
+import ProductRow from '../../components/product/ProductRow.astro';
+import FindingCard from '../../components/product/FindingCard.astro';
+import OutcomeBand from '../../components/product/OutcomeBand.astro';
+import CtaBand from '../../components/CtaBand.astro';
+
+const stats = [
+  { num: '41', label: 'units publishing', delta: 'no central mandate' },
+  { num: '412', label: 'readings unreadable', delta: 'scanned, no text layer' },
+  { num: '86%', label: 'institution average', delta: '↑ 7 pts this year', ok: true },
+  { num: '4', label: 'vendor systems', delta: '2 renewals due' },
+];
+
+const units = [
+  {
+    name: 'Learning platform',
+    meta: 'Vendor · 412 unreadable readings',
+    bar: 68,
+    verdict: 'fail' as const,
+    count: '31',
+  },
+  {
+    name: 'Faculty of Engineering',
+    meta: 'Self-published · 2,400 pages',
+    bar: 52,
+    verdict: 'attention' as const,
+    count: '24',
+  },
+  { name: 'Library discovery', meta: 'Vendor · renewal in November', bar: 38, verdict: 'attention' as const, count: '17' },
+  {
+    name: 'Application portal',
+    meta: 'Central web team · weekly releases',
+    bar: 12,
+    verdict: 'attention' as const,
+    count: '4',
+  },
+  {
+    name: 'Student information system',
+    meta: 'Vendor · VPAT on file',
+    bar: 3,
+    verdict: 'pass' as const,
+    count: '0',
+  },
+  { name: 'Main institutional site', meta: 'Central web team', bar: 2, verdict: 'pass' as const, count: '0' },
+];
+
+const frictions = [
+  {
+    title: 'Autonomy cuts both ways',
+    d: 'M12 4L2 9l10 5 10-5-10-5zM6 11v5c0 1 3 2.5 6 2.5s6-1.5 6-2.5v-5',
+    body: 'Departments own their own sites, their own course content, and their own publishing decisions. A central policy is a suggestion until someone makes the gap visible.',
+  },
+  {
+    title: 'The duty is individual',
+    d: 'M9 8a3 3 0 100-6 3 3 0 000 6zM3 20c0-3.3 2.7-5 6-5s6 1.7 6 5M17 11a2.5 2.5 0 100-5 2.5 2.5 0 000 5zM21 20c0-2.5-1.8-4-4-4',
+    body: 'A student registers a need and the institution must accommodate, usually within a fixed deadline. Inaccessible material converts directly into manual remediation work.',
+  },
+  {
+    title: 'The estate is licensed',
+    d: 'M5 11h14v10H5zM8.5 11V8a3.5 3.5 0 017 0v3',
+    body: 'The learning platform, the SIS, the library layer. You cannot fix them in code, so evidence has to be good enough to move a vendor or a renewal.',
+  },
+];
+
+const facultyRows = [
+  { label: 'Course pages', val: '18 open' },
+  { label: 'Research group sites', val: '6 open' },
+  { label: 'Staff directory', val: 'clear', ok: true },
+];
+
+const vendors = [
+  { name: 'Learning platform', meta: 'Renewal November · 31 findings', val: 'Pack ready' },
+  { name: 'Library discovery', meta: 'Renewal March · 17 findings', val: 'Pack ready' },
+  { name: 'Student information system', meta: 'VPAT verified against live results', val: 'Conformant', ok: true },
+  { name: 'Application portal', meta: 'Built in house', val: 'Internal', ok: true },
+];
+
+const outcomes = [
+  'Each unit accountable for its own position, with the institutional average as the reference point.',
+  'The accommodation backlog sized before requests arrive, so the disability office resources a fix instead of absorbing it.',
+  'Course materials assessed as learning content, not just as files on a server.',
+  'Vendor findings packaged for renewal negotiations, where the institution actually has leverage.',
+];
+---
+
+<Base
+  title="Accessibility for higher education · limena"
+  description="One institutional obligation, forty departments publishing independently, and a legal duty to accommodate that lands the moment a student asks."
+  active="usecases"
+>
+  <ProductHero
+    backHref="/use-cases"
+    backLabel="Use cases"
+    title="Accessibility for higher education"
+    lede="One institutional obligation, forty departments publishing independently, and a legal duty to accommodate that lands the moment a student asks."
+    panelTitle="Institution rollup"
+    panelMeta="41 units · 68,000 pages"
+    panelStatus="Uneven across units"
+    panelStatusTone="attention"
+    stats={stats}
+    rows={units}
+  />
+
+  <FrictionBand
+    heading="Nobody can mandate anything, and everyone is liable."
+    lede="Academic autonomy means the central web team cannot compel a department to fix anything. The obligation, and the complaint, still arrive centrally."
+    items={frictions}
+  />
+
+  <ProductRow
+    first
+    eyebrow="01 · Influence without authority"
+    heading="Every unit sees its own position."
+    body={[
+      'A central team that cannot mandate can still make the standard visible. Each faculty gets its own workspace, its own findings, and its own trend, alongside where it sits against the rest of the institution.',
+      'Departments move when the gap is legible and attributable, not when a policy circulates.',
+    ]}
+  >
+    <div class="unit">
+      <div class="unit__head">
+        <span class="unit__title">Faculty of Engineering</span>
+        <span class="unit__meta">own workspace</span>
+      </div>
+
+      <div class="unit__body">
+        <div class="unit__scoreRow">
+          <span class="unit__score">74<span class="unit__pct">%</span></span>
+          <span class="unit__delta">↑ 12 pts this term</span>
+        </div>
+        <p class="unit__sub">checks passing · institution average 86%</p>
+
+        <ul class="unit__rows">
+          {
+            facultyRows.map((r) => (
+              <li class="unit__row">
+                <span class="unit__label">{r.label}</span>
+                <span class={`unit__val ${r.ok ? 'unit__val--ok' : ''}`}>{r.val}</span>
+              </li>
+            ))
+          }
+        </ul>
+
+        <p class="unit__foot">Ranked 34th of 41 units. Visible to the faculty and to the accessibility office.</p>
+      </div>
+    </div>
+  </ProductRow>
+
+  <ProductRow
+    flip
+    eyebrow="02 · The accommodation backlog"
+    heading="Fix it once, or remediate it per student, forever."
+    body={[
+      'Inaccessible course material does not stay quiet. It converts into individual accommodation requests, each one produced by hand against a deadline, term after term.',
+      'limena sizes that backlog before the requests arrive, so the disability office is resourcing a fix rather than absorbing the consequence.',
+    ]}
+  >
+    <FindingCard
+      verdict="Fail"
+      title="Course materials are scanned images"
+      error="412 readings in the learning platform are photographs of book pages with no text layer. A screen reader finds nothing to read. Text cannot be enlarged, selected, or searched."
+      impact="Affects 28 courses and roughly <strong>1,900 enrolled students</strong>. Each request triggers an individual accommodation the disability office produces by hand, typically inside a two week deadline."
+      impactLabel="Academic impact"
+      impactIcon="shield"
+      owner={{
+        initials: 'TL',
+        role: 'content',
+        name: 'Teaching and learning support',
+        meta: 'Bulk OCR pass · course leads notified',
+        action: 'View 412 files',
+      }}
+    />
+  </ProductRow>
+
+  <ProductRow
+    last
+    eyebrow="03 · Systems you did not build"
+    heading="Most of the estate is licensed, not written."
+    body={[
+      'The learning platform, the student information system, the library discovery layer, the application portal. You cannot patch them, so the lever is the contract. limena holds each vendor system to the same standard and produces the finding pack that goes into a renewal conversation or a VPAT request.',
+    ]}
+  >
+    <div class="vendors">
+      <div class="vendors__head">
+        <span class="vendors__title">Vendor systems · conformance</span>
+        <span class="vendors__action">Export packs</span>
+      </div>
+      <ul class="vendors__rows">
+        {
+          vendors.map((v) => (
+            <li class="vendors__row">
+              <span class="vendors__main">
+                <span class="vendors__name">{v.name}</span>
+                <span class="vendors__meta">{v.meta}</span>
+              </span>
+              <span class={`vendors__val ${v.ok ? 'vendors__val--ok' : ''}`}>{v.val}</span>
+            </li>
+          ))
+        }
+      </ul>
+      <p class="vendors__note">Two renewals fall this year. Both packs are ready to attach to the negotiation.</p>
+    </div>
+  </ProductRow>
+
+  <OutcomeBand heading="One standard across a federated institution." outcomes={outcomes} />
+
+  <CtaBand
+    heading="Start with the application portal."
+    body="Every prospective student passes through it, and it is usually the one surface the centre actually controls."
+    primaryLabel="Book a demo"
+    primaryHref="/contact"
+    secondaryLabel="Test a page free"
+    secondaryHref="/scan"
+  />
+</Base>
+
+<style>
+  /* ---------- Single-unit card ---------- */
+
+  .unit {
+    background: var(--white);
+    border: 1px solid var(--border-strong);
+    border-radius: var(--r-card);
+    box-shadow: var(--shadow);
+    overflow: hidden;
+  }
+
+  .unit__head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 14px 20px;
+    background: var(--sunken);
+    border-bottom: 1px solid rgba(22, 38, 28, 0.08);
+  }
+
+  .unit__title {
+    font-size: 14.5px;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+  }
+
+  .unit__meta {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  .unit__body {
+    padding: 22px 20px;
+  }
+
+  .unit__scoreRow {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+  }
+
+  .unit__score {
+    font-size: 44px;
+    font-weight: 800;
+    letter-spacing: -0.035em;
+    line-height: 1;
+    color: var(--attention-text);
+  }
+
+  .unit__pct {
+    font-size: 22px;
+  }
+
+  .unit__delta {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--green-hover);
+  }
+
+  .unit__sub {
+    font-size: 13px;
+    color: var(--muted);
+    margin-top: 8px;
+  }
+
+  .unit__rows {
+    margin-top: 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 11px;
+  }
+
+  .unit__row {
+    display: flex;
+    align-items: center;
+    gap: 11px;
+  }
+
+  .unit__label {
+    flex: 1;
+    font-size: 14px;
+    color: var(--ink-700);
+  }
+
+  .unit__val {
+    font-size: 13.5px;
+    font-weight: 700;
+    color: var(--attention-text);
+    flex: none;
+  }
+
+  .unit__val--ok {
+    color: var(--green-hover);
+  }
+
+  .unit__foot {
+    border-top: 1px solid rgba(22, 38, 28, 0.08);
+    margin-top: 16px;
+    padding-top: 14px;
+    font-size: 13px;
+    line-height: 1.5;
+    color: var(--ink-500);
+  }
+
+  /* ---------- Vendor conformance ---------- */
+
+  .vendors {
+    background: var(--evergreen);
+    border-radius: var(--r-card);
+    padding: 28px;
+    box-shadow: 0 2px 8px rgba(22, 38, 28, 0.16), 0 30px 60px -34px rgba(22, 38, 28, 0.5);
+  }
+
+  .vendors__head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+
+  .vendors__title {
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    color: var(--green-light);
+  }
+
+  .vendors__action {
+    display: inline-flex;
+    align-items: center;
+    height: 26px;
+    padding: 0 11px;
+    background: rgba(116, 199, 154, 0.16);
+    color: var(--green-light);
+    border-radius: var(--r-pill);
+    font-size: 12px;
+    font-weight: 600;
+    flex: none;
+  }
+
+  .vendors__rows {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .vendors__row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid rgba(244, 241, 234, 0.12);
+  }
+
+  .vendors__main {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .vendors__name {
+    display: block;
+    font-size: 14px;
+    color: var(--paper);
+    font-weight: 600;
+  }
+
+  .vendors__meta {
+    display: block;
+    font-size: 12.5px;
+    color: var(--on-dark-sage);
+    margin-top: 2px;
+  }
+
+  .vendors__val {
+    font-size: 13.5px;
+    font-weight: 700;
+    color: var(--on-dark-mist);
+    flex: none;
+  }
+
+  .vendors__val--ok {
+    color: var(--green-light);
+  }
+
+  .vendors__note {
+    margin-top: 18px;
+    font-size: 13.5px;
+    line-height: 1.5;
+    color: var(--on-dark-sage);
+  }
+</style>

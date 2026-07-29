@@ -1,0 +1,655 @@
+---
+import Base from '../../layouts/Base.astro';
+import ProductHero from '../../components/product/ProductHero.astro';
+import FrictionBand from '../../components/product/FrictionBand.astro';
+import ProductRow from '../../components/product/ProductRow.astro';
+import OutcomeBand from '../../components/product/OutcomeBand.astro';
+import CtaBand from '../../components/CtaBand.astro';
+
+const stats = [
+  { num: '241', label: 'findings are yours', delta: 'of 480 total' },
+  { num: '0', label: 'need a developer', delta: 'all CMS-editable', ok: true },
+  { num: '214', label: 'images need alt text', delta: 'drafts ready to review' },
+  { num: '~4h', label: 'to clear the queue', delta: 'estimated', ok: true },
+];
+
+const queue = [
+  {
+    kind: 'ALT TEXT',
+    title: 'Images with no description',
+    meta: 'Drafts written, awaiting your review',
+    count: '214',
+    time: '~2h',
+  },
+  {
+    kind: 'LINKS',
+    title: '"Read more" and "click here"',
+    meta: 'Reads as 14 identical links out of context',
+    count: '14',
+    time: '~20m',
+  },
+  {
+    kind: 'HEADINGS',
+    title: 'Heading levels skip a step',
+    meta: 'h2 straight to h4 on 9 pages',
+    count: '9',
+    time: '~30m',
+  },
+  { kind: 'TABLES', title: 'Tables with no header row', meta: 'Data cannot be read in order', count: '3', time: '~15m' },
+  { kind: 'MEANING', title: 'Colour is the only signal', meta: '"Items in red are overdue"', count: '1', time: '~10m' },
+];
+
+const frictions = [
+  {
+    title: 'Written for developers',
+    d: 'M6 3h9l4 4v14H6zM14 3v5h5',
+    body: '"Ensure all img elements have an alt attribute" is a sentence for an engineer. The person who uploads the images never reads it.',
+  },
+  {
+    title: 'Filed in the wrong backlog',
+    d: 'M4 6h16M4 12h10M4 18h7',
+    body: 'Content findings land in an engineering queue and wait behind feature work, even though no code change is needed to fix them.',
+  },
+  {
+    title: 'The backlog outpaces you',
+    d: 'M12 8v4l3 2M12 3a9 9 0 100 18 9 9 0 000-18z',
+    body: 'You publish faster than anyone audits. By the time a report arrives, half of it is about pages that have already changed.',
+  },
+];
+
+const alts = [
+  {
+    draft: 'Two volunteers sorting donations at a warehouse bench',
+    file: 'volunteers-warehouse.jpg',
+    verdict: 'attention',
+    label: 'Draft',
+  },
+  {
+    draft: 'Line chart showing donations rising from 2022 to 2026',
+    file: 'donations-chart.png',
+    verdict: 'attention',
+    label: 'Draft',
+  },
+  {
+    draft: 'Decorative divider, no description needed',
+    file: 'section-rule.svg',
+    verdict: 'none',
+    label: 'Decorative',
+  },
+  { draft: 'Portrait of Maya Kerr, programme director', file: 'team-mkerr.jpg', verdict: 'pass', label: 'Accepted' },
+];
+
+const checks = [
+  { label: 'Every image has a description', tag: 'pass', ok: true },
+  { label: 'Headings run in order', tag: 'pass', ok: true },
+  { label: 'Link text describes its destination', tag: '2 links', ok: false },
+  { label: 'Table has a header row', tag: 'pass', ok: true },
+  { label: 'Reading level is grade 9 or below', tag: 'grade 13', ok: false },
+];
+
+const outcomes = [
+  'A queue of only the findings you can actually fix, separated from engineering work.',
+  'Every barrier explained by who it affects, with suggested wording you can accept or rewrite.',
+  'Alt text drafted for the whole library, reviewed in one list instead of 214 pages.',
+  'Checks that run while you write, so the backlog stops growing as you clear it.',
+];
+---
+
+<Base
+  title="limena for content teams"
+  description="Roughly half of all accessibility barriers are content decisions, not code. Which means you can fix them today, without waiting for a sprint."
+  active="usecases"
+>
+  <ProductHero
+    backHref="/use-cases"
+    backLabel="Use cases"
+    title="For content teams"
+    lede="Roughly half of all accessibility barriers are content decisions, not code. Which means you can fix them today, without waiting for a sprint."
+    panelTitle="Your queue"
+    panelMeta="Content author · no code needed"
+    panelStatus="All fixable in the CMS"
+    panelStatusTone="pass"
+    stats={stats}
+  >
+    {
+      queue.map((q) => (
+        <div class="q">
+          <span class="q__kind">{q.kind}</span>
+          <span class="q__main">
+            <span class="q__title">{q.title}</span>
+            <span class="q__meta">{q.meta}</span>
+          </span>
+          <span class="q__count">{q.count}</span>
+          <span class="q__time">{q.time}</span>
+        </div>
+      ))
+    }
+  </ProductHero>
+
+  <FrictionBand
+    heading="Nobody told you this was your job."
+    lede="Accessibility findings are written for developers, so content issues get filed into an engineering backlog and sit there, even though the person who could fix them in ten minutes never sees them."
+    items={frictions}
+  />
+
+  <ProductRow
+    first
+    flip
+    eyebrow="01 · Plain language, both ways"
+    heading="No WCAG numbers, no code snippets."
+    body={[
+      'Each finding explains who is affected and why in one sentence, then proposes replacement wording you can accept, edit, or reject.',
+      'The AI drafts. You decide, because you are the one who knows the voice and the context.',
+    ]}
+  >
+    <div class="link">
+      <div class="link__head">
+        <span class="link__verdict">Fail</span>
+        <span class="link__title">This link does not say where it goes</span>
+      </div>
+
+      <div class="link__who">
+        <p class="link__label">Who this affects</p>
+        <p class="link__text">
+          Screen reader users often pull up a list of every link on the page, out of context. Yours reads as "read more"
+          fourteen times with no way to tell them apart.
+        </p>
+      </div>
+
+      <div class="link__compare">
+        <div class="linkCol">
+          <p class="link__label">Now</p>
+          <p class="link__sample link__sample--now">Read more</p>
+        </div>
+        <span class="link__arrow" aria-hidden="true">→</span>
+        <div class="linkCol">
+          <p class="link__label">Suggested</p>
+          <p class="link__sample link__sample--next">Read the 2026 accessibility plan</p>
+        </div>
+      </div>
+
+      <div class="link__actions">
+        <span class="link__btn">Accept and publish</span>
+        <span class="link__btn link__btn--ghost">Edit wording</span>
+        <span class="link__note">Opens in your CMS</span>
+      </div>
+    </div>
+  </ProductRow>
+
+  <ProductRow
+    eyebrow="02 · The alt text backlog"
+    heading="Two hundred images, one afternoon."
+    body={[
+      'limena drafts a description for each image from what is actually on the page, and flags the decorative ones so you are not writing alt text for a divider line.',
+      'You review in a single list rather than opening 214 pages one at a time.',
+    ]}
+  >
+    <div class="alts">
+      <div class="alts__head">
+        <span class="alts__title">Alt text review · 214 images</span>
+        <span class="alts__meta">38 reviewed</span>
+      </div>
+      <ul>
+        {
+          alts.map((a) => (
+            <li class="alt">
+              <span class="alt__thumb" aria-hidden="true" />
+              <span class="alt__main">
+                <span class="alt__draft">{a.draft}</span>
+                <span class="alt__file">{a.file}</span>
+              </span>
+              <span class={`alt__badge alt__badge--${a.verdict}`}>{a.label}</span>
+            </li>
+          ))
+        }
+      </ul>
+      <div class="alts__foot">
+        <span class="alts__btn">Accept all drafts</span>
+        <span class="alts__note">or work through them one at a time</span>
+      </div>
+    </div>
+  </ProductRow>
+
+  <ProductRow
+    last
+    flip
+    eyebrow="03 · Caught while writing"
+    heading="Better to fix it before it publishes."
+    body={[
+      'limena checks a draft as you write it: heading order, link wording, alt text, tables, and reading level. The barrier never reaches the live site, so it never becomes a finding.',
+      'That is how the backlog stops growing while you are working through it.',
+    ]}
+  >
+    <div class="pre">
+      <div class="pre__head">
+        <span class="pre__title">Pre-publish check · new article</span>
+        <span class="pre__flag">2 to fix</span>
+      </div>
+      <ul>
+        {
+          checks.map((c) => (
+            <li class={`pre__row ${c.ok ? '' : 'pre__row--fix'}`}>
+              <span class="pre__mark" aria-hidden="true">
+                {c.ok ? '✓' : '!'}
+              </span>
+              <span class="pre__label">{c.label}</span>
+              <span class={`pre__tag ${c.ok ? '' : 'pre__tag--fix'}`}>{c.tag}</span>
+            </li>
+          ))
+        }
+      </ul>
+      <p class="pre__note">
+        Runs as you write, in the CMS. Nothing reaches the site with a barrier you could have caught in the editor.
+      </p>
+    </div>
+  </ProductRow>
+
+  <OutcomeBand heading="Half the barriers, fixed without an engineer." outcomes={outcomes} />
+
+  <CtaBand
+    heading="Bring one page you publish often."
+    body="We will show you what you could fix on it this afternoon, in your own words rather than WCAG references."
+    primaryLabel="Book a demo"
+    primaryHref="/contact"
+    secondaryLabel="Test a page free"
+    secondaryHref="/scan"
+  />
+</Base>
+
+<style>
+  /* ---------- Queue rows ---------- */
+
+  .q {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 24px;
+    border-bottom: 1px solid rgba(22, 38, 28, 0.06);
+  }
+
+  .q:last-child {
+    border-bottom: none;
+  }
+
+  .q__kind {
+    font-family: var(--mono);
+    font-size: 10px;
+    font-weight: 600;
+    padding: 4px 9px;
+    background: var(--chip-content-bg);
+    color: var(--chip-content-ink);
+    border-radius: 7px;
+    flex: none;
+    width: 82px;
+    text-align: center;
+  }
+
+  .q__main {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .q__title {
+    display: block;
+    font-size: 14.5px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+  }
+
+  .q__meta {
+    display: block;
+    font-size: 12.5px;
+    color: var(--muted);
+    margin-top: 2px;
+  }
+
+  .q__count {
+    font-family: var(--mono);
+    font-size: 13px;
+    color: var(--ink-500);
+    flex: none;
+    width: 42px;
+    text-align: right;
+  }
+
+  .q__time {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--green-hover);
+    flex: none;
+    width: 42px;
+    text-align: right;
+  }
+
+  /* ---------- Link finding ---------- */
+
+  .link {
+    background: var(--white);
+    border: 1px solid var(--border-strong);
+    border-left: 4px solid var(--fail);
+    border-radius: var(--r-card-sm);
+    box-shadow: var(--shadow);
+    overflow: hidden;
+  }
+
+  .link__head {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 18px 22px;
+    border-bottom: 1px solid rgba(22, 38, 28, 0.08);
+  }
+
+  .link__verdict {
+    display: inline-flex;
+    align-items: center;
+    height: 25px;
+    padding: 0 11px;
+    background: var(--fail-tint);
+    color: var(--fail-text);
+    border-radius: var(--r-pill);
+    font-size: 12.5px;
+    font-weight: 600;
+    flex: none;
+  }
+
+  .link__title {
+    font-size: 17px;
+    font-weight: 700;
+    letter-spacing: -0.015em;
+  }
+
+  .link__who {
+    padding: 18px 22px;
+    border-bottom: 1px solid rgba(22, 38, 28, 0.08);
+  }
+
+  .link__label {
+    font-family: var(--mono);
+    font-size: 10.5px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 7px;
+  }
+
+  .link__text {
+    font-size: 14.5px;
+    line-height: 1.6;
+    color: var(--ink-700);
+  }
+
+  .link__compare {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    padding: 20px 22px;
+    background: var(--sunken);
+    border-bottom: 1px solid rgba(22, 38, 28, 0.08);
+  }
+
+  .linkCol {
+    flex: 1;
+  }
+
+  .link__sample {
+    font-size: 15px;
+    font-weight: 600;
+    text-decoration: underline;
+  }
+
+  .link__sample--now {
+    color: var(--fail-text);
+  }
+
+  .link__sample--next {
+    color: var(--green-hover);
+  }
+
+  .link__arrow {
+    font-size: 18px;
+    color: var(--muted);
+    flex: none;
+  }
+
+  .link__actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 16px 22px;
+    flex-wrap: wrap;
+  }
+
+  .link__btn {
+    display: inline-flex;
+    align-items: center;
+    height: 32px;
+    padding: 0 13px;
+    background: var(--green);
+    color: var(--paper);
+    border-radius: 9px;
+    font-size: 13px;
+    font-weight: 600;
+  }
+
+  .link__btn--ghost {
+    background: var(--white);
+    color: var(--evergreen);
+    border: 1px solid rgba(22, 38, 28, 0.18);
+  }
+
+  .link__note {
+    font-size: 12.5px;
+    color: var(--muted);
+    margin-left: auto;
+  }
+
+  /* ---------- Alt text review ---------- */
+
+  .alts,
+  .pre {
+    background: var(--white);
+    border: 1px solid var(--border-strong);
+    border-radius: var(--r-card);
+    box-shadow: var(--shadow);
+    overflow: hidden;
+  }
+
+  .alts__head,
+  .pre__head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 14px 20px;
+    background: var(--sunken);
+    border-bottom: 1px solid rgba(22, 38, 28, 0.08);
+  }
+
+  .alts__title,
+  .pre__title {
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  .alts__meta {
+    font-size: 12.5px;
+    color: var(--muted);
+  }
+
+  .alt {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 12px 20px;
+    border-bottom: 1px solid rgba(22, 38, 28, 0.06);
+  }
+
+  /* Stands in for the image being described; the draft text is the content. */
+  .alt__thumb {
+    width: 38px;
+    height: 30px;
+    border-radius: 6px;
+    background: linear-gradient(135deg, #e3e1d9, #d1cec2);
+    flex: none;
+  }
+
+  .alt__main {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .alt__draft {
+    display: block;
+    font-size: 14px;
+    color: var(--ink-700);
+  }
+
+  .alt__file {
+    display: block;
+    font-family: var(--mono);
+    font-size: 11.5px;
+    color: var(--muted);
+    margin-top: 2px;
+  }
+
+  .alt__badge {
+    display: inline-flex;
+    align-items: center;
+    height: 23px;
+    padding: 0 10px;
+    border-radius: var(--r-pill);
+    font-size: 12px;
+    font-weight: 600;
+    flex: none;
+  }
+
+  .alt__badge--attention {
+    background: var(--attention-tint);
+    color: var(--attention-text);
+  }
+  .alt__badge--pass {
+    background: var(--green-soft);
+    color: var(--green-hover);
+  }
+  .alt__badge--none {
+    background: var(--rail);
+    color: var(--ink-500);
+  }
+
+  .alts__foot {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px 20px;
+    flex-wrap: wrap;
+  }
+
+  .alts__btn {
+    display: inline-flex;
+    align-items: center;
+    height: 32px;
+    padding: 0 13px;
+    background: var(--green);
+    color: var(--paper);
+    border-radius: 9px;
+    font-size: 13px;
+    font-weight: 600;
+  }
+
+  .alts__note {
+    font-size: 12.5px;
+    color: var(--muted);
+  }
+
+  /* ---------- Pre-publish check ---------- */
+
+  .pre__flag {
+    display: inline-flex;
+    align-items: center;
+    height: 22px;
+    padding: 0 9px;
+    background: var(--attention-tint);
+    color: var(--attention-text);
+    border-radius: 7px;
+    font-family: var(--mono);
+    font-size: 10.5px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+
+  .pre__row {
+    display: flex;
+    align-items: center;
+    gap: 11px;
+    padding: 12px 20px;
+    font-size: 14px;
+    color: var(--ink-700);
+  }
+
+  .pre__row--fix {
+    background: var(--attention-tint);
+  }
+
+  .pre__mark {
+    font-family: var(--mono);
+    font-weight: 700;
+    color: var(--green-hover);
+    flex: none;
+    width: 14px;
+  }
+
+  .pre__row--fix .pre__mark {
+    color: var(--attention-text);
+  }
+
+  .pre__label {
+    flex: 1;
+  }
+
+  .pre__tag {
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--green-hover);
+    flex: none;
+  }
+
+  .pre__tag--fix {
+    color: var(--attention-text);
+  }
+
+  .pre__note {
+    padding: 14px 20px;
+    border-top: 1px solid rgba(22, 38, 28, 0.08);
+    font-size: 13px;
+    line-height: 1.55;
+    color: var(--muted);
+  }
+
+  @media (max-width: 700px) {
+    .link__compare {
+      flex-direction: column;
+      align-items: stretch;
+      gap: 12px;
+    }
+    .link__arrow {
+      transform: rotate(90deg);
+      align-self: center;
+    }
+    .q {
+      flex-wrap: wrap;
+      gap: 8px 12px;
+    }
+    .q__main {
+      flex-basis: 100%;
+      order: -1;
+    }
+  }
+</style>

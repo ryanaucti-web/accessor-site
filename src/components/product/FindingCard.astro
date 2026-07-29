@@ -1,0 +1,295 @@
+---
+/** The full finding card: verdict header, the error in plain language, the fix,
+ *  a dark business-impact strip, and an owner footer. The dark strip is what
+ *  turns a rule violation into a decision, so it is never optional. */
+
+/** Icons for the impact strip. Which one is right depends on what the page
+ *  argues the cost of the barrier is. */
+const ICONS = {
+  chart: 'M4 19V5M4 19h16M8 16v-4M12 16V8M16 16v-6',
+  care: 'M12 21s-7-4.5-7-10a4 4 0 017-2.6A4 4 0 0119 11c0 5.5-7 10-7 10z',
+  cart: 'M3 7h18l-1.5 13H4.5L3 7zM8 7V5a4 4 0 018 0v2',
+  shield: 'M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6l8-3z',
+  clock: 'M12 8v4l3 2M12 3a9 9 0 100 18 9 9 0 000-18z',
+} as const;
+
+interface Props {
+  verdict: string;
+  verdictTone?: 'fail' | 'attention' | 'pass';
+  title: string;
+  errorLabel?: string;
+  error: string;
+  /** Omit when the page wants the impact to land straight after the error. */
+  fix?: string;
+  impact: string;
+  impactLabel?: string;
+  impactIcon?: keyof typeof ICONS;
+  owner?: {
+    initials: string;
+    /** Tints the avatar to the ARRM role that owns the fix. */
+    role: 'design' | 'dev' | 'content';
+    name: string;
+    meta: string;
+    action: string;
+  };
+}
+
+const {
+  verdict,
+  verdictTone = 'fail',
+  title,
+  errorLabel = 'Error',
+  error,
+  fix,
+  impact,
+  impactLabel = 'Business impact',
+  impactIcon = 'chart',
+  owner,
+} = Astro.props;
+---
+
+<article class={`fc fc--${verdictTone}`}>
+  <header class="fc__head">
+    <span class={`fc__verdict fc__verdict--${verdictTone}`}>{verdict}</span>
+    <h3 class="fc__title">{title}</h3>
+  </header>
+
+  <div class="fc__block">
+    <p class={`fc__label fc__label--${verdictTone}`}>{errorLabel}</p>
+    <p class="fc__text">{error}</p>
+  </div>
+
+  {
+    fix && (
+      <div class="fc__block fc__block--fix">
+        <p class="fc__label fc__label--fix">How to fix</p>
+        <p class="fc__text">{fix}</p>
+      </div>
+    )
+  }
+
+  <div class="fc__impact">
+    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <path
+        d={ICONS[impactIcon]}
+        stroke="var(--green-light)"
+        stroke-width="1.8"
+        stroke-linecap="round"
+        stroke-linejoin="round"></path>
+    </svg>
+    <div>
+      <p class="fc__impactLabel">{impactLabel}</p>
+      <p class="fc__impactBody"><Fragment set:html={impact} /></p>
+    </div>
+  </div>
+
+  {
+    owner && (
+      <footer class="fc__owner">
+        <span class={`fc__avatar fc__avatar--${owner.role}`}>{owner.initials}</span>
+        <span class="fc__ownerMeta">
+          <span class="fc__ownerName">{owner.name}</span>
+          <span class="fc__ownerSub">{owner.meta}</span>
+        </span>
+        <span class="fc__action">{owner.action}</span>
+      </footer>
+    )
+  }
+</article>
+
+<style>
+  .fc {
+    background: var(--white);
+    border: 1px solid var(--border-strong);
+    border-radius: var(--r-card-sm);
+    box-shadow: var(--shadow);
+    overflow: hidden;
+  }
+
+  .fc--fail {
+    border-left: 4px solid var(--fail);
+  }
+  .fc--attention {
+    border-left: 4px solid var(--attention);
+  }
+  .fc--pass {
+    border-left: 4px solid var(--pass);
+  }
+
+  .fc__head {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 18px 22px;
+    border-bottom: 1px solid rgba(22, 38, 28, 0.08);
+  }
+
+  .fc__verdict {
+    display: inline-flex;
+    align-items: center;
+    height: 25px;
+    padding: 0 11px;
+    border-radius: var(--r-pill);
+    font-size: 12.5px;
+    font-weight: 600;
+    flex: none;
+  }
+
+  .fc__verdict--fail {
+    background: var(--fail-tint);
+    color: var(--fail-text);
+  }
+  .fc__verdict--attention {
+    background: var(--attention-tint);
+    color: var(--attention-text);
+  }
+  .fc__verdict--pass {
+    background: var(--green-soft);
+    color: var(--green-hover);
+  }
+
+  .fc__title {
+    flex: 1;
+    font-size: 17px;
+    font-weight: 700;
+    letter-spacing: -0.015em;
+  }
+
+  .fc__block {
+    padding: 18px 22px;
+    border-bottom: 1px solid rgba(22, 38, 28, 0.08);
+  }
+
+  .fc__block--fix {
+    background: var(--green-tint);
+  }
+
+  .fc__label {
+    font-family: var(--mono);
+    font-size: 10.5px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-bottom: 7px;
+  }
+
+  .fc__label--fail {
+    color: var(--fail-text);
+  }
+  .fc__label--attention {
+    color: var(--attention-text);
+  }
+  .fc__label--pass,
+  .fc__label--fix {
+    color: var(--green-hover);
+  }
+
+  .fc__text {
+    font-size: 14.5px;
+    line-height: 1.6;
+    color: var(--ink-700);
+  }
+
+  .fc__impact {
+    display: flex;
+    gap: 11px;
+    align-items: flex-start;
+    padding: 18px 22px;
+    background: var(--evergreen);
+  }
+
+  .fc__impact svg {
+    flex: none;
+    margin-top: 2px;
+  }
+
+  .fc__impactLabel {
+    font-family: var(--mono);
+    font-size: 10.5px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--green-light);
+    margin-bottom: 5px;
+  }
+
+  .fc__impactBody {
+    font-size: 14px;
+    line-height: 1.5;
+    color: var(--on-dark-mist);
+  }
+
+  .fc__impactBody :global(strong) {
+    color: var(--paper);
+  }
+
+  .fc__owner {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 18px 22px;
+    border-top: 1px solid rgba(22, 38, 28, 0.08);
+  }
+
+  .fc__avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    color: var(--white);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: 700;
+    flex: none;
+  }
+
+  .fc__avatar--design {
+    background: var(--chip-design-ink);
+  }
+  .fc__avatar--dev {
+    background: var(--chip-dev-ink);
+  }
+  .fc__avatar--content {
+    background: #5c645c;
+  }
+
+  .fc__ownerMeta {
+    flex: 1;
+  }
+
+  .fc__ownerName {
+    display: block;
+    font-size: 14.5px;
+    font-weight: 600;
+  }
+
+  .fc__ownerSub {
+    display: block;
+    font-size: 12.5px;
+    color: var(--muted);
+  }
+
+  .fc__action {
+    display: inline-flex;
+    align-items: center;
+    height: 32px;
+    padding: 0 13px;
+    background: var(--white);
+    color: var(--evergreen);
+    border: 1px solid rgba(22, 38, 28, 0.18);
+    border-radius: 9px;
+    font-size: 13px;
+    font-weight: 600;
+    flex: none;
+  }
+
+  @media (max-width: 640px) {
+    .fc__owner {
+      flex-wrap: wrap;
+    }
+    .fc__ownerMeta {
+      flex-basis: calc(100% - 44px);
+    }
+  }
+</style>

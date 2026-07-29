@@ -1,0 +1,703 @@
+---
+import Base from '../../layouts/Base.astro';
+import CtaBand from '../../components/CtaBand.astro';
+import CheckCircle from '../../components/ui/CheckCircle.astro';
+
+const types = [
+  {
+    key: 'service',
+    nav: 'Service providers',
+    href: '/partners/service-providers',
+    cta: 'Talk to partnerships',
+    title: 'Service providers',
+    who: 'Design, development, and digital agencies delivering websites and products for clients who now ask about accessibility.',
+    d: 'M3 21h18M5 21V8l7-4 7 4v13M9 21v-6h6v6',
+    points: [
+      'A client workspace per engagement, fully white-labelled',
+      'Findings written in plain language, so you can hand them to a client without translating first',
+      'A live conformance record to attach to your own reporting',
+      'Accessibility packaged as a retainer instead of a one-off audit line item',
+    ],
+    model: 'Priced per client workspace at wholesale, so margin stays inside your retainer.',
+  },
+  {
+    key: 'consultancy',
+    nav: 'Accessibility consultancies',
+    href: '/partners/consultancies',
+    cta: 'Talk to partnerships',
+    title: 'Accessibility consultancies',
+    who: 'Specialists doing manual testing, assistive technology review, and conformance sign-off for organizations that need real expertise.',
+    d: 'M12 3l8 4v6c0 4-3.5 7-8 8-4.5-1-8-4-8-8V7l8-4zM9 12l2 2 4-4',
+    points: [
+      'The automated layer handled, so billable hours go to judgment rather than sweeping for contrast errors',
+      'Every manual verdict recorded against the criterion, with who signed it and when',
+      'Evidence and VPAT generation from live results',
+      'Your name on the report, because the expertise is yours',
+    ],
+    model:
+      'limena never marks conformance passed on automation alone. The judgment call stays with you, and the platform records it.',
+  },
+  {
+    key: 'incubator',
+    nav: 'Incubators and accelerators',
+    href: '/partners/incubators',
+    cta: 'Talk to us about your cohort',
+    title: 'Incubators and accelerators',
+    who: 'Programmes supporting a portfolio of early companies that would rather build accessibility in than retrofit it before their first enterprise deal.',
+    d: 'M12 2l3 6 6 1-4.5 4.5L18 20l-6-3-6 3 1.5-6.5L3 9l6-1 3-6',
+    points: [
+      'Portfolio-wide access, so every company in the cohort can test from day one',
+      'A differentiator for the programme: founders leave able to answer an enterprise accessibility questionnaire',
+      'Barriers caught while a product is small enough to fix cheaply',
+      'A clear upgrade path as portfolio companies grow into their own plans',
+    ],
+    model: 'Programme-level terms based on cohort size, with companies graduating onto direct plans as they raise.',
+  },
+];
+
+const benefits = [
+  {
+    title: 'Full white-label',
+    body: 'Your logo, colours, and domain across the dashboard and every exported report. Clients never see limena unless you want them to.',
+  },
+  {
+    title: 'Isolated workspaces',
+    body: 'Each organization’s data, programmes, and evidence stay separate. Switch between them from one login.',
+  },
+  {
+    title: 'Wholesale terms',
+    body: 'Rates set against the number of organizations you look after, so the model works when you are the one billing.',
+  },
+  {
+    title: 'Unlimited seats',
+    body: 'Your whole team plus your client’s, on every workspace. Accessibility never becomes one person’s job.',
+  },
+  {
+    title: 'A clean upgrade path',
+    body: 'When a client outgrows a single product or needs governance controls, they move onto a direct plan you can resell.',
+  },
+  {
+    title: 'Listed as a partner',
+    body: 'Organizations that come to us needing delivery capacity get introduced to partners who can do the work.',
+  },
+];
+
+const how = [
+  {
+    n: '01',
+    title: 'Tell us your shape',
+    body: 'How many organizations you look after, whether you deliver the remediation or advise on it, and how you bill today. That determines which of the three models fits and what the terms look like.',
+  },
+  {
+    n: '02',
+    title: 'Set up one workspace',
+    body: 'Start with a single client or portfolio company, white-labelled and ready to show. Most partners run their first engagement through limena before signing anything larger.',
+  },
+  {
+    n: '03',
+    title: 'Scale as your book grows',
+    body: 'Add workspaces as you win engagements. Terms improve with volume, and you are never renegotiating mid-engagement to add one more client.',
+  },
+];
+
+const helpWith = [
+  'Remediating the findings limena surfaces, in your codebase or CMS',
+  'Manual and assistive technology testing where automation cannot judge',
+  'Conformance sign-off and VPAT review by a qualified specialist',
+  'Standing up an accessibility programme and training the team who will run it',
+];
+---
+
+<Base
+  title="Partners · limena"
+  description="If you deliver accessibility for other organizations, or you are responsible for a portfolio of them, you are a partner, and the commercial model should reflect that."
+  active="partners"
+>
+  <!-- HERO -->
+  <section class="band band--dark pHero">
+    <div class="pHero__inner">
+      <p class="eyebrow pHero__eyebrow">Partners</p>
+      <h1 class="pHero__h1">Accessibility is a service. limena is what runs underneath it.</h1>
+      <p class="pHero__lede">
+        If you deliver accessibility for other organizations, or you are responsible for a portfolio of them, you are not
+        a customer buying a tool. You are a partner, and the commercial model should reflect that.
+      </p>
+    </div>
+  </section>
+
+  <!-- PARTNER TYPES -->
+  <section class="band band--paper" id="partner-types">
+    <div class="types__inner">
+      <div class="lead lead--center">
+        <p class="eyebrow">Three ways to partner</p>
+        <h2 class="h2">Which one describes you?</h2>
+      </div>
+
+      <div class="types__grid">
+        <div class="types__rail" role="tablist" aria-orientation="vertical" aria-label="Partner types">
+          {
+            types.map((t, i) => (
+              <button
+                type="button"
+                class="railBtn"
+                role="tab"
+                id={`ptab-${t.key}`}
+                aria-controls={`ppane-${t.key}`}
+                aria-selected={i === 0 ? 'true' : 'false'}
+                tabindex={i === 0 ? 0 : -1}
+                data-ptab
+              >
+                <span class="railBtn__label">{t.nav}</span>
+                <span class="railBtn__arrow" aria-hidden="true">
+                  →
+                </span>
+              </button>
+            ))
+          }
+          <p class="types__hint">
+            Not sure which fits? Tell us how you bill for accessibility today and we will point you at the right one.
+          </p>
+        </div>
+
+        <div class="types__panes">
+          {
+            types.map((t, i) => (
+              <div class="pane" role="tabpanel" id={`ppane-${t.key}`} aria-labelledby={`ptab-${t.key}`} hidden={i !== 0}>
+                <span class="pane__icon">
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                    <path d={t.d} stroke="var(--green-hover)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+                  </svg>
+                </span>
+                <h3 class="pane__title">{t.title}</h3>
+                <p class="pane__who">{t.who}</p>
+
+                <p class="pane__label">What it gives you</p>
+                <ul class="pane__points">
+                  {t.points.map((p) => (
+                    <li class="pane__point">
+                      <CheckCircle size={17} />
+                      <span>{p}</span>
+                    </li>
+                  ))}
+                </ul>
+
+                <div class="pane__model">
+                  <p class="pane__modelLabel">How it is priced</p>
+                  <p class="pane__modelBody">{t.model}</p>
+                </div>
+
+                <a href={t.href} class="btn btn--primary pane__cta">
+                  {t.cta}
+                </a>
+              </div>
+            ))
+          }
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- WHAT EVERY PARTNER GETS -->
+  <section class="band band--banded ruled">
+    <div class="types__inner">
+      <div class="lead lead--center">
+        <h2 class="h2 lead__h2">What every partner gets.</h2>
+        <p class="lede">The same platform, on terms that assume you are delivering to someone else.</p>
+      </div>
+
+      <div class="grid3">
+        {
+          benefits.map((b) => (
+            <div class="card benefit">
+              <h3 class="benefit__title">{b.title}</h3>
+              <p class="benefit__body">{b.body}</p>
+            </div>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- HOW IT WORKS -->
+  <section class="band band--paper">
+    <div class="types__inner">
+      <h2 class="h2 how__h2">Getting started takes a conversation, not a contract cycle.</h2>
+      <ol class="how">
+        {
+          how.map((h) => (
+            <li class="howStep">
+              <div class="howStep__top">
+                <span class="howStep__n">{h.n}</span>
+                <h3 class="howStep__title">{h.title}</h3>
+              </div>
+              <p class="howStep__body">{h.body}</p>
+            </li>
+          ))
+        }
+      </ol>
+    </div>
+  </section>
+
+  <!-- FIND A PARTNER -->
+  <section class="band band--dark" id="find-a-partner">
+    <div class="find">
+      <div>
+        <p class="eyebrow">Looking for help instead?</p>
+        <h2 class="find__h2">Find a partner to run it with you.</h2>
+        <p class="find__body">
+          limena tells you what to fix and who owns it. If you do not have the capacity in house, our partners do the
+          remediation, the manual testing, and the conformance sign-off.
+        </p>
+        <a href="/contact" class="btn btn--primary find__cta">Request an introduction</a>
+      </div>
+
+      <div class="findCard">
+        <p class="findCard__label">Partners can help with</p>
+        <ul>
+          {
+            helpWith.map((h) => (
+              <li class="findCard__item">
+                <CheckCircle size={17} color="var(--green-light)" />
+                <span>{h}</span>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <CtaBand
+    heading="Let's talk about your book of business."
+    body="Tell us how many organizations you look after and how you bill for accessibility today. We will size the terms around it."
+    primaryLabel="Talk to partnerships"
+    primaryHref="/contact"
+    secondaryLabel="Test a client site free"
+    secondaryHref="/scan"
+  />
+</Base>
+
+<style>
+  .pHero {
+    padding-bottom: 72px;
+  }
+
+  .pHero__inner {
+    max-width: var(--content-narrow);
+    margin: 0 auto;
+    text-align: center;
+  }
+
+  .pHero__eyebrow {
+    font-size: 13px;
+    letter-spacing: 0.14em;
+    margin-bottom: 20px;
+  }
+
+  .pHero__h1 {
+    font-size: 54px;
+    font-weight: 800;
+    letter-spacing: -0.035em;
+    line-height: 1.04;
+    margin-bottom: 22px;
+    color: var(--paper);
+    text-wrap: balance;
+  }
+
+  .pHero__lede {
+    font-size: 19px;
+    line-height: 1.6;
+    color: var(--on-dark-sage);
+    max-width: 62ch;
+    margin: 0 auto;
+    text-wrap: pretty;
+  }
+
+  .types__inner {
+    max-width: 1160px;
+    margin: 0 auto;
+  }
+
+  .ruled {
+    border-top: 1px solid rgba(22, 38, 28, 0.06);
+    border-bottom: 1px solid rgba(22, 38, 28, 0.06);
+  }
+
+  .lead {
+    max-width: 60ch;
+    margin: 0 auto 44px;
+  }
+
+  .lead--center {
+    text-align: center;
+  }
+
+  .lead .eyebrow {
+    display: block;
+    font-size: 13px;
+    letter-spacing: 0.14em;
+    margin-bottom: 16px;
+  }
+
+  .lead__h2 {
+    margin-bottom: 14px;
+  }
+
+  /* ---------- Rail and pane ---------- */
+
+  .types__grid {
+    display: grid;
+    grid-template-columns: 300px 1fr;
+    gap: 28px;
+    align-items: start;
+  }
+
+  .types__rail {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    background: var(--rail);
+    border-radius: var(--r-card);
+    padding: 22px 20px;
+  }
+
+  .railBtn {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    width: 100%;
+    padding: 14px 16px;
+    /* All four edges declared so no UA border survives on one of them. */
+    border: 1px solid transparent;
+    border-radius: var(--r-pill);
+    background: transparent;
+    text-align: left;
+    font-family: var(--sans);
+    cursor: pointer;
+  }
+
+  .railBtn[aria-selected='true'] {
+    background: var(--evergreen);
+  }
+
+  .railBtn__label {
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--ink-700);
+  }
+
+  .railBtn__arrow {
+    font-size: 14px;
+    flex: none;
+    color: var(--muted);
+  }
+
+  .railBtn[aria-selected='true'] .railBtn__label {
+    font-weight: 600;
+    color: var(--paper);
+  }
+
+  .railBtn[aria-selected='true'] .railBtn__arrow {
+    color: var(--green-light);
+  }
+
+  .types__hint {
+    margin-top: 18px;
+    padding-top: 18px;
+    border-top: 1px solid rgba(22, 38, 28, 0.1);
+    font-size: 13.5px;
+    line-height: 1.55;
+    color: var(--muted);
+  }
+
+  .pane {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: var(--r-card);
+    box-shadow: var(--shadow);
+    padding: 34px;
+  }
+
+  .pane[hidden] {
+    display: none;
+  }
+
+  .pane__icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    background: var(--green-tint);
+    margin-bottom: 18px;
+  }
+
+  .pane__title {
+    font-size: 27px;
+    font-weight: 800;
+    letter-spacing: -0.025em;
+    margin-bottom: 10px;
+  }
+
+  .pane__who {
+    font-size: 16.5px;
+    line-height: 1.6;
+    color: var(--ink-500);
+    margin-bottom: 24px;
+    max-width: 60ch;
+  }
+
+  .pane__label {
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    color: var(--green-hover);
+    margin-bottom: 14px;
+  }
+
+  .pane__points {
+    display: flex;
+    flex-direction: column;
+    gap: 11px;
+    margin-bottom: 24px;
+  }
+
+  .pane__point {
+    display: flex;
+    gap: 11px;
+    align-items: flex-start;
+    font-size: 15.5px;
+    line-height: 1.5;
+    color: var(--ink-700);
+  }
+
+  .pane__point :global(svg) {
+    margin-top: 2px;
+  }
+
+  .pane__model {
+    background: var(--sunken);
+    border: 1px solid var(--border);
+    border-radius: var(--r-control);
+    padding: 18px 20px;
+    margin-bottom: 24px;
+  }
+
+  .pane__modelLabel {
+    font-family: var(--mono);
+    font-size: 10.5px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 6px;
+  }
+
+  .pane__modelBody {
+    font-size: 14.5px;
+    line-height: 1.55;
+    color: var(--ink-700);
+  }
+
+  /* ---------- Benefits ---------- */
+
+  .grid3 {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 18px;
+  }
+
+  .benefit {
+    padding: 28px;
+  }
+
+  .benefit__title {
+    font-size: 18px;
+    font-weight: 700;
+    letter-spacing: -0.015em;
+    margin-bottom: 8px;
+  }
+
+  .benefit__body {
+    font-size: 15px;
+    line-height: 1.55;
+    color: var(--ink-500);
+  }
+
+  /* ---------- How it works ---------- */
+
+  .how__h2 {
+    max-width: 24ch;
+    margin-bottom: 40px;
+  }
+
+  .how {
+    border-bottom: 1px solid rgba(22, 38, 28, 0.14);
+  }
+
+  .howStep {
+    display: grid;
+    grid-template-columns: 0.42fr 0.58fr;
+    gap: 44px;
+    align-items: baseline;
+    border-top: 1px solid rgba(22, 38, 28, 0.14);
+    padding: 30px 0;
+  }
+
+  .howStep__top {
+    display: flex;
+    align-items: baseline;
+    gap: 14px;
+  }
+
+  .howStep__n {
+    font-family: var(--mono);
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    color: var(--green-hover);
+    flex: none;
+  }
+
+  .howStep__title {
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+  }
+
+  .howStep__body {
+    font-size: 16px;
+    line-height: 1.6;
+    color: var(--ink-500);
+  }
+
+  /* ---------- Find a partner ---------- */
+
+  .find {
+    max-width: 1160px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 56px;
+    align-items: center;
+  }
+
+  .find .eyebrow {
+    display: block;
+    font-size: 13px;
+    letter-spacing: 0.14em;
+    margin-bottom: 16px;
+  }
+
+  .find__h2 {
+    font-size: 36px;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    line-height: 1.08;
+    color: var(--paper);
+    margin-bottom: 16px;
+    text-wrap: balance;
+  }
+
+  .find__body {
+    font-size: 17px;
+    line-height: 1.6;
+    color: var(--on-dark-sage);
+    margin-bottom: 26px;
+    max-width: 48ch;
+  }
+
+  .findCard {
+    background: rgba(244, 241, 234, 0.05);
+    border: 1px solid var(--on-dark-border);
+    border-radius: var(--r-card);
+    padding: 28px;
+  }
+
+  .findCard__label {
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    color: var(--green-light);
+    margin-bottom: 18px;
+  }
+
+  .findCard__item {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    font-size: 15px;
+    line-height: 1.55;
+    color: var(--on-dark-mist);
+  }
+
+  .findCard__item + .findCard__item {
+    margin-top: 14px;
+  }
+
+  .findCard__item :global(svg) {
+    margin-top: 2px;
+  }
+
+  /* ---------- Responsive ---------- */
+
+  @media (max-width: 1000px) {
+    .pHero__h1 {
+      font-size: 36px;
+    }
+    .pHero__lede {
+      font-size: 17.5px;
+    }
+    .types__grid,
+    .find,
+    .howStep {
+      grid-template-columns: 1fr;
+      gap: 24px;
+    }
+    .howStep {
+      gap: 12px;
+    }
+    .grid3 {
+      grid-template-columns: 1fr;
+    }
+    .pane {
+      padding: 26px;
+    }
+    .find__h2 {
+      font-size: 27px;
+    }
+  }
+</style>
+
+<script>
+  const rail = document.querySelector<HTMLElement>('#partner-types');
+  if (rail) {
+    const tabs = Array.from(rail.querySelectorAll<HTMLButtonElement>('[data-ptab]'));
+
+    const select = (tab: HTMLButtonElement, focus = false) => {
+      for (const t of tabs) {
+        const on = t === tab;
+        t.setAttribute('aria-selected', on ? 'true' : 'false');
+        t.tabIndex = on ? 0 : -1;
+        document.getElementById(t.getAttribute('aria-controls')!)?.toggleAttribute('hidden', !on);
+      }
+      if (focus) tab.focus();
+    };
+
+    for (const [i, tab] of tabs.entries()) {
+      tab.addEventListener('click', () => select(tab));
+      tab.addEventListener('keydown', (e) => {
+        const step = { ArrowDown: 1, ArrowRight: 1, ArrowUp: -1, ArrowLeft: -1 }[e.key];
+        if (!step) return;
+        e.preventDefault();
+        select(tabs[(i + step + tabs.length) % tabs.length], true);
+      });
+    }
+  }
+</script>

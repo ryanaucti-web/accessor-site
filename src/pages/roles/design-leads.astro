@@ -1,0 +1,703 @@
+---
+import Base from '../../layouts/Base.astro';
+import ProductHero from '../../components/product/ProductHero.astro';
+import FrictionBand from '../../components/product/FrictionBand.astro';
+import ProductRow from '../../components/product/ProductRow.astro';
+import OutcomeBand from '../../components/product/OutcomeBand.astro';
+import CtaBand from '../../components/CtaBand.astro';
+
+const stats = [
+  { num: '4', label: 'components at fault', delta: 'of 42' },
+  { num: '2,140', label: 'violations from 1 token', delta: 'accent-500' },
+  { num: '11', label: 'components use it', delta: 'across 3 products' },
+  { num: '1', label: 'token change clears them', delta: 'no screens touched', ok: true },
+];
+
+// `sw` is the swatch shown against each component: the token it currently uses.
+const comps = [
+  {
+    name: 'Button',
+    meta: 'Focus ring removed by CSS reset',
+    usage: '214 usages',
+    sw: '#9FD4B6',
+    verdict: 'fail',
+    label: 'Fail',
+  },
+  {
+    name: 'Chip',
+    meta: 'No focus indicator in any state',
+    usage: '86 usages',
+    sw: '#9FD4B6',
+    verdict: 'fail',
+    label: 'Fail',
+  },
+  {
+    name: 'IconButton',
+    meta: 'Target area 18px, below 24px minimum',
+    usage: '148 usages',
+    sw: '#D9D5C8',
+    verdict: 'attention',
+    label: 'Attention',
+  },
+  {
+    name: 'Tabs',
+    meta: 'Active state signalled by colour only',
+    usage: '32 usages',
+    sw: '#D9D5C8',
+    verdict: 'attention',
+    label: 'Attention',
+  },
+  {
+    name: 'TextField',
+    meta: 'Label, error, and focus all present',
+    usage: '196 usages',
+    sw: '#2C7A52',
+    verdict: 'pass',
+    label: 'Pass',
+  },
+];
+
+const frictions = [
+  {
+    title: 'Leverage cuts both ways',
+    d: 'M4 5h7v7H4zM13 12h7v7h-7z',
+    body: 'The reason a system is valuable is the reason a mistake in it is expensive. One failing token becomes a barrier on every screen that adopts it.',
+  },
+  {
+    title: 'Findings arrive as pages',
+    d: 'M6 3h9l4 4v14H6zM14 3v5h5',
+    body: 'A report tells you 2,140 pages fail contrast. It does not tell you they are all one token, so the work looks enormous and nobody starts.',
+  },
+  {
+    title: 'States are undesigned',
+    d: 'M12 3v2M12 19v2M5 12H3M21 12h-2M12 8a4 4 0 100 8 4 4 0 000-8z',
+    body: 'Focus-visible, error, and 200 percent zoom rarely make it into the file. They are also where most component-level barriers actually are.',
+  },
+];
+
+// Each row shows the real rendered swatch beside the verdict, so the state
+// under discussion is visible rather than described.
+const states = [
+  { name: 'default', note: 'Contrast 5.4:1 with proposed token', bg: '#2C7A52', fg: '#F4F1EA', verdict: 'pass', label: 'Pass' },
+  { name: 'hover', note: 'Contrast holds', bg: '#1E5E3D', fg: '#F4F1EA', verdict: 'pass', label: 'Pass' },
+  {
+    name: 'focus-visible',
+    note: 'No visible indicator, removed by reset',
+    bg: '#2C7A52',
+    fg: '#F4F1EA',
+    verdict: 'fail',
+    label: 'Fail',
+  },
+  // The low-contrast pair here is the point of the row, not an oversight: a
+  // disabled control is exempt from 1.4.3.
+  {
+    name: 'disabled',
+    note: 'Contrast 2.1:1, acceptable for disabled',
+    bg: '#D9D5C8',
+    fg: '#8A938A',
+    verdict: 'pass',
+    label: 'Pass',
+  },
+  { name: 'error', note: 'Colour is the only signal', bg: '#B24A33', fg: '#F4F1EA', verdict: 'attention', label: 'Attention' },
+  {
+    name: 'zoom 200%',
+    note: 'Label truncates instead of wrapping',
+    bg: '#2C7A52',
+    fg: '#F4F1EA',
+    verdict: 'attention',
+    label: 'Attention',
+  },
+];
+
+const storyRows = [
+  { label: 'Button · all states', tag: 'pass', ok: true },
+  { label: 'TextField · all states', tag: 'pass', ok: true },
+  { label: 'Tabs · colour only on active', tag: 'known', ok: true },
+  { label: 'Chip · no focus indicator', tag: 'new', ok: false },
+];
+
+const outcomes = [
+  'Contrast failures traced to the token, with the blast radius shown before you change it.',
+  'Focus, error, disabled, and 200 percent zoom tested as states rather than reported as a broken component.',
+  'The component library checked directly, so a barrier is caught before three product teams adopt it.',
+  'One change in the system clearing thousands of instances, instead of a ticket per screen.',
+];
+---
+
+<Base
+  title="limena for design leads"
+  description="One token, one component, thousands of instances. Accessibility decisions made in your design system either scale or replicate, and limena tells you which."
+  active="usecases"
+>
+  <ProductHero
+    backHref="/use-cases"
+    backLabel="Use cases"
+    title="For design leads"
+    lede="One token, one component, thousands of instances. Accessibility decisions made in your design system either scale or replicate, and limena tells you which."
+    panelTitle="Design system audit"
+    panelMeta="42 components · 3 products"
+    panelStatus="4 components at fault"
+    stats={stats}
+  >
+    {
+      comps.map((c) => (
+        <div class="dcomp">
+          <span class="dcomp__sw" style={`background:${c.sw}`} aria-hidden="true" />
+          <span class="dcomp__main">
+            <span class="dcomp__name">{c.name}</span>
+            <span class="dcomp__meta">{c.meta}</span>
+          </span>
+          <span class="dcomp__usage">{c.usage}</span>
+          <span class={`dcomp__badge dcomp__badge--${c.verdict}`}>{c.label}</span>
+        </div>
+      ))
+    }
+  </ProductHero>
+
+  <FrictionBand
+    heading="Your decisions replicate whether they are right or not."
+    lede="A design system is leverage in both directions. One accent colour that fails contrast becomes a barrier on every screen that adopts it."
+    items={frictions}
+  />
+
+  <ProductRow
+    first
+    flip
+    eyebrow="01 · Fix it at the token"
+    heading="One value, thousands of screens."
+    body={[
+      'limena traces contrast failures back to the token, not the page. You see the current value, a passing alternative, and exactly how far the change reaches before you make it.',
+      'Same for focus styles, target sizes, and spacing that breaks at 200 percent zoom.',
+    ]}
+  >
+    <div class="token">
+      <div class="token__head">
+        <span class="token__verdict">Fail</span>
+        <span class="token__title">Accent on paper is 3.1:1</span>
+        <span class="token__wcag">1.4.3</span>
+      </div>
+
+      <div class="token__compare">
+        <div class="swatch">
+          <p class="swatch__label">Now</p>
+          <!-- The swatch is the failing pair itself, so it is hidden from
+               assistive tech: the value and verdict below carry the meaning. -->
+          <span class="swatch__btn swatch__btn--now" aria-hidden="true">Continue</span>
+          <p class="swatch__val">#9FD4B6 · 3.1:1 fails</p>
+        </div>
+        <span class="token__arrow" aria-hidden="true">→</span>
+        <div class="swatch">
+          <p class="swatch__label">Proposed</p>
+          <span class="swatch__btn swatch__btn--next" aria-hidden="true">Continue</span>
+          <p class="swatch__val">#2C7A52 · 5.4:1 passes</p>
+        </div>
+      </div>
+
+      <div class="token__blast">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path
+            d="M4 5h7v7H4zM13 12h7v7h-7z"
+            stroke="var(--green-light)"
+            stroke-width="1.8"
+            stroke-linecap="round"
+            stroke-linejoin="round"></path>
+        </svg>
+        <div>
+          <p class="token__blastLabel">Blast radius</p>
+          <p class="token__blastBody">
+            Token <strong>accent-500</strong> is used by 11 components across 3 products. Changing it here clears
+            <strong>2,140 reported violations</strong> without touching a screen.
+          </p>
+        </div>
+      </div>
+
+      <div class="token__actions">
+        <span class="token__btn">Update token</span>
+        <span class="token__btn token__btn--ghost">See 11 components</span>
+      </div>
+    </div>
+  </ProductRow>
+
+  <ProductRow
+    eyebrow="02 · The states nobody designs"
+    heading="Focus, error, and zoom get checked too."
+    body={[
+      'Default and hover are always in the file. Focus-visible, disabled, error, and how the component behaves at 200 percent zoom usually are not, and that is where most component-level barriers live.',
+      'limena tests each state and tells you which one is missing rather than reporting the component as broken.',
+    ]}
+  >
+    <div class="states">
+      <div class="states__head">
+        <span class="states__title">Button · state coverage</span>
+        <span class="states__meta">214 usages</span>
+      </div>
+      <ul>
+        {
+          states.map((s) => (
+            <li class="state">
+              <span class="state__sample" style={`background:${s.bg};color:${s.fg}`} aria-hidden="true">
+                Continue
+              </span>
+              <span class="state__main">
+                <span class="state__name">{s.name}</span>
+                <span class="state__note">{s.note}</span>
+              </span>
+              <span class={`state__badge state__badge--${s.verdict}`}>{s.label}</span>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </ProductRow>
+
+  <ProductRow
+    last
+    flip
+    eyebrow="03 · Upstream of everything"
+    heading="Catch it in the system, not in the product."
+    body={[
+      'limena tests your component library directly, in Storybook or a live docs site. A new component with no focus indicator fails there, before three product teams adopt it and it becomes thirty tickets.',
+      'This is the cheapest place accessibility can possibly be fixed.',
+    ]}
+  >
+    <div class="story">
+      <div class="story__head">
+        <span class="story__title">Storybook check · design system v4.1</span>
+        <span class="story__flag">1 new</span>
+      </div>
+      <ul>
+        {
+          storyRows.map((r) => (
+            <li class={`story__row ${r.ok ? '' : 'story__row--new'}`}>
+              <span class="story__mark" aria-hidden="true">
+                {r.ok ? '✓' : '!'}
+              </span>
+              <span class="story__label">{r.label}</span>
+              <span class={`story__tag ${r.ok ? '' : 'story__tag--new'}`}>{r.tag}</span>
+            </li>
+          ))
+        }
+      </ul>
+      <p class="story__note">
+        The new Chip component ships without a focus indicator. Caught in the design system pipeline, before any product
+        adopts it.
+      </p>
+    </div>
+  </ProductRow>
+
+  <OutcomeBand heading="A design system that makes accessibility the default." outcomes={outcomes} />
+
+  <CtaBand
+    heading="Point it at your Storybook."
+    body="We will tell you which tokens and components are replicating a barrier, and how far each fix reaches."
+    primaryLabel="Book a demo"
+    primaryHref="/contact"
+    secondaryLabel="Test a page free"
+    secondaryHref="/scan"
+  />
+</Base>
+
+<style>
+  /* ---------- Component rows ---------- */
+
+  .dcomp {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 24px;
+    border-bottom: 1px solid rgba(22, 38, 28, 0.06);
+  }
+
+  .dcomp:last-child {
+    border-bottom: none;
+  }
+
+  .dcomp__sw {
+    width: 22px;
+    height: 22px;
+    border-radius: 6px;
+    border: 1px solid rgba(22, 38, 28, 0.12);
+    flex: none;
+  }
+
+  .dcomp__main {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .dcomp__name {
+    display: block;
+    font-size: 14.5px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+  }
+
+  .dcomp__meta {
+    display: block;
+    font-size: 12.5px;
+    color: var(--muted);
+    margin-top: 2px;
+  }
+
+  .dcomp__usage {
+    font-size: 12.5px;
+    color: var(--muted);
+    flex: none;
+  }
+
+  .dcomp__badge,
+  .state__badge {
+    display: inline-flex;
+    align-items: center;
+    height: 23px;
+    padding: 0 10px;
+    border-radius: var(--r-pill);
+    font-size: 12px;
+    font-weight: 600;
+    flex: none;
+  }
+
+  .dcomp__badge--fail,
+  .state__badge--fail {
+    background: var(--fail-tint);
+    color: var(--fail-text);
+  }
+  .dcomp__badge--attention,
+  .state__badge--attention {
+    background: var(--attention-tint);
+    color: var(--attention-text);
+  }
+  .dcomp__badge--pass,
+  .state__badge--pass {
+    background: var(--green-soft);
+    color: var(--green-hover);
+  }
+
+  /* ---------- Token card ---------- */
+
+  .token {
+    background: var(--white);
+    border: 1px solid var(--border-strong);
+    border-left: 4px solid var(--fail);
+    border-radius: var(--r-card-sm);
+    box-shadow: var(--shadow);
+    overflow: hidden;
+  }
+
+  .token__head {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 18px 22px;
+    border-bottom: 1px solid rgba(22, 38, 28, 0.08);
+  }
+
+  .token__verdict {
+    display: inline-flex;
+    align-items: center;
+    height: 25px;
+    padding: 0 11px;
+    background: var(--fail-tint);
+    color: var(--fail-text);
+    border-radius: var(--r-pill);
+    font-size: 12.5px;
+    font-weight: 600;
+    flex: none;
+  }
+
+  .token__title {
+    flex: 1;
+    font-size: 17px;
+    font-weight: 700;
+    letter-spacing: -0.015em;
+  }
+
+  .token__wcag {
+    font-family: var(--mono);
+    font-size: 11.5px;
+    color: var(--muted);
+    flex: none;
+  }
+
+  .token__compare {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    padding: 22px;
+    background: var(--sunken);
+    border-bottom: 1px solid rgba(22, 38, 28, 0.08);
+  }
+
+  .swatch {
+    flex: 1;
+  }
+
+  .swatch__label {
+    font-family: var(--mono);
+    font-size: 10.5px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 8px;
+  }
+
+  .swatch__btn {
+    display: inline-flex;
+    align-items: center;
+    height: 38px;
+    padding: 0 18px;
+    border-radius: var(--r-control-sm);
+    font-size: 14.5px;
+    font-weight: 600;
+  }
+
+  /* Deliberately the failing pair: this swatch is the evidence. */
+  .swatch__btn--now {
+    background: #9fd4b6;
+    color: #f4f1ea;
+  }
+
+  .swatch__btn--next {
+    background: var(--green);
+    color: var(--paper);
+  }
+
+  .swatch__val {
+    font-family: var(--mono);
+    font-size: 11.5px;
+    color: var(--muted);
+    margin-top: 8px;
+  }
+
+  .token__arrow {
+    font-size: 18px;
+    color: var(--muted);
+    flex: none;
+  }
+
+  .token__blast {
+    display: flex;
+    gap: 11px;
+    align-items: flex-start;
+    padding: 18px 22px;
+    background: var(--evergreen);
+  }
+
+  .token__blast svg {
+    flex: none;
+    margin-top: 2px;
+  }
+
+  .token__blastLabel {
+    font-family: var(--mono);
+    font-size: 10.5px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--green-light);
+    margin-bottom: 5px;
+  }
+
+  .token__blastBody {
+    font-size: 14px;
+    line-height: 1.5;
+    color: var(--on-dark-mist);
+  }
+
+  .token__blastBody strong {
+    color: var(--paper);
+  }
+
+  .token__actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 16px 22px;
+    flex-wrap: wrap;
+  }
+
+  .token__btn {
+    display: inline-flex;
+    align-items: center;
+    height: 32px;
+    padding: 0 13px;
+    background: var(--green);
+    color: var(--paper);
+    border-radius: 9px;
+    font-size: 13px;
+    font-weight: 600;
+  }
+
+  .token__btn--ghost {
+    background: var(--white);
+    color: var(--evergreen);
+    border: 1px solid rgba(22, 38, 28, 0.18);
+  }
+
+  /* ---------- State coverage ---------- */
+
+  .states,
+  .story {
+    background: var(--white);
+    border: 1px solid var(--border-strong);
+    border-radius: var(--r-card);
+    box-shadow: var(--shadow);
+    overflow: hidden;
+  }
+
+  .states__head,
+  .story__head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 14px 20px;
+    background: var(--sunken);
+    border-bottom: 1px solid rgba(22, 38, 28, 0.08);
+  }
+
+  .states__title,
+  .story__title {
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  .states__meta {
+    font-size: 12.5px;
+    color: var(--muted);
+  }
+
+  .state {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 12px 20px;
+    border-bottom: 1px solid rgba(22, 38, 28, 0.06);
+  }
+
+  .state:last-child {
+    border-bottom: none;
+  }
+
+  .state__sample {
+    display: inline-flex;
+    align-items: center;
+    height: 30px;
+    padding: 0 14px;
+    border-radius: 9px;
+    font-size: 13px;
+    font-weight: 600;
+    flex: none;
+  }
+
+  .state__main {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .state__name {
+    display: block;
+    font-family: var(--mono);
+    font-size: 12.5px;
+    font-weight: 600;
+  }
+
+  .state__note {
+    display: block;
+    font-size: 12.5px;
+    color: var(--muted);
+    margin-top: 2px;
+  }
+
+  /* ---------- Storybook check ---------- */
+
+  .story__flag {
+    display: inline-flex;
+    align-items: center;
+    height: 22px;
+    padding: 0 9px;
+    background: var(--fail-tint);
+    color: var(--fail-text);
+    border-radius: 7px;
+    font-family: var(--mono);
+    font-size: 10.5px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+
+  .story__row {
+    display: flex;
+    align-items: center;
+    gap: 11px;
+    padding: 12px 20px;
+    font-size: 14px;
+    color: var(--ink-700);
+  }
+
+  .story__row--new {
+    background: var(--fail-tint);
+  }
+
+  .story__mark {
+    font-family: var(--mono);
+    font-weight: 700;
+    color: var(--green-hover);
+    flex: none;
+    width: 14px;
+  }
+
+  .story__row--new .story__mark {
+    color: var(--fail-text);
+  }
+
+  .story__label {
+    flex: 1;
+  }
+
+  .story__tag {
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--muted);
+    flex: none;
+  }
+
+  .story__tag--new {
+    color: var(--fail-text);
+  }
+
+  .story__note {
+    padding: 14px 20px;
+    border-top: 1px solid rgba(22, 38, 28, 0.08);
+    font-size: 13px;
+    line-height: 1.55;
+    color: var(--muted);
+  }
+
+  @media (max-width: 700px) {
+    .token__compare {
+      flex-direction: column;
+      align-items: stretch;
+      gap: 12px;
+    }
+    .token__arrow {
+      transform: rotate(90deg);
+      align-self: center;
+    }
+    .dcomp,
+    .state {
+      flex-wrap: wrap;
+      gap: 8px 12px;
+    }
+    .dcomp__main,
+    .state__main {
+      flex-basis: 100%;
+    }
+  }
+</style>

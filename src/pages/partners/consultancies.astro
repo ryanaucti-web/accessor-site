@@ -1,0 +1,655 @@
+---
+import Base from '../../layouts/Base.astro';
+import ProductHero from '../../components/product/ProductHero.astro';
+import FrictionBand from '../../components/product/FrictionBand.astro';
+import ProductRow from '../../components/product/ProductRow.astro';
+import OutcomeBand from '../../components/product/OutcomeBand.astro';
+import CtaBand from '../../components/CtaBand.astro';
+
+const stats = [
+  { num: '30', label: 'criteria auto-cleared', delta: 'before you opened it', ok: true },
+  { num: '18', label: 'need your judgment', delta: 'queued for you' },
+  { num: '8', label: 'not evaluated', delta: 'stated, not assumed' },
+  { num: '0', label: 'passed on AI alone', delta: 'by design', ok: true },
+];
+
+const split = [
+  { count: '30', label: 'machine-verified', note: 'Deterministic checks, re-run every release.', tone: 'auto' },
+  { count: '18', label: 'your verdict', note: 'Reading order, meaning, plain language, context.', tone: 'human' },
+  { count: '8', label: 'not evaluated', note: 'Blocked or out of scope. Recorded honestly.', tone: 'none' },
+];
+
+const frictions = [
+  {
+    title: 'The sweep eats the budget',
+    d: 'M4 6h16M4 12h10M4 18h7',
+    body: 'A fixed-fee audit spends its first day on contrast ratios and missing labels. That is the cheapest part of your expertise and the most expensive way to buy it.',
+  },
+  {
+    title: 'Your verdict leaves no trace',
+    d: 'M6 3h9l4 4v14H6zM14 3v5h5',
+    body: 'You made a hundred judgment calls. The deliverable records the conclusions, not who decided what, so none of it is defensible a year later.',
+  },
+  {
+    title: 'Tools compete with you dishonestly',
+    d: 'M12 3l8 4v6c0 4-3.5 7-8 8-4.5-1-8-4-8-8V7l8-4z',
+    body: 'Products that claim a clean pass across all of WCAG are overstating what automation can know, and it undercuts the case for hiring a specialist at all.',
+  },
+];
+
+const vpat = [
+  { ref: '1.4.3', name: 'Contrast (Minimum)', note: 'Measured across every text node', m: 'AUTOMATED', mk: 'auto' },
+  {
+    ref: '1.3.2',
+    name: 'Meaningful Sequence',
+    note: 'Reading order confirmed with a screen reader',
+    m: 'M. KERR',
+    mk: 'human',
+  },
+  {
+    ref: '3.3.1',
+    name: 'Error Identification',
+    note: 'Wording assessed as insufficient, remediated',
+    m: 'M. KERR',
+    mk: 'human',
+  },
+  {
+    ref: '1.4.13',
+    name: 'Content on Hover or Focus',
+    note: 'Out of scope for this engagement',
+    m: 'NOT EVAL',
+    mk: 'none',
+  },
+];
+
+const drift = [
+  { label: '1.4.3 · contrast still holding', tag: 'stable', ok: true },
+  { label: '2.1.1 · keyboard traversal still holding', tag: 'stable', ok: true },
+  { label: '3.3.1 · error copy reverted in v4.2', tag: 'regressed', ok: false },
+  { label: '1.3.2 · reading order changed on 6 pages', tag: 're-check', ok: false },
+];
+
+const outcomes = [
+  'The mechanical criteria cleared before you start, so a fixed fee buys more of your expertise.',
+  'Every verdict recorded against the criterion with your name and credential, which is what makes it defensible.',
+  'Reports white-labelled to your practice, stating method per criterion rather than implying a clean automated pass.',
+  'Notification when a criterion you signed off regresses, which protects your name and creates a reason to re-engage.',
+];
+---
+
+<Base
+  title="limena for accessibility consultancies"
+  description="You are the reason limena refuses to claim conformance on automation alone. This exists so your hours go to judgment instead of sweeping for contrast errors."
+  active="partners"
+>
+  <ProductHero
+    backHref="/partners"
+    backLabel="Partners"
+    title="For accessibility consultancies"
+    lede="You are the reason limena refuses to claim conformance on automation alone. This exists so your hours go to judgment instead of sweeping for contrast errors."
+    panelTitle="Engagement triage"
+    panelMeta="56 criteria · WCAG 2.2 AA"
+    panelStatus="Your verdict required"
+    panelStatusTone="attention"
+    stats={stats}
+  >
+    <div class="split">
+      <p class="split__label">Where the 56 criteria landed</p>
+
+      <div
+        class="split__bar"
+        role="img"
+        aria-label="Of 56 criteria: 30 machine-verified, 18 awaiting your verdict, 8 not evaluated."
+      >
+        <span class="split__seg split__seg--auto" style="flex:30"></span>
+        <span class="split__seg split__seg--human" style="flex:18"></span>
+        <span class="split__seg split__seg--none" style="flex:8"></span>
+      </div>
+
+      <ul class="split__rows">
+        {
+          split.map((s) => (
+            <li class="split__row">
+              <span class={`split__dot split__dot--${s.tone}`} aria-hidden="true" />
+              <span class="split__main">
+                <span class="split__top">
+                  <span class="split__count">{s.count}</span>
+                  <span class="split__name">{s.label}</span>
+                </span>
+                <span class="split__note">{s.note}</span>
+              </span>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </ProductHero>
+
+  <FrictionBand
+    heading="Your expertise is being spent on the wrong half."
+    lede="A manual audit still starts with hours of mechanical checking before anyone reaches a question that actually needs a specialist."
+    items={frictions}
+  />
+
+  <ProductRow
+    first
+    flip
+    eyebrow="01 · Only the judgment calls"
+    heading="You get a queue, not a report to read."
+    body={[
+      'limena clears the deterministic criteria and hands you only what needs a human. Each item arrives with what automation already established, so you are not re-deriving context.',
+      'Your verdict is attributed to you by name and credential, which is what makes the conformance claim defensible later.',
+    ]}
+  >
+    <div class="verdict">
+      <div class="verdict__head">
+        <span class="verdict__flag">Needs your verdict</span>
+        <span class="verdict__q">Is this error message sufficient?</span>
+        <span class="verdict__ref">3.3.1</span>
+      </div>
+
+      <div class="verdict__block">
+        <p class="verdict__label">What automation established</p>
+        <p class="verdict__text">
+          The field has an associated error message, it is programmatically linked, and it is announced on submit. The
+          mechanical part of 3.3.1 is satisfied.
+        </p>
+        <p class="verdict__code">"Error: invalid input in field 3."</p>
+      </div>
+
+      <div class="verdict__block verdict__block--why">
+        <p class="verdict__label verdict__label--why">Why it is yours</p>
+        <p class="verdict__text">
+          Whether that wording lets someone actually recover is a judgment call. limena will not pass it, and will not
+          fail it, without you.
+        </p>
+      </div>
+
+      <div class="verdict__actions">
+        <span class="verdict__btn">Sufficient</span>
+        <span class="verdict__btn verdict__btn--ghost">Not sufficient</span>
+        <span class="verdict__btn verdict__btn--ghost">Add a note</span>
+      </div>
+
+      <div class="verdict__sig">
+        <span class="verdict__avatar">MK</span>
+        <span>
+          Recorded against 3.3.1 as <strong>M. Kerr, CPACC</strong>, with today's date and your note.
+        </span>
+      </div>
+    </div>
+  </ProductRow>
+
+  <ProductRow
+    eyebrow="02 · Attribution"
+    heading="The expertise is yours, so the report says so."
+    body={[
+      'A VPAT generated from live results, white-labelled to your practice, stating exactly which criteria were machine-verified and which you assessed personally.',
+      'Clients are buying your sign-off. The document should make that unambiguous.',
+    ]}
+  >
+    <div class="vpat">
+      <div class="vpat__head">
+        <span class="vpat__title">Conformance report · VPAT 2.5</span>
+        <span class="vpat__brand">Your practice</span>
+      </div>
+      <ul>
+        {
+          vpat.map((v) => (
+            <li class="vrow">
+              <span class="vrow__ref">{v.ref}</span>
+              <span class="vrow__main">
+                <span class="vrow__name">{v.name}</span>
+                <span class="vrow__note">{v.note}</span>
+              </span>
+              <span class={`vrow__m vrow__m--${v.mk}`}>{v.m}</span>
+            </li>
+          ))
+        }
+      </ul>
+      <p class="vpat__foot">
+        Assessed by M. Kerr, CPACC. Method stated per criterion, so a reviewer knows precisely what the claim rests on.
+      </p>
+    </div>
+  </ProductRow>
+
+  <ProductRow
+    last
+    flip
+    eyebrow="03 · The audit stops being terminal"
+    heading="You find out when your sign-off stops being true."
+    body={[
+      'Today an audit ends and you hear nothing until the client commissions another one. limena keeps watching, and tells you when a criterion you assessed has regressed.',
+      'That protects your name on the report, and it turns a one-off audit into an ongoing relationship.',
+    ]}
+  >
+    <div class="drift">
+      <div class="drift__head">
+        <span class="drift__title">Since your audit closed</span>
+        <span class="drift__meta">4 releases</span>
+      </div>
+      <ul>
+        {
+          drift.map((d) => (
+            <li class={`drift__row ${d.ok ? '' : 'drift__row--flag'}`}>
+              <span class="drift__label">{d.label}</span>
+              <span class={`drift__tag ${d.ok ? '' : 'drift__tag--flag'}`}>{d.tag}</span>
+            </li>
+          ))
+        }
+      </ul>
+      <p class="drift__note">
+        Two criteria you personally signed off have drifted. That is a conversation with the client, and a reason to be
+        re-engaged.
+      </p>
+    </div>
+  </ProductRow>
+
+  <OutcomeBand heading="Automation handles the volume. You keep the judgment." outcomes={outcomes} />
+
+  <CtaBand
+    heading="Bring an engagement you are mid-way through."
+    body="We will show you how much of it limena would have cleared before you opened the file, and what would have been left for you."
+    primaryLabel="Talk to partnerships"
+    primaryHref="/contact"
+    secondaryLabel="Test a page free"
+    secondaryHref="/scan"
+  />
+</Base>
+
+<style>
+  /* ---------- Triage split, inside the hero dashboard ---------- */
+
+  .split {
+    padding: 24px;
+  }
+
+  .split__label {
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 14px;
+  }
+
+  .split__bar {
+    display: flex;
+    height: 12px;
+    border-radius: var(--r-pill);
+    overflow: hidden;
+    margin-bottom: 20px;
+  }
+
+  .split__seg--auto {
+    background: var(--green);
+  }
+  .split__seg--human {
+    background: var(--chip-design-ink);
+  }
+  .split__seg--none {
+    background: #c3c9c3;
+  }
+
+  .split__rows {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+  }
+
+  .split__row {
+    display: flex;
+    gap: 11px;
+  }
+
+  .split__dot {
+    width: 11px;
+    height: 11px;
+    border-radius: 50%;
+    flex: none;
+    margin-top: 5px;
+  }
+
+  .split__dot--auto {
+    background: var(--green);
+  }
+  .split__dot--human {
+    background: var(--chip-design-ink);
+  }
+  .split__dot--none {
+    background: #c3c9c3;
+  }
+
+  .split__main {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .split__top {
+    display: flex;
+    align-items: baseline;
+    gap: 7px;
+  }
+
+  .split__count {
+    font-size: 19px;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+  }
+
+  .split__name {
+    font-size: 13.5px;
+    font-weight: 600;
+  }
+
+  .split__note {
+    display: block;
+    font-size: 12.5px;
+    line-height: 1.5;
+    color: var(--muted);
+    margin-top: 3px;
+  }
+
+  /* ---------- Verdict card ---------- */
+
+  .verdict {
+    background: var(--white);
+    border: 1px solid var(--border-strong);
+    border-left: 4px solid var(--chip-design-ink);
+    border-radius: var(--r-card-sm);
+    box-shadow: var(--shadow);
+    overflow: hidden;
+  }
+
+  .verdict__head {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 18px 22px;
+    border-bottom: 1px solid rgba(22, 38, 28, 0.08);
+    flex-wrap: wrap;
+  }
+
+  .verdict__flag {
+    display: inline-flex;
+    align-items: center;
+    height: 25px;
+    padding: 0 11px;
+    background: var(--chip-design-bg);
+    color: var(--chip-design-ink);
+    border-radius: var(--r-pill);
+    font-size: 12.5px;
+    font-weight: 600;
+    flex: none;
+  }
+
+  .verdict__q {
+    flex: 1;
+    font-size: 17px;
+    font-weight: 700;
+    letter-spacing: -0.015em;
+  }
+
+  .verdict__ref {
+    font-family: var(--mono);
+    font-size: 11.5px;
+    color: var(--muted);
+    flex: none;
+  }
+
+  .verdict__block {
+    padding: 18px 22px;
+    border-bottom: 1px solid rgba(22, 38, 28, 0.08);
+  }
+
+  .verdict__block--why {
+    background: var(--green-tint);
+  }
+
+  .verdict__label {
+    font-family: var(--mono);
+    font-size: 10.5px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 7px;
+  }
+
+  .verdict__label--why {
+    color: var(--green-hover);
+  }
+
+  .verdict__text {
+    font-size: 14.5px;
+    line-height: 1.6;
+    color: var(--ink-700);
+  }
+
+  .verdict__code {
+    margin-top: 10px;
+    padding: 10px 12px;
+    background: var(--rail);
+    border-radius: 9px;
+    font-family: var(--mono);
+    font-size: 12.5px;
+    color: var(--ink-700);
+  }
+
+  .verdict__actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 16px 22px;
+    flex-wrap: wrap;
+  }
+
+  .verdict__btn {
+    display: inline-flex;
+    align-items: center;
+    height: 32px;
+    padding: 0 13px;
+    background: var(--green);
+    color: var(--paper);
+    border-radius: 9px;
+    font-size: 13px;
+    font-weight: 600;
+  }
+
+  .verdict__btn--ghost {
+    background: var(--white);
+    color: var(--evergreen);
+    border: 1px solid rgba(22, 38, 28, 0.18);
+  }
+
+  .verdict__sig {
+    display: flex;
+    align-items: center;
+    gap: 11px;
+    padding: 16px 22px;
+    border-top: 1px solid rgba(22, 38, 28, 0.08);
+    background: var(--sunken);
+    font-size: 13px;
+    line-height: 1.5;
+    color: var(--ink-500);
+  }
+
+  .verdict__avatar {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: var(--chip-design-ink);
+    color: var(--white);
+    font-size: 11px;
+    font-weight: 700;
+    flex: none;
+  }
+
+  /* ---------- VPAT ---------- */
+
+  .vpat,
+  .drift {
+    background: var(--white);
+    border: 1px solid var(--border-strong);
+    border-radius: var(--r-card);
+    box-shadow: var(--shadow);
+    overflow: hidden;
+  }
+
+  .vpat__head,
+  .drift__head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 14px 20px;
+    background: var(--sunken);
+    border-bottom: 1px solid rgba(22, 38, 28, 0.08);
+  }
+
+  .vpat__title,
+  .drift__title {
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  .vpat__brand {
+    display: inline-flex;
+    align-items: center;
+    height: 22px;
+    padding: 0 9px;
+    background: var(--chip-design-bg);
+    color: var(--chip-design-ink);
+    border-radius: 7px;
+    font-family: var(--mono);
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+
+  .vrow {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 13px 20px;
+    border-bottom: 1px solid rgba(22, 38, 28, 0.06);
+  }
+
+  .vrow__ref {
+    font-family: var(--mono);
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--muted);
+    flex: none;
+    width: 46px;
+  }
+
+  .vrow__main {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .vrow__name {
+    display: block;
+    font-size: 14px;
+    font-weight: 600;
+  }
+
+  .vrow__note {
+    display: block;
+    font-size: 12.5px;
+    color: var(--muted);
+    margin-top: 2px;
+  }
+
+  .vrow__m {
+    font-family: var(--mono);
+    font-size: 10px;
+    font-weight: 600;
+    padding: 3px 8px;
+    border-radius: 7px;
+    flex: none;
+    white-space: nowrap;
+  }
+
+  .vrow__m--auto {
+    background: var(--green-soft);
+    color: var(--green-hover);
+  }
+  .vrow__m--human {
+    background: var(--chip-design-bg);
+    color: var(--chip-design-ink);
+  }
+  .vrow__m--none {
+    background: var(--rail);
+    color: var(--muted);
+  }
+
+  .vpat__foot {
+    padding: 16px 20px;
+    background: var(--green-tint);
+    font-size: 13.5px;
+    line-height: 1.55;
+    color: var(--ink-700);
+  }
+
+  /* ---------- Drift ---------- */
+
+  .drift__meta {
+    font-size: 12.5px;
+    color: var(--muted);
+  }
+
+  .drift__row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 13px 20px;
+    border-bottom: 1px solid rgba(22, 38, 28, 0.06);
+    font-size: 14px;
+    color: var(--ink-700);
+  }
+
+  .drift__row--flag {
+    background: var(--fail-tint);
+  }
+
+  .drift__label {
+    flex: 1;
+  }
+
+  .drift__tag {
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--green-hover);
+    flex: none;
+  }
+
+  .drift__tag--flag {
+    color: var(--fail-text);
+  }
+
+  .drift__note {
+    padding: 16px 20px;
+    font-size: 13px;
+    line-height: 1.55;
+    color: var(--muted);
+  }
+
+  @media (max-width: 1000px) {
+    .split__rows {
+      grid-template-columns: 1fr;
+      gap: 14px;
+    }
+  }
+</style>

@@ -1,0 +1,634 @@
+---
+import Base from '../../layouts/Base.astro';
+import ProductHero from '../../components/product/ProductHero.astro';
+import FrictionBand from '../../components/product/FrictionBand.astro';
+import ProductRow from '../../components/product/ProductRow.astro';
+import OutcomeBand from '../../components/product/OutcomeBand.astro';
+import CtaBand from '../../components/CtaBand.astro';
+
+const stats = [
+  { num: '8,940', label: 'reported violations', delta: 'before grouping' },
+  { num: '12', label: 'actual tickets', delta: 'component level', ok: true },
+  { num: '3', label: 'fixes clear 96%', delta: 'shared components', ok: true },
+  { num: '14s', label: 'CI check', delta: 'runs on every PR', ok: true },
+];
+
+const components = [
+  {
+    path: 'PaymentFields.tsx',
+    title: 'Inputs use placeholders, not labels',
+    meta: '3 fields · WCAG 3.3.2',
+    clears: '1,842',
+    effort: 'S',
+  },
+  {
+    path: 'ProductCard.tsx',
+    title: 'Image alt derived from filename',
+    meta: '1 component · 6,489 renders',
+    clears: '6,489',
+    effort: 'S',
+  },
+  {
+    path: 'Button.tsx',
+    title: 'Focus ring removed by reset',
+    meta: '1 component · 214 usages',
+    clears: '214',
+    effort: 'S',
+  },
+  {
+    path: 'QuantityStepper.tsx',
+    title: 'Controls are div elements',
+    meta: 'needs rebuild · WCAG 2.1.1',
+    clears: '8',
+    effort: 'M',
+  },
+  {
+    path: 'CountdownBanner.tsx',
+    title: 'Focus trapped before cart',
+    meta: 'campaign component',
+    clears: '3',
+    effort: 'M',
+  },
+];
+
+const frictions = [
+  {
+    title: 'Counted, not grouped',
+    d: 'M4 6h16M4 12h10M4 18h7',
+    body: 'Eight thousand rows where 6,489 are one card component rendered across the catalogue. The number tells you nothing about the size of the job.',
+  },
+  {
+    title: 'No location',
+    d: 'M6 3h9l4 4v14H6zM14 3v5h5',
+    body: 'A CSS selector is not a file path. Someone has to reverse engineer which component produced the markup before any work can start.',
+  },
+  {
+    title: 'It comes back',
+    d: 'M4 12a8 8 0 018-8 8 8 0 016.9 4M20 12a8 8 0 01-8 8 8 8 0 01-6.9-4M18 3v5h-5M6 21v-5h5',
+    body: 'Nothing verifies the fix held. A dependency bump reverts it and the same barrier reappears in the next audit as a brand new finding.',
+  },
+];
+
+const tags = [
+  { label: 'WCAG 3.3.2', tone: 'neutral' },
+  { label: 'checkout', tone: 'dev' },
+  { label: 'blocking', tone: 'fail' },
+  { label: 'effort: S', tone: 'green' },
+];
+
+const ciRows = [
+  { label: 'checkout · 4 pages', tag: 'pass', ok: true },
+  { label: 'product · 12 templates', tag: 'pass', ok: true },
+  { label: 'cart · 2 pages', tag: 'pass', ok: true },
+  { label: 'campaign/holiday · focus trap', tag: 'new', ok: false },
+];
+
+const outcomes = [
+  'Twelve tickets instead of eight thousand rows, each scoped to the component that causes the barrier.',
+  'File, line, diff, and criterion on every ticket, in the tracker your team already uses.',
+  'A CI check that fails new barriers and ignores the backlog you inherited.',
+  'Fixes verified at release, so the same work does not reappear at the next audit.',
+];
+---
+
+<Base
+  title="limena for engineering leads"
+  description="A spreadsheet of 8,000 violations is not a backlog. limena gives you deduplicated, component-level tickets with the file, the fix, and a check that stops the regression coming back."
+  active="usecases"
+>
+  <ProductHero
+    backHref="/use-cases"
+    backLabel="Use cases"
+    title="For engineering leads"
+    lede="A spreadsheet of 8,000 violations is not a backlog. limena gives you deduplicated, component-level tickets with the file, the fix, and a check that stops the regression coming back."
+    panelTitle="Grouped by component"
+    panelMeta="8,940 violations · 12 tickets"
+    panelStatus="3 fixes clear 96%"
+    panelStatusTone="pass"
+    stats={stats}
+  >
+    {
+      components.map((c) => (
+        <div class="comp">
+          <span class="comp__path">{c.path}</span>
+          <span class="comp__main">
+            <span class="comp__title">{c.title}</span>
+            <span class="comp__meta">{c.meta}</span>
+          </span>
+          <span class="comp__clears">{c.clears}</span>
+          <span class="comp__effort">{c.effort}</span>
+        </div>
+      ))
+    }
+  </ProductHero>
+
+  <FrictionBand
+    heading="Most accessibility tools create work for you, not with you."
+    lede="The output arrives as a CSV, sized in thousands, with no indication of which items are the same problem or where in the codebase they live."
+    items={frictions}
+  />
+
+  <ProductRow
+    first
+    flip
+    eyebrow="01 · A ticket, not a row"
+    heading="Deduplicated to the component that causes it."
+    body={[
+      '1,842 reported violations are usually one shared component rendered 614 times. limena groups them back to the source file so the work is sized honestly.',
+      'Each ticket carries the file, the line, a diff, and the criterion. It lands in Linear, Jira, or GitHub with your existing labels.',
+    ]}
+  >
+    <div class="ticket">
+      <div class="ticket__head">
+        <span class="ticket__id">LIM-412</span>
+        <span class="ticket__title">Add labels to payment card fields</span>
+        <span class="ticket__p">P1</span>
+      </div>
+
+      <div class="ticket__body">
+        <div class="ticket__tags">
+          {tags.map((t) => <span class={`tag tag--${t.tone}`}>{t.label}</span>)}
+        </div>
+
+        <p class="ticket__path">src/checkout/PaymentFields.tsx · line 84</p>
+
+        <pre class="diff"><code><span class="diff__del">- &lt;input placeholder="Card number" /&gt;</span>
+<span class="diff__add">+ &lt;label htmlFor="cc-num"&gt;Card number&lt;/label&gt;</span>
+<span class="diff__add">+ &lt;input id="cc-num" /&gt;</span></code></pre>
+      </div>
+
+      <p class="ticket__impact">
+        <strong>One component, 3 fields, every order.</strong> Closing this ticket resolves 1,842 reported violations across
+        the catalogue.
+      </p>
+
+      <div class="ticket__actions">
+        <span class="ticket__btn">Open PR</span>
+        <span class="ticket__btn ticket__btn--ghost">View 3 instances</span>
+        <span class="ticket__sync">Synced to Linear</span>
+      </div>
+    </div>
+  </ProductRow>
+
+  <ProductRow
+    eyebrow="02 · In the pipeline"
+    heading="Fails the build, not the retro."
+    body={[
+      'limena runs on every pull request and reports as a check. New blocking barriers fail; existing ones do not, so you are never blocked by a backlog you inherited.',
+      'Already running axe-core? POST your results and keep your test setup, limena handles the deduplication, ownership, and evidence on top.',
+    ]}
+  >
+    <div class="ci">
+      <div class="ci__head">
+        <span class="ci__name">limena / accessibility</span>
+        <span class="ci__status">Failing</span>
+        <span class="ci__meta">#2841 · 14s</span>
+      </div>
+
+      <ul class="ci__rows">
+        {
+          ciRows.map((c) => (
+            <li class={`ci__row ${c.ok ? '' : 'ci__row--new'}`}>
+              <span class="ci__mark" aria-hidden="true">
+                {c.ok ? '✓' : '!'}
+              </span>
+              <span class="ci__label">{c.label}</span>
+              <span class={`ci__tag ${c.ok ? '' : 'ci__tag--new'}`}>{c.tag}</span>
+            </li>
+          ))
+        }
+      </ul>
+
+      <p class="ci__note">
+        1 new blocking barrier introduced by this PR.<br />Pre-existing findings do not fail the build.
+      </p>
+    </div>
+  </ProductRow>
+
+  <ProductRow
+    last
+    flip
+    eyebrow="03 · It stays fixed"
+    heading="The work does not come back next quarter."
+    body={[
+      'Every fix becomes a check. limena knows what was resolved and in which release, so a dependency bump that quietly removes focus styles is flagged as a regression rather than rediscovered a year later as a new finding.',
+      'That is the difference between paying for accessibility once and paying for it every audit cycle.',
+    ]}
+  >
+    <div class="trend">
+      <div class="trend__head">
+        <span class="trend__label">Open findings, 8 releases</span>
+        <span class="trend__delta">↓ 84%</span>
+      </div>
+
+      <svg
+        viewBox="0 0 380 120"
+        width="100%"
+        style="display:block;margin:14px 0 4px;"
+        role="img"
+        aria-label="Open findings fall steadily across eight releases, with one spike at v7.4 where a fixed barrier was reintroduced."
+      >
+        <line x1="24" y1="10" x2="24" y2="96" stroke="rgba(22,38,28,0.12)" stroke-width="1"></line>
+        <line x1="24" y1="96" x2="372" y2="96" stroke="rgba(22,38,28,0.12)" stroke-width="1"></line>
+        <polyline
+          points="44,18 90,32 136,44 182,54 228,38 274,62 320,76 362,86"
+          fill="none"
+          stroke="var(--green)"
+          stroke-width="3"
+          stroke-linecap="round"
+          stroke-linejoin="round"></polyline>
+        <circle cx="228" cy="38" r="6" fill="var(--fail)"></circle>
+        <text x="228" y="24" text-anchor="middle" font-family="JetBrains Mono" font-size="10" fill="#97402C">v7.4</text>
+      </svg>
+
+      <p class="trend__note">
+        <strong>v7.4 reintroduced a fixed barrier.</strong> A dependency bump replaced the focus styles on the button component.
+        Caught in CI, reverted the same day.
+      </p>
+    </div>
+  </ProductRow>
+
+  <OutcomeBand heading="Accessibility work sized like engineering work." outcomes={outcomes} />
+
+  <CtaBand
+    heading="Point it at a branch."
+    body="We will show you the real ticket count behind the violation count, and what the first three fixes clear."
+    primaryLabel="Book a demo"
+    primaryHref="/contact"
+    secondaryLabel="Test a page free"
+    secondaryHref="/scan"
+  />
+</Base>
+
+<style>
+  /* ---------- Component rows in the hero dashboard ---------- */
+
+  .comp {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 24px;
+    border-bottom: 1px solid rgba(22, 38, 28, 0.06);
+  }
+
+  .comp:last-child {
+    border-bottom: none;
+  }
+
+  .comp__path {
+    font-family: var(--mono);
+    font-size: 11.5px;
+    font-weight: 600;
+    color: var(--chip-dev-ink);
+    flex: none;
+    width: 168px;
+  }
+
+  .comp__main {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .comp__title {
+    display: block;
+    font-size: 14.5px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+  }
+
+  .comp__meta {
+    display: block;
+    font-size: 12.5px;
+    color: var(--muted);
+    margin-top: 2px;
+  }
+
+  .comp__clears {
+    font-family: var(--mono);
+    font-size: 13px;
+    color: var(--ink-500);
+    flex: none;
+    width: 66px;
+    text-align: right;
+  }
+
+  .comp__effort {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 26px;
+    height: 22px;
+    background: var(--green-soft);
+    color: var(--green-hover);
+    border-radius: 7px;
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 600;
+    flex: none;
+  }
+
+  /* ---------- Ticket ---------- */
+
+  .ticket {
+    background: var(--white);
+    border: 1px solid var(--border-strong);
+    border-radius: var(--r-card-sm);
+    box-shadow: var(--shadow);
+    overflow: hidden;
+  }
+
+  .ticket__head {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px 22px;
+    border-bottom: 1px solid rgba(22, 38, 28, 0.08);
+  }
+
+  .ticket__id {
+    font-family: var(--mono);
+    font-size: 11.5px;
+    font-weight: 600;
+    color: var(--muted);
+    flex: none;
+  }
+
+  .ticket__title {
+    flex: 1;
+    font-size: 16px;
+    font-weight: 700;
+    letter-spacing: -0.015em;
+  }
+
+  .ticket__p {
+    display: inline-flex;
+    align-items: center;
+    height: 22px;
+    padding: 0 9px;
+    background: var(--fail-tint);
+    color: var(--fail-text);
+    border-radius: 7px;
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 600;
+    flex: none;
+  }
+
+  .ticket__body {
+    padding: 18px 22px;
+  }
+
+  .ticket__tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 7px;
+    margin-bottom: 14px;
+  }
+
+  .tag {
+    display: inline-flex;
+    align-items: center;
+    height: 22px;
+    padding: 0 9px;
+    border-radius: 7px;
+    font-size: 12px;
+    font-weight: 500;
+  }
+
+  .tag--neutral {
+    background: #e3e1d9;
+    color: var(--ink-500);
+  }
+  .tag--dev {
+    background: var(--chip-dev-bg);
+    color: var(--chip-dev-ink);
+  }
+  .tag--fail {
+    background: var(--fail-tint);
+    color: var(--fail-text);
+  }
+  .tag--green {
+    background: var(--green-soft);
+    color: var(--green-hover);
+  }
+
+  .ticket__path {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--muted);
+    margin-bottom: 12px;
+  }
+
+  .diff {
+    margin: 0;
+    padding: 14px 16px;
+    background: var(--rail);
+    border-radius: 10px;
+    font-family: var(--mono);
+    font-size: 12.5px;
+    line-height: 1.6;
+    overflow-x: auto;
+  }
+
+  .diff__del {
+    display: block;
+    color: var(--fail-text);
+  }
+
+  .diff__add {
+    display: block;
+    color: var(--green-hover);
+  }
+
+  .ticket__impact {
+    padding: 16px 22px;
+    background: var(--green-tint);
+    font-size: 14px;
+    line-height: 1.55;
+    color: var(--ink-700);
+  }
+
+  .ticket__actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 16px 22px;
+    flex-wrap: wrap;
+  }
+
+  .ticket__btn {
+    display: inline-flex;
+    align-items: center;
+    height: 32px;
+    padding: 0 13px;
+    background: var(--green);
+    color: var(--paper);
+    border-radius: 9px;
+    font-size: 13px;
+    font-weight: 600;
+    flex: none;
+  }
+
+  .ticket__btn--ghost {
+    background: var(--white);
+    color: var(--evergreen);
+    border: 1px solid rgba(22, 38, 28, 0.18);
+  }
+
+  .ticket__sync {
+    font-size: 12.5px;
+    color: var(--muted);
+    margin-left: auto;
+  }
+
+  /* ---------- CI check ---------- */
+
+  .ci {
+    background: var(--white);
+    border: 1px solid var(--border-strong);
+    border-radius: var(--r-card);
+    box-shadow: var(--shadow);
+    overflow: hidden;
+  }
+
+  .ci__head {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 20px;
+    background: var(--sunken);
+    border-bottom: 1px solid rgba(22, 38, 28, 0.08);
+  }
+
+  .ci__name {
+    font-family: var(--mono);
+    font-size: 12.5px;
+    font-weight: 600;
+  }
+
+  .ci__status {
+    display: inline-flex;
+    align-items: center;
+    height: 22px;
+    padding: 0 9px;
+    background: var(--fail-tint);
+    color: var(--fail-text);
+    border-radius: 7px;
+    font-family: var(--mono);
+    font-size: 10.5px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+
+  .ci__meta {
+    font-size: 12.5px;
+    color: var(--muted);
+    margin-left: auto;
+  }
+
+  .ci__rows {
+    padding: 8px 0;
+  }
+
+  .ci__row {
+    display: flex;
+    align-items: center;
+    gap: 11px;
+    padding: 10px 20px;
+    font-size: 14px;
+    color: var(--ink-700);
+  }
+
+  .ci__row--new {
+    background: var(--fail-tint);
+  }
+
+  .ci__mark {
+    font-family: var(--mono);
+    font-weight: 700;
+    color: var(--green-hover);
+    flex: none;
+    width: 14px;
+  }
+
+  .ci__row--new .ci__mark {
+    color: var(--fail-text);
+  }
+
+  .ci__label {
+    flex: 1;
+  }
+
+  .ci__tag {
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--green-hover);
+    flex: none;
+  }
+
+  .ci__tag--new {
+    color: var(--fail-text);
+  }
+
+  .ci__note {
+    padding: 14px 20px;
+    border-top: 1px solid rgba(22, 38, 28, 0.08);
+    font-size: 13px;
+    line-height: 1.55;
+    color: var(--muted);
+  }
+
+  /* ---------- Trend ---------- */
+
+  .trend {
+    background: var(--white);
+    border: 1px solid var(--border-strong);
+    border-radius: var(--r-card);
+    box-shadow: var(--shadow);
+    padding: 24px;
+  }
+
+  .trend__head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+  .trend__label {
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  .trend__delta {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--green-hover);
+  }
+
+  .trend__note {
+    font-size: 13.5px;
+    line-height: 1.55;
+    color: var(--ink-500);
+  }
+
+  @media (max-width: 700px) {
+    .comp {
+      flex-wrap: wrap;
+      gap: 8px 12px;
+    }
+    .comp__path {
+      width: auto;
+    }
+    .comp__main {
+      flex-basis: 100%;
+      order: -1;
+    }
+  }
+</style>

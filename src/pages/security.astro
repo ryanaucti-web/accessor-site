@@ -1,0 +1,730 @@
+---
+import Base from '../layouts/Base.astro';
+import CtaBand from '../components/CtaBand.astro';
+
+const posture = [
+  {
+    state: 'live',
+    title: 'Encryption in transit and at rest',
+    body: 'TLS 1.2 or higher on every connection. Data encrypted at rest with managed keys.',
+  },
+  {
+    state: 'live',
+    title: 'Canadian data residency',
+    body: 'Primary hosting in Canada. Available as a contractual commitment on Govern.',
+  },
+  {
+    state: 'live',
+    title: 'SAML single sign-on',
+    body: 'Available on Govern, with SCIM provisioning so leavers lose access with the rest of their tooling.',
+  },
+  {
+    state: 'live',
+    title: 'Audit history',
+    body: 'Who viewed, changed, or exported what, retained for the life of the account and exportable.',
+  },
+  {
+    state: 'prog',
+    title: 'SOC 2 Type II',
+    body: 'Readiness work underway. We will publish the report date when it is set rather than implying we hold one.',
+  },
+  {
+    state: 'prog',
+    title: 'Penetration testing',
+    body: 'First third-party test scheduled. The summary letter will be available under NDA once complete.',
+  },
+];
+
+const stateLabels = { live: 'In place', prog: 'In progress', plan: 'Not yet' } as const;
+
+const data = [
+  {
+    label: 'Page markup and screenshots',
+    note: 'The evidence behind each finding',
+    stored: 'Yes',
+    kept: true,
+    retention: 'While the finding is open, then 12 months',
+  },
+  {
+    label: 'Uploaded documents',
+    note: 'Word, Excel, PowerPoint, PDF',
+    stored: 'Yes',
+    kept: true,
+    retention: 'Until you delete them, or 30 days after account close',
+  },
+  {
+    label: 'Findings and verdicts',
+    note: 'Including who signed off and when',
+    stored: 'Yes',
+    kept: true,
+    retention: 'Life of the account, for the compliance trail',
+  },
+  {
+    label: 'Session credentials for auth testing',
+    note: 'Captured browser session, never a password',
+    stored: 'Encrypted',
+    kept: true,
+    retention: 'Until revoked or the session expires',
+  },
+  {
+    label: 'Passwords for your systems',
+    note: 'We never ask for or accept these',
+    stored: 'No',
+    kept: false,
+    retention: 'Not applicable',
+  },
+  {
+    label: 'Analytics on your end users',
+    note: 'limena does not run on your live site',
+    stored: 'No',
+    kept: false,
+    retention: 'Not applicable',
+  },
+  {
+    label: 'Free test inputs',
+    note: 'Tested without an account',
+    stored: 'No',
+    kept: false,
+    retention: 'Discarded after the result is shown',
+  },
+];
+
+const ai = [
+  {
+    title: 'No training on your data',
+    body: 'We use enterprise API tiers with training disabled by contract. Your content is not used to improve any model, ours or the provider’s.',
+  },
+  {
+    title: 'Only what the finding needs',
+    body: 'The relevant element and its surrounding context, not the whole page or document. We do not bulk-send your content.',
+  },
+  {
+    title: 'Providers are named',
+    body: 'Our sub-processor list is published and versioned. If it changes, existing customers are notified before the change takes effect.',
+  },
+  {
+    title: 'You can turn it off',
+    body: 'AI explanations can be disabled per workspace. limena still detects and routes findings, you just get the standard criterion wording instead.',
+  },
+  {
+    title: 'AI never signs off conformance',
+    body: 'A judgment call is always recorded against a person. This is a product principle, not only a security control.',
+  },
+];
+
+const access = [
+  {
+    title: 'Sessions, not passwords',
+    d: 'M5 11h14v10H5zM8.5 11V8a3.5 3.5 0 017 0v3',
+    body: 'For authenticated testing you capture a browser session and hand limena that. We never ask for a password, and we cannot reuse the session outside the scan.',
+  },
+  {
+    title: 'Read-only by default',
+    d: 'M11 4a7 7 0 100 14 7 7 0 000-14zM16 16l4.5 4.5',
+    body: 'limena reads your product. Write access exists only where you explicitly connect a CMS or repo for auto-fix, and it is scoped to that.',
+  },
+  {
+    title: 'Use a test account',
+    d: 'M9 8a3 3 0 100-6 3 3 0 000 6zM3 20c0-3.3 2.7-5 6-5s6 1.7 6 5M17 11a2.5 2.5 0 100-5 2.5 2.5 0 000 5zM21 20c0-2.5-1.8-4-4-4',
+    body: 'We recommend a dedicated non-production account with representative permissions rather than a real user. Findings are identical.',
+  },
+  {
+    title: 'Role-based access on your side',
+    d: 'M12 3l8 4v6c0 4-3.5 7-8 8-4.5-1-8-4-8-8V7l8-4z',
+    body: 'Unlimited seats does not mean unlimited visibility. Roles control who sees findings, evidence, and exports within your workspace.',
+  },
+];
+
+const docs = [
+  { label: 'Security questionnaire, completed', tag: 'On request' },
+  { label: 'Sub-processor list', tag: 'Published' },
+  { label: 'Data processing agreement', tag: 'On request' },
+  { label: 'Architecture and data flow summary', tag: 'Under NDA' },
+  { label: 'Penetration test summary', tag: 'When complete' },
+];
+---
+
+<Base
+  title="Security and trust · limena"
+  description="You are handing us your unfixed accessibility findings. We treat them accordingly, and we are direct about what is in place today versus what is coming."
+>
+  <!-- HERO -->
+  <section class="band band--dark secHero">
+    <div class="secHero__inner">
+      <p class="eyebrow secHero__eyebrow">Security and trust</p>
+      <h1 class="secHero__h1">You are handing us your unfixed accessibility findings.</h1>
+      <p class="secHero__lede">
+        That is a list of exactly where your products fall short, sometimes alongside documents containing client
+        information. We treat it accordingly, and we are direct about what is in place today versus what is coming.
+      </p>
+    </div>
+  </section>
+
+  <!-- POSTURE -->
+  <section class="band band--paper">
+    <div class="band__inner">
+      <div class="lead">
+        <h2 class="h2 lead__h2">Where we stand today</h2>
+        <p class="lede">
+          No certification theatre. If something is in progress we say in progress, so you can weigh it against your own
+          risk appetite.
+        </p>
+      </div>
+
+      <div class="grid3">
+        {
+          posture.map((p) => (
+            <div class="card postureCard">
+              <p class={`stateTag stateTag--${p.state}`}>
+                <span class="stateTag__dot" aria-hidden="true" />
+                {stateLabels[p.state]}
+              </p>
+              <h3 class="postureCard__title">{p.title}</h3>
+              <p class="postureCard__body">{p.body}</p>
+            </div>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- DATA HANDLING -->
+  <section class="band band--banded ruled">
+    <div class="band__inner">
+      <div class="lead">
+        <h2 class="h2 lead__h2">What we store, and what we do not.</h2>
+        <p class="lede">
+          The shortest version: we keep what is needed to show a finding and prove it was fixed, and nothing beyond that.
+        </p>
+      </div>
+
+      <div class="tableWrap">
+        <table class="dataTable">
+          <thead>
+            <tr>
+              <th scope="col">Data</th>
+              <th scope="col">Stored</th>
+              <th scope="col">Retention</th>
+            </tr>
+          </thead>
+          <tbody>
+            {
+              data.map((d) => (
+                <tr>
+                  <th scope="row">
+                    <span class="dataTable__label">{d.label}</span>
+                    <span class="dataTable__note">{d.note}</span>
+                  </th>
+                  <td>
+                    <span class={`storedTag ${d.kept ? 'storedTag--yes' : 'storedTag--no'}`}>{d.stored}</span>
+                  </td>
+                  <td class="dataTable__retention">{d.retention}</td>
+                </tr>
+              ))
+            }
+          </tbody>
+        </table>
+      </div>
+
+      <p class="dataNote">
+        <strong>The free test stores nothing.</strong> A page or document tested without an account is processed in memory,
+        the result is shown once, and it is discarded. Nothing is retained unless you create an account.
+      </p>
+    </div>
+  </section>
+
+  <!-- AI -->
+  <section class="band band--paper">
+    <div class="band__inner aiGrid">
+      <div>
+        <p class="eyebrow aiGrid__eyebrow">AI and your content</p>
+        <h2 class="h2 lead__h2">Your content is not training data.</h2>
+        <p class="body aiGrid__body">
+          limena uses AI to explain findings and draft fixes, which means content from your pages and documents is sent
+          to a model provider.
+        </p>
+        <p class="body aiGrid__body">
+          This is the question every security reviewer asks, so here are the specifics rather than a reassurance.
+        </p>
+      </div>
+
+      <ul class="aiList">
+        {
+          ai.map((a) => (
+            <li class="aiItem">
+              <p class="aiItem__title">{a.title}</p>
+              <p class="aiItem__body">{a.body}</p>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+
+  <!-- ACCESS -->
+  <section class="band band--banded ruled">
+    <div class="band__inner">
+      <div class="lead">
+        <h2 class="h2 lead__h2">Access, authentication, and the awkward one.</h2>
+        <p class="lede">
+          Testing an authenticated app means limena needs to get in. How that works matters more than any certificate.
+        </p>
+      </div>
+
+      <div class="grid2">
+        {
+          access.map((a) => (
+            <div class="card accessCard">
+              <span class="accessCard__icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                  <path d={a.d} stroke="var(--green-hover)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+              </span>
+              <h3 class="accessCard__title">{a.title}</h3>
+              <p class="accessCard__body">{a.body}</p>
+            </div>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- FOR REVIEWERS -->
+  <section class="band band--dark">
+    <div class="band__inner reviewers">
+      <div>
+        <p class="eyebrow reviewers__eyebrow">For your security review</p>
+        <h2 class="reviewers__h2">Send the questionnaire.</h2>
+        <p class="reviewers__body">
+          We would rather answer a real assessment than publish a badge. Send yours and we will complete it, including
+          the questions where the answer is not yet.
+        </p>
+        <a href="/contact" class="btn btn--primary">Contact security</a>
+      </div>
+
+      <div class="docsCard">
+        <p class="docsCard__label">Available on request</p>
+        <ul>
+          {
+            docs.map((d) => (
+              <li class="docsCard__row">
+                <span class="docsCard__name">{d.label}</span>
+                <span class="docsCard__tag">{d.tag}</span>
+              </li>
+            ))
+          }
+        </ul>
+        <p class="docsCard__note">
+          Under NDA where appropriate. Enterprise agreements can include a security addendum and a defined incident
+          notification window.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <CtaBand
+    heading="Questions we have not answered here?"
+    body="Ask directly. We will give you a straight answer, including where the answer is that we are not there yet."
+    primaryLabel="Contact security"
+    primaryHref="/contact"
+    secondaryLabel="View pricing"
+    secondaryHref="/pricing"
+  />
+</Base>
+
+<style>
+  .secHero__inner {
+    max-width: var(--content-narrow);
+    margin: 0 auto;
+  }
+
+  .secHero__eyebrow {
+    display: block;
+    font-size: 13px;
+    letter-spacing: 0.14em;
+    margin-bottom: 20px;
+  }
+
+  .secHero__h1 {
+    font-size: 50px;
+    font-weight: 800;
+    letter-spacing: -0.035em;
+    line-height: 1.04;
+    color: var(--paper);
+    margin-bottom: 20px;
+    max-width: 22ch;
+    text-wrap: balance;
+  }
+
+  .secHero__lede {
+    font-size: 19px;
+    line-height: 1.6;
+    color: var(--on-dark-sage);
+    max-width: 62ch;
+    text-wrap: pretty;
+  }
+
+  .ruled {
+    border-top: 1px solid rgba(22, 38, 28, 0.06);
+    border-bottom: 1px solid rgba(22, 38, 28, 0.06);
+  }
+
+  .lead {
+    max-width: 62ch;
+    margin-bottom: 44px;
+  }
+
+  .lead__h2 {
+    margin-bottom: 14px;
+  }
+
+  .grid3 {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 18px;
+  }
+
+  .grid2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 18px;
+  }
+
+  /* ---------- Posture ---------- */
+
+  .postureCard {
+    padding: 28px;
+  }
+
+  /* Status is the word plus a dot plus the tint, never the tint alone. */
+  .stateTag {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    height: 24px;
+    padding: 0 11px 0 9px;
+    border-radius: var(--r-pill);
+    font-family: var(--mono);
+    font-size: 10.5px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-bottom: 16px;
+  }
+
+  .stateTag__dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    flex: none;
+  }
+
+  .stateTag--live {
+    background: var(--green-soft);
+    color: var(--green-hover);
+  }
+  .stateTag--live .stateTag__dot {
+    background: var(--green);
+  }
+
+  .stateTag--prog {
+    background: var(--attention-tint);
+    color: var(--attention-text);
+  }
+  .stateTag--prog .stateTag__dot {
+    background: var(--attention);
+  }
+
+  .stateTag--plan {
+    background: var(--rail);
+    color: var(--ink-500);
+  }
+  .stateTag--plan .stateTag__dot {
+    background: #c3c9c3;
+  }
+
+  .postureCard__title {
+    font-size: 18px;
+    font-weight: 700;
+    letter-spacing: -0.015em;
+    margin-bottom: 8px;
+  }
+
+  .postureCard__body {
+    font-size: 14.5px;
+    line-height: 1.55;
+    color: var(--ink-500);
+  }
+
+  /* ---------- Data table ---------- */
+
+  .tableWrap {
+    overflow-x: auto;
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: var(--r-card);
+  }
+
+  .dataTable {
+    width: 100%;
+    min-width: 620px;
+    border-collapse: collapse;
+    text-align: left;
+  }
+
+  .dataTable thead th {
+    padding: 14px 20px;
+    background: var(--sunken);
+    border-bottom: 1px solid var(--border);
+    font-family: var(--mono);
+    font-size: 10.5px;
+    font-weight: 600;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  .dataTable tbody th,
+  .dataTable tbody td {
+    padding: 15px 20px;
+    border-bottom: 1px solid rgba(22, 38, 28, 0.06);
+    vertical-align: top;
+    font-weight: 400;
+  }
+
+  .dataTable tbody tr:last-child th,
+  .dataTable tbody tr:last-child td {
+    border-bottom: none;
+  }
+
+  .dataTable__label {
+    display: block;
+    font-size: 14.5px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+  }
+
+  .dataTable__note {
+    display: block;
+    font-size: 12.5px;
+    color: var(--muted);
+    margin-top: 2px;
+  }
+
+  .storedTag {
+    display: inline-flex;
+    align-items: center;
+    height: 23px;
+    padding: 0 10px;
+    border-radius: 7px;
+    font-size: 12px;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+
+  .storedTag--yes {
+    background: var(--green-soft);
+    color: var(--green-hover);
+  }
+
+  .storedTag--no {
+    background: var(--rail);
+    color: var(--ink-500);
+  }
+
+  .dataTable__retention {
+    font-size: 13.5px;
+    line-height: 1.5;
+    color: var(--ink-500);
+  }
+
+  .dataNote {
+    margin-top: 20px;
+    padding: 18px 22px;
+    background: var(--green-tint);
+    border-radius: var(--r-control);
+    font-size: 14.5px;
+    line-height: 1.6;
+    color: var(--ink-700);
+  }
+
+  /* ---------- AI ---------- */
+
+  .aiGrid {
+    display: grid;
+    grid-template-columns: 0.44fr 0.56fr;
+    gap: 56px;
+    align-items: start;
+  }
+
+  .aiGrid__eyebrow {
+    display: block;
+    font-size: 13px;
+    letter-spacing: 0.14em;
+    margin-bottom: 16px;
+  }
+
+  .aiGrid__body + .aiGrid__body {
+    margin-top: 14px;
+  }
+
+  .aiList {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .aiItem {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 13px;
+    padding: 20px 22px;
+  }
+
+  .aiItem__title {
+    font-size: 15.5px;
+    font-weight: 700;
+    letter-spacing: -0.015em;
+    margin-bottom: 6px;
+  }
+
+  .aiItem__body {
+    font-size: 14.5px;
+    line-height: 1.55;
+    color: var(--ink-500);
+  }
+
+  /* ---------- Access ---------- */
+
+  .accessCard {
+    padding: 28px;
+  }
+
+  .accessCard__icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 11px;
+    background: var(--green-tint);
+    margin-bottom: 16px;
+  }
+
+  .accessCard__title {
+    font-size: 18px;
+    font-weight: 700;
+    letter-spacing: -0.015em;
+    margin-bottom: 8px;
+  }
+
+  .accessCard__body {
+    font-size: 14.5px;
+    line-height: 1.55;
+    color: var(--ink-500);
+  }
+
+  /* ---------- Reviewers ---------- */
+
+  .reviewers {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 56px;
+    align-items: center;
+  }
+
+  .reviewers__eyebrow {
+    display: block;
+    font-size: 13px;
+    letter-spacing: 0.14em;
+    margin-bottom: 16px;
+  }
+
+  .reviewers__h2 {
+    font-size: 36px;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    line-height: 1.08;
+    color: var(--paper);
+    margin-bottom: 16px;
+  }
+
+  .reviewers__body {
+    font-size: 17px;
+    line-height: 1.6;
+    color: var(--on-dark-sage);
+    margin-bottom: 26px;
+    max-width: 48ch;
+  }
+
+  .docsCard {
+    background: rgba(244, 241, 234, 0.05);
+    border: 1px solid var(--on-dark-border);
+    border-radius: var(--r-card);
+    padding: 28px;
+  }
+
+  .docsCard__label {
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    color: var(--green-light);
+    margin-bottom: 18px;
+  }
+
+  .docsCard__row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding-bottom: 12px;
+    margin-bottom: 12px;
+    border-bottom: 1px solid rgba(244, 241, 234, 0.12);
+  }
+
+  .docsCard__name {
+    flex: 1;
+    font-size: 14.5px;
+    color: var(--on-dark-mist);
+  }
+
+  .docsCard__tag {
+    font-family: var(--mono);
+    font-size: 10.5px;
+    font-weight: 600;
+    color: var(--green-light);
+    flex: none;
+  }
+
+  .docsCard__note {
+    font-size: 13px;
+    line-height: 1.55;
+    color: var(--on-dark-sage);
+  }
+
+  /* ---------- Responsive ---------- */
+
+  @media (max-width: 1000px) {
+    .secHero__h1 {
+      font-size: 34px;
+    }
+    .secHero__lede {
+      font-size: 17.5px;
+    }
+    .grid3,
+    .grid2,
+    .aiGrid,
+    .reviewers {
+      grid-template-columns: 1fr;
+      gap: 32px;
+    }
+    .grid3,
+    .grid2 {
+      gap: 18px;
+    }
+    .reviewers__h2 {
+      font-size: 27px;
+    }
+  }
+</style>

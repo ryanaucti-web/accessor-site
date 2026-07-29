@@ -1,0 +1,91 @@
+---
+import LegalPage from '../layouts/LegalPage.astro';
+---
+
+<LegalPage
+  title="Privacy · limena"
+  description="What limena stores, what it does not, where it lives, and how long it is kept."
+  h1="Privacy"
+  standfirst="What we store, what we do not, where it lives, and how long we keep it. The same answers you will find on the security page, in the form a privacy policy needs them."
+  updated="Pending review"
+  effective="Pending review"
+  operator="limena"
+  draft
+>
+  <h2>1. What this covers</h2>
+  <p>
+    This policy covers the limena platform, the free scan, and this website. It does not cover the sites and documents
+    you point limena at, which remain yours.
+  </p>
+
+  <h2>2. What we collect</h2>
+
+  <h3>From your account</h3>
+  <ul>
+    <li>Identity: your name, work email, organization, and role, as you provide them.</li>
+    <li>Workspace data: the programmes you create, the products you bring under governance, and your team's roles.</li>
+    <li>Billing details, handled by our payment processor. We never see a full card number.</li>
+  </ul>
+
+  <h3>From the products you test</h3>
+  <ul>
+    <li>Page markup and screenshots, kept as the evidence behind each finding.</li>
+    <li>Uploaded documents, in the formats you submit them.</li>
+    <li>Findings and verdicts, including who signed off and when, because that record is the point.</li>
+    <li>
+      Session credentials for authenticated testing, encrypted at rest. We never ask for or accept a password for one of
+      your systems.
+    </li>
+  </ul>
+
+  <h3>What we do not collect</h3>
+  <ul>
+    <li>Analytics on your end users. limena does not run on your live site.</li>
+    <li>Anything from the free scan. A page or document tested without an account is processed in memory and discarded.</li>
+    <li>Behavioural tracking or advertising identifiers on this website.</li>
+  </ul>
+
+  <h2>3. AI processing</h2>
+  <p>
+    limena uses AI to explain findings and draft fixes, which means the relevant element and its surrounding context are
+    sent to a model provider. We use enterprise API tiers with training disabled by contract: your content is not used to
+    improve any model, ours or the provider's. Our sub-processor list is published and versioned, and existing customers
+    are notified before it changes.
+  </p>
+  <p>AI explanations can be disabled per workspace. Detection, routing, and evidence all continue without them.</p>
+
+  <h2>4. Where your data lives</h2>
+  <p>
+    Primary hosting is in Canada. Data residency is available as a contractual commitment on the Govern plan. Model API
+    calls are governed by the provider's own residency terms, which are listed alongside the sub-processor list.
+  </p>
+
+  <h2>5. How long we keep it</h2>
+  <ul>
+    <li>Evidence behind an open finding: while the finding is open, then 12 months.</li>
+    <li>Uploaded documents: until you delete them, or 30 days after the account closes.</li>
+    <li>Findings and verdicts: the life of the account, because they are the compliance trail.</li>
+    <li>Session credentials: until revoked or the session expires.</li>
+    <li>Free scan inputs: not retained at all.</li>
+  </ul>
+
+  <h2>6. Who we share it with</h2>
+  <p>
+    Sub-processors strictly necessary to run the service, each contractually bound to handle data only as we instruct;
+    your chosen model provider for the AI calls described above; and the people inside your own workspace, scoped by
+    their role. We do not sell, rent, or transfer customer data to third parties for marketing.
+  </p>
+
+  <h2>7. Your rights</h2>
+  <p>
+    You can access, correct, export, or delete your data. Workspace admins can do most of this directly in the product;
+    for anything else, write to us and we will action it.
+  </p>
+
+  <h2>8. Contact</h2>
+  <p>
+    Privacy questions: <a href="mailto:privacy@limena.app">privacy@limena.app</a>. Security questions, including
+    completed questionnaires and a data processing agreement: <a href="mailto:security@limena.app">security@limena.app</a>,
+    or see the <a href="/security">security page</a>.
+  </p>
+</LegalPage>

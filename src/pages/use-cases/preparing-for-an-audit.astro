@@ -1,0 +1,185 @@
+---
+import SituationPage from '../../layouts/SituationPage.astro';
+
+const steps = [
+  {
+    when: 'Weeks out',
+    title: 'Establish the real baseline',
+    body: 'limena crawls the full scope and maps every finding to a WCAG 2.2 success criterion, so you know exactly where you stand, not an inflated error count.',
+  },
+  {
+    when: 'The runway',
+    title: 'Close the gaps that matter',
+    body: 'Barriers are ranked by impact and routed to owners, so the weeks before the deadline go to real conformance, not triage meetings.',
+  },
+  {
+    when: 'Deadline',
+    title: 'Generate the VPAT from live data',
+    body: 'Produce a conformance report and an evidence trail straight from the current state of the product, with each claim backed by a dated result.',
+  },
+  {
+    when: 'After',
+    title: 'Never scramble again',
+    body: 'Because the loop keeps running, the next audit is a report you export, not a project you staff.',
+  },
+];
+
+const levels = [
+  { label: 'Level A', value: '30 / 32 supported', pct: 94, tone: 'pass' },
+  { label: 'Level AA', value: '22 / 24 supported', pct: 92, tone: 'attention' },
+];
+---
+
+<SituationPage
+  title="Preparing for an audit · limena"
+  description="An audit or VPAT deadline turns most teams into a two-week scramble. When accessibility runs as an operation, the evidence is a byproduct of the work."
+  h1="Walk into your audit with the evidence already done."
+  lede="An audit or VPAT deadline turns most teams into a two-week scramble. When accessibility runs as an operation, the evidence is a byproduct of the work, not a project of its own."
+  situationHeading="The deadline is real, and the report is stale."
+  situation={[
+    "A procurement requirement, a legal obligation, or a customer's security review lands with a date attached. Someone runs a scanner, exports hundreds of errors, and the team spends two weeks reconciling a snapshot that's already out of date, guessing which findings are real, and hand-assembling a VPAT nobody trusts.",
+    "The problem isn't the audit. It's that accessibility was never being operated, so there's nothing to draw the evidence from.",
+  ]}
+  stepsHeading="Evidence that builds itself as you work."
+  steps={steps}
+  ctaHeading="Your next audit starts today, not the week before."
+>
+  <div class="vpat">
+    <div class="vpat__head">
+      <div>
+        <p class="vpat__kicker">Conformance report · VPAT 2.5</p>
+        <p class="vpat__title">aucti.ca · WCAG 2.2 AA</p>
+      </div>
+      <span class="vpat__export">Export PDF</span>
+    </div>
+
+    <div class="vpat__grid">
+      {
+        levels.map((l) => (
+          <div class="vpat__cell">
+            <p class="vpat__cellLabel">{l.label}</p>
+            <p class={`vpat__cellValue vpat__cellValue--${l.tone}`}>{l.value}</p>
+            <div class="meter">
+              <div class={`meter__fill meter__fill--${l.tone}`} style={`width:${l.pct}%`} />
+            </div>
+          </div>
+        ))
+      }
+      <div class="vpat__cell">
+        <p class="vpat__cellLabel">Evidence</p>
+        <p class="vpat__cellValue vpat__cellValue--pass">Every claim dated</p>
+        <p class="vpat__cellNote">Backed by live results</p>
+      </div>
+    </div>
+  </div>
+</SituationPage>
+
+<style>
+  .vpat {
+    background: var(--white);
+    border: 1px solid var(--border-strong);
+    border-radius: var(--r-card);
+    padding: 28px;
+    box-shadow: var(--shadow);
+  }
+
+  .vpat__head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 18px;
+    flex-wrap: wrap;
+  }
+
+  .vpat__kicker {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 4px;
+  }
+
+  .vpat__title {
+    font-size: 18px;
+    font-weight: 700;
+    letter-spacing: -0.015em;
+  }
+
+  .vpat__export {
+    display: inline-flex;
+    align-items: center;
+    height: 36px;
+    padding: 0 16px;
+    background: var(--green);
+    color: var(--paper);
+    border-radius: 9px;
+    font-size: 14px;
+    font-weight: 600;
+  }
+
+  .vpat__grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+  }
+
+  .vpat__cell {
+    border: 1px solid var(--border);
+    border-radius: 11px;
+    padding: 16px;
+  }
+
+  .vpat__cellLabel {
+    font-family: var(--mono);
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 8px;
+  }
+
+  .vpat__cellValue {
+    font-size: 15px;
+    font-weight: 700;
+  }
+
+  .vpat__cellValue--pass {
+    color: var(--green-hover);
+  }
+  .vpat__cellValue--attention {
+    color: var(--attention-text);
+  }
+
+  .vpat__cellNote {
+    font-size: 12px;
+    color: var(--muted);
+    margin-top: 9px;
+  }
+
+  .meter {
+    height: 6px;
+    border-radius: var(--r-pill);
+    background: #e3e1d9;
+    overflow: hidden;
+    margin-top: 9px;
+  }
+
+  .meter__fill {
+    height: 100%;
+  }
+  .meter__fill--pass {
+    background: var(--green);
+  }
+  .meter__fill--attention {
+    background: var(--attention);
+  }
+
+  @media (max-width: 700px) {
+    .vpat__grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

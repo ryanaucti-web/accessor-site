@@ -1,0 +1,137 @@
+---
+/** "Fix these first": a ranked list where each row carries a rank, a headline,
+ *  a classification chip, and the sentence that justifies the rank. The chip is
+ *  a word, never a colour on its own. */
+
+export interface RankedItem {
+  rank: string;
+  title: string;
+  chip: string;
+  /** `high` marks the chip as the consequential class on this page. */
+  tone?: 'high' | 'neutral' | 'attention';
+  why: string;
+}
+
+interface Props {
+  head: string;
+  meta: string;
+  items: RankedItem[];
+}
+
+const { head, meta, items } = Astro.props;
+---
+
+<div class="rp">
+  <div class="rp__head">
+    <span class="rp__title">{head}</span>
+    <span class="rp__meta">{meta}</span>
+  </div>
+  {
+    items.map((r) => (
+      <div class="rp__row">
+        <div class="rp__rowTop">
+          <span class="rp__rank">{r.rank}</span>
+          <span class="rp__name">{r.title}</span>
+          <span class={`rp__chip rp__chip--${r.tone ?? 'high'}`}>{r.chip}</span>
+        </div>
+        <p class="rp__why">{r.why}</p>
+      </div>
+    ))
+  }
+</div>
+
+<style>
+  .rp {
+    background: var(--white);
+    border: 1px solid var(--border-strong);
+    border-radius: var(--r-card);
+    box-shadow: var(--shadow);
+    overflow: hidden;
+  }
+
+  .rp__head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 14px 20px;
+    background: var(--sunken);
+    border-bottom: 1px solid rgba(22, 38, 28, 0.08);
+  }
+
+  .rp__title {
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  .rp__meta {
+    font-size: 12.5px;
+    color: var(--muted);
+  }
+
+  .rp__row {
+    padding: 15px 20px;
+    border-bottom: 1px solid rgba(22, 38, 28, 0.06);
+  }
+
+  .rp__row:last-child {
+    border-bottom: none;
+  }
+
+  .rp__rowTop {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 7px;
+  }
+
+  .rp__rank {
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--fail-text);
+    flex: none;
+  }
+
+  .rp__name {
+    flex: 1;
+    font-size: 14.5px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+  }
+
+  .rp__chip {
+    display: inline-flex;
+    align-items: center;
+    height: 21px;
+    padding: 0 9px;
+    border-radius: 7px;
+    font-size: 11px;
+    font-weight: 600;
+    flex: none;
+    white-space: nowrap;
+  }
+
+  .rp__chip--high {
+    background: var(--fail-tint);
+    color: var(--fail-text);
+  }
+  .rp__chip--attention {
+    background: var(--attention-tint);
+    color: var(--attention-text);
+  }
+  .rp__chip--neutral {
+    background: var(--rail);
+    color: var(--muted);
+  }
+
+  .rp__why {
+    font-size: 13px;
+    line-height: 1.45;
+    color: var(--ink-500);
+  }
+</style>
