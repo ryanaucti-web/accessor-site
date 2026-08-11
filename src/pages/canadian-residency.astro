@@ -1,0 +1,634 @@
+---
+import Base from '../layouts/Base.astro';
+import CtaBand from '../components/CtaBand.astro';
+
+/** The page a procurement officer is sent to, so the answer is a URL rather
+ *  than a sentence in a meeting. Every region below is read from the running
+ *  infrastructure, not from an intention. If one moves, this page is wrong and
+ *  has to change with it. */
+
+const infra = [
+  {
+    layer: 'Application and API',
+    service: 'Vercel',
+    region: 'yul1 · Montréal',
+    note: 'Every server route that touches workspace data is pinned to the Canadian region.',
+  },
+  {
+    layer: 'Database, files, and authentication',
+    service: 'Supabase Postgres',
+    region: 'ca-central-1 · Montréal',
+    note: 'Findings, evidence, uploaded documents, and the audit trail. Backups stay in region.',
+  },
+  {
+    layer: 'Audit worker',
+    service: 'Google Cloud Run',
+    region: 'northamerica-northeast1 · Montréal',
+    note: 'The service that loads your pages, runs the tests, and captures screenshots.',
+  },
+];
+
+const providers = [
+  {
+    name: 'CANChat',
+    detail: 'Government of Canada',
+    region: 'Canada',
+    tone: 'ca' as const,
+    note: 'Processes inside Government of Canada infrastructure.',
+  },
+  {
+    name: 'Azure OpenAI',
+    detail: 'Your tenant, Canadian region',
+    region: 'Your tenancy',
+    tone: 'ca' as const,
+    note: 'Text never leaves the subscription you already hold.',
+  },
+  {
+    name: 'Self-hosted endpoint',
+    detail: 'Any OpenAI-compatible host',
+    region: 'Your tenancy',
+    tone: 'ca' as const,
+    note: 'Processes wherever your operator put it, which is the point of offering it.',
+  },
+  {
+    name: 'Anthropic or OpenAI, direct',
+    detail: 'The vendor’s own hosted service',
+    region: 'United States',
+    tone: 'us' as const,
+    note: 'Refused by the database when the workspace holds a Canadian residency.',
+  },
+];
+
+const enforcement = [
+  {
+    title: 'Chosen once, not toggled',
+    d: 'M5 11h14v10H5zM8.5 11V8a3.5 3.5 0 017 0v3',
+    body: 'Residency is set during onboarding and stated as permanent before the choice is made. It is not a preference someone can quietly change after procurement has seen it.',
+  },
+  {
+    title: 'Refused, not warned',
+    d: 'M12 3l8 4v6c0 4-3.5 7-8 8-4.5-1-8-4-8-8V7l8-4z',
+    body: 'Pairing a US-processing model with a Canadian residency raises a database error and the change does not save. A screen can be bypassed by calling the API directly. The database cannot.',
+  },
+  {
+    title: 'No shared key to fall back to',
+    d: 'M11 4a7 7 0 100 14 7 7 0 000-14zM16 16l4.5 4.5',
+    body: 'Every AI feature in a workspace uses your provider. With none configured the endpoints refuse the request rather than quietly using ours, because ours does not exist on that path.',
+  },
+];
+
+const limits = [
+  {
+    title: 'Our providers are US-incorporated',
+    body: 'Vercel, Supabase, and Google operate the Canadian regions above, and all three are American companies. Your data is stored and processed in Canada. The corporate jurisdiction of the operator is a separate question, and if it matters to your assessment we would rather you weigh it than have the word Canadian cover both.',
+  },
+  {
+    title: 'The free public scan is not covered',
+    body: 'A scan run without an account has no workspace, so it has no residency setting to honour. It uses our own model key, which processes in the United States. It stores nothing and discards the result, but do not point it at anything sensitive.',
+  },
+  {
+    title: 'We do not hold SOC 2 yet',
+    body: 'Readiness work is underway and the first third-party penetration test is scheduled. We will publish dates when they are set rather than imply a report exists.',
+  },
+];
+---
+
+<Base
+  title="Canadian data residency · limena"
+  description="Where limena stores your data, where it processes it, and what enforces that. Storage and processing run in Montréal, and AI processing stays under your control."
+>
+  <!-- HERO -->
+  <section class="band band--dark resHero">
+    <div class="resHero__inner">
+      <p class="eyebrow resHero__eyebrow">Canadian data residency</p>
+      <h1 class="resHero__h1">Stored in Canada, processed in Canada, and enforced by the database.</h1>
+      <p class="resHero__lede">
+        Most residency claims cover storage and go quiet about the AI. This page covers both, names the regions, and is
+        explicit about the two places the claim does not reach.
+      </p>
+    </div>
+  </section>
+
+  <!-- INFRASTRUCTURE -->
+  <section class="band band--paper">
+    <div class="band__inner">
+      <div class="lead">
+        <h2 class="h2 lead__h2">Where the data actually sits.</h2>
+        <p class="lede">
+          Three services hold or touch customer data. All three run in Montréal, and each region below is a deployment
+          setting rather than a policy statement.
+        </p>
+      </div>
+
+      <div class="tableWrap">
+        <table class="resTable">
+          <thead>
+            <tr>
+              <th scope="col">Layer</th>
+              <th scope="col">Service</th>
+              <th scope="col">Region</th>
+            </tr>
+          </thead>
+          <tbody>
+            {
+              infra.map((i) => (
+                <tr>
+                  <th scope="row">
+                    <span class="resTable__label">{i.layer}</span>
+                    <span class="resTable__note">{i.note}</span>
+                  </th>
+                  <td class="resTable__service">{i.service}</td>
+                  <td>
+                    <span class="regionTag">
+                      <span class="regionTag__dot" aria-hidden="true" />
+                      {i.region}
+                    </span>
+                  </td>
+                </tr>
+              ))
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- AI PROCESSING -->
+  <section class="band band--banded ruled">
+    <div class="band__inner">
+      <div class="lead">
+        <h2 class="h2 lead__h2">The AI is bring-your-own, which is why the claim holds.</h2>
+        <p class="lede">
+          limena sends page and document content to a model to explain findings and draft fixes. In a workspace, that
+          model is always yours. We do not have a shared key on that path to fall back to.
+        </p>
+      </div>
+
+      <div class="provGrid">
+        {
+          providers.map((p) => (
+            <div class="card provCard">
+              <div class="provCard__head">
+                <p class="provCard__name">{p.name}</p>
+                <span class={`regionPill regionPill--${p.tone}`}>
+                  <span class="regionPill__dot" aria-hidden="true" />
+                  {p.region}
+                </span>
+              </div>
+              <p class="provCard__detail">{p.detail}</p>
+              <p class="provCard__note">{p.note}</p>
+            </div>
+          ))
+        }
+      </div>
+
+      <p class="provNote">
+        <strong>A Canadian workspace cannot hold a US model.</strong> The two settings are checked against each other
+        when either one changes, and the mismatch is rejected with an error naming the provider and the region. This is
+        a constraint in the database, so it applies to the API and the screens alike.
+      </p>
+    </div>
+  </section>
+
+  <!-- ENFORCEMENT -->
+  <section class="band band--paper">
+    <div class="band__inner">
+      <div class="lead">
+        <h2 class="h2 lead__h2">What makes it a control rather than a promise.</h2>
+        <p class="lede">
+          A setting that can be changed by anyone, at any time, without a record, is a preference. These three are what
+          make it something you can put in front of a reviewer.
+        </p>
+      </div>
+
+      <div class="enfGrid">
+        {
+          enforcement.map((e) => (
+            <div class="card enfCard">
+              <span class="enfCard__icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                  <path
+                    d={e.d}
+                    stroke="var(--green-hover)"
+                    stroke-width="1.8"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                </svg>
+              </span>
+              <h3 class="enfCard__title">{e.title}</h3>
+              <p class="enfCard__body">{e.body}</p>
+            </div>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- LIMITS -->
+  <section class="band band--dark">
+    <div class="band__inner limits">
+      <div>
+        <p class="eyebrow limits__eyebrow">Where the claim stops</p>
+        <h2 class="limits__h2">Three things we will not let the word Canadian cover.</h2>
+        <p class="limits__body">
+          You are going to find these in a security review anyway. You should find them here first, from us, while you
+          still have time to decide whether they matter.
+        </p>
+        <a href="/contact" class="btn btn--primary">Ask us directly</a>
+      </div>
+
+      <ul class="limitList">
+        {
+          limits.map((l) => (
+            <li class="limitItem">
+              <p class="limitItem__title">{l.title}</p>
+              <p class="limitItem__body">{l.body}</p>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+
+  <CtaBand
+    heading="Send us the residency section of your questionnaire."
+    body="We will complete it against the running infrastructure, including the questions where the answer is not the one you were hoping for."
+    primaryLabel="Contact us"
+    primaryHref="/contact"
+    secondaryLabel="Security and trust"
+    secondaryHref="/security"
+  />
+</Base>
+
+<style>
+  .resHero__inner {
+    max-width: var(--content-narrow);
+    margin: 0 auto;
+  }
+
+  .resHero__eyebrow {
+    display: block;
+    font-size: 13px;
+    letter-spacing: 0.14em;
+    margin-bottom: 20px;
+  }
+
+  .resHero__h1 {
+    font-size: 50px;
+    font-weight: 800;
+    letter-spacing: -0.035em;
+    line-height: 1.04;
+    color: var(--paper);
+    margin-bottom: 20px;
+    max-width: 20ch;
+    text-wrap: balance;
+  }
+
+  .resHero__lede {
+    font-size: 19px;
+    line-height: 1.6;
+    color: var(--on-dark-sage);
+    max-width: 62ch;
+    text-wrap: pretty;
+  }
+
+  .ruled {
+    border-top: 1px solid rgba(22, 38, 28, 0.06);
+    border-bottom: 1px solid rgba(22, 38, 28, 0.06);
+  }
+
+  .lead {
+    max-width: 62ch;
+    margin-bottom: 44px;
+  }
+
+  .lead__h2 {
+    margin-bottom: 14px;
+  }
+
+  /* ---------- Infrastructure table ---------- */
+
+  .tableWrap {
+    overflow-x: auto;
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: var(--r-card);
+  }
+
+  .resTable {
+    width: 100%;
+    min-width: 620px;
+    border-collapse: collapse;
+    text-align: left;
+  }
+
+  .resTable thead th {
+    padding: 14px 20px;
+    background: var(--sunken);
+    border-bottom: 1px solid var(--border);
+    font-family: var(--mono);
+    font-size: 10.5px;
+    font-weight: 600;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  .resTable tbody th,
+  .resTable tbody td {
+    padding: 15px 20px;
+    border-bottom: 1px solid rgba(22, 38, 28, 0.06);
+    vertical-align: top;
+    font-weight: 400;
+  }
+
+  .resTable tbody tr:last-child th,
+  .resTable tbody tr:last-child td {
+    border-bottom: none;
+  }
+
+  .resTable__label {
+    display: block;
+    font-size: 14.5px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+  }
+
+  .resTable__note {
+    display: block;
+    font-size: 12.5px;
+    color: var(--muted);
+    margin-top: 2px;
+    max-width: 48ch;
+  }
+
+  .resTable__service {
+    font-size: 14.5px;
+    color: var(--ink-700);
+    white-space: nowrap;
+  }
+
+  /* Region is the word plus a mark plus the tint, never the tint alone. */
+  .regionTag {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    height: 24px;
+    padding: 0 11px 0 9px;
+    border-radius: var(--r-pill);
+    background: var(--green-soft);
+    color: var(--green-hover);
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+
+  .regionTag__dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--green);
+    flex: none;
+  }
+
+  /* ---------- Providers ---------- */
+
+  .provGrid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 18px;
+  }
+
+  .provCard {
+    padding: 24px 26px;
+  }
+
+  .provCard__head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    margin-bottom: 6px;
+  }
+
+  .provCard__name {
+    font-size: 17px;
+    font-weight: 700;
+    letter-spacing: -0.015em;
+  }
+
+  .regionPill {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    height: 23px;
+    padding: 0 10px 0 8px;
+    border-radius: var(--r-pill);
+    font-family: var(--mono);
+    font-size: 10.5px;
+    font-weight: 600;
+    white-space: nowrap;
+    flex: none;
+  }
+
+  .regionPill__dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    flex: none;
+  }
+
+  .regionPill--ca {
+    background: var(--green-soft);
+    color: var(--green-hover);
+  }
+  .regionPill--ca .regionPill__dot {
+    background: var(--green);
+  }
+
+  .regionPill--us {
+    background: var(--attention-tint);
+    color: var(--attention-text);
+  }
+  .regionPill--us .regionPill__dot {
+    background: var(--attention);
+  }
+
+  .provCard__detail {
+    font-size: 13px;
+    color: var(--muted);
+    margin-bottom: 10px;
+  }
+
+  .provCard__note {
+    font-size: 14.5px;
+    line-height: 1.55;
+    color: var(--ink-500);
+  }
+
+  .provNote {
+    margin-top: 20px;
+    padding: 18px 22px;
+    background: var(--green-tint);
+    border-radius: var(--r-control);
+    font-size: 14.5px;
+    line-height: 1.6;
+    color: var(--ink-700);
+  }
+
+  /* ---------- Enforcement ---------- */
+
+  .enfGrid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 18px;
+  }
+
+  .enfCard {
+    padding: 28px;
+  }
+
+  .enfCard__icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 11px;
+    background: var(--green-tint);
+    margin-bottom: 16px;
+  }
+
+  .enfCard__title {
+    font-size: 18px;
+    font-weight: 700;
+    letter-spacing: -0.015em;
+    margin-bottom: 8px;
+  }
+
+  .enfCard__body {
+    font-size: 14.5px;
+    line-height: 1.55;
+    color: var(--ink-500);
+  }
+
+  /* ---------- Limits ---------- */
+
+  .limits {
+    display: grid;
+    grid-template-columns: 0.44fr 0.56fr;
+    gap: 56px;
+    align-items: start;
+  }
+
+  .limits__eyebrow {
+    display: block;
+    font-size: 13px;
+    letter-spacing: 0.14em;
+    margin-bottom: 16px;
+  }
+
+  .limits__h2 {
+    font-size: 34px;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    line-height: 1.08;
+    color: var(--paper);
+    margin-bottom: 16px;
+    text-wrap: balance;
+  }
+
+  .limits__body {
+    font-size: 17px;
+    line-height: 1.6;
+    color: var(--on-dark-sage);
+    margin-bottom: 26px;
+    max-width: 48ch;
+  }
+
+  .limitList {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .limitItem {
+    background: rgba(244, 241, 234, 0.05);
+    border: 1px solid var(--on-dark-border);
+    border-radius: 13px;
+    padding: 20px 22px;
+  }
+
+  .limitItem__title {
+    font-size: 15.5px;
+    font-weight: 700;
+    letter-spacing: -0.015em;
+    color: var(--paper);
+    margin-bottom: 6px;
+  }
+
+  .limitItem__body {
+    font-size: 14.5px;
+    line-height: 1.55;
+    color: var(--on-dark-mist);
+  }
+
+  /* ---------- Responsive ---------- */
+
+  @media (max-width: 1000px) {
+    .resHero__h1 {
+      font-size: 34px;
+    }
+    .resHero__lede {
+      font-size: 17.5px;
+    }
+    .provGrid,
+    .enfGrid,
+    .limits {
+      grid-template-columns: 1fr;
+    }
+    .limits {
+      gap: 32px;
+    }
+    .limits__h2 {
+      font-size: 27px;
+    }
+  }
+
+  /* ---------- Print ---------- */
+  /* This is the page someone hands to a procurement officer, so it has to
+     survive being printed to PDF: dark bands would burn ink and drop the text
+     to white on white. */
+
+  @media print {
+    .band {
+      padding: 24px 0 !important;
+      background: #fff !important;
+      border: none !important;
+      break-inside: avoid;
+    }
+    .resHero__h1,
+    .limits__h2,
+    .limitItem__title {
+      color: #16261c !important;
+    }
+    .resHero__lede,
+    .limits__body,
+    .limitItem__body {
+      color: #3d4a42 !important;
+    }
+    .limitItem {
+      background: #fff !important;
+      border: 1px solid #c8cfc9 !important;
+    }
+    .btn {
+      display: none !important;
+    }
+    .provGrid,
+    .enfGrid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+</style>

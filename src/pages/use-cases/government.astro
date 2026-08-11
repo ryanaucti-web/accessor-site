@@ -8,6 +8,7 @@ import FindingCard from '../../components/product/FindingCard.astro';
 import EvidencePanel from '../../components/product/EvidencePanel.astro';
 import OutcomeBand from '../../components/product/OutcomeBand.astro';
 import CtaBand from '../../components/CtaBand.astro';
+import CheckCircle from '../../components/ui/CheckCircle.astro';
 
 const stats = [
   { num: '2', label: 'statutory services blocked', delta: 'no offline route' },
@@ -112,10 +113,27 @@ const ranked = [
 ];
 
 const standards = [
-  { label: 'Accessible Canada Act', count: 'Federal obligation', val: 'WCAG 2.1 AA' },
+  { label: 'Accessible Canada Act', count: 'Plan, feedback, progress reports', val: 'Statutory' },
+  { label: 'CAN/ASC-EN 301 549:2024', count: 'National Standard of Canada', val: 'WCAG 2.1 AA' },
   { label: 'AODA, Ontario', count: 'Provincial obligation', val: 'WCAG 2.0 AA' },
-  { label: 'EN 301 549', count: 'For EU-facing services', val: 'WCAG 2.1 AA' },
-  { label: 'Resolved target', count: 'Highest bar across all four', val: 'WCAG 2.2 AA', ok: true },
+  { label: 'Resolved target', count: 'Highest bar across all three', val: 'WCAG 2.2 AA', ok: true },
+];
+
+// The obligation is a cycle, not a pass mark. This is the argument no other
+// use-case page makes, and the one a federal visitor came to the stand with.
+const cycle = [
+  {
+    title: 'The plan has to name barriers',
+    body: 'A plan listing intentions and no barriers is the one that draws a complaint. limena gives you the inventory the plan is meant to describe, ranked by who is shut out.',
+  },
+  {
+    title: 'The progress report has to show movement',
+    body: 'Next year you have to say what changed. Verified fixes carrying a date and evidence are the difference between a progress report and a restatement.',
+  },
+  {
+    title: 'Feedback arrives as a barrier, not a ticket',
+    body: 'Someone tells you they could not renew a licence. limena ties that to the finding, the service, and the fix, so your response cites a record rather than an assurance.',
+  },
 ];
 
 const outcomes = [
@@ -193,6 +211,7 @@ const outcomes = [
     heading="One record, every standard you answer to."
     body={[
       'Most of your estate is vendor-built and procured, so the lever is the contract. limena holds each supplier to the same bar and produces the evidence pack that goes into a renewal or an accessibility complaint response.',
+      'EN 301 549 is a National Standard of Canada now, published as CAN/ASC-EN 301 549:2024, so the requirement you write into a solicitation and the bar you hold the delivered product to are finally the same document.',
       'Multiple jurisdictions resolve to the highest bar, so one programme satisfies all of them rather than running three.',
     ]}
   >
@@ -200,9 +219,46 @@ const outcomes = [
       head="Standards in scope"
       action="Export"
       rows={standards}
-      note="All four resolve to WCAG 2.2 AA, so the programme is run once against the highest bar."
+      note="All three resolve to WCAG 2.2 AA, so the programme is run once against the highest bar."
     />
   </ProductRow>
+
+  <!-- The obligation this page has to state plainly, because it is a cycle
+       rather than a pass mark, and the cycle is what limena actually is. -->
+  <section class="band band--banded cycle">
+    <div class="cycle__inner">
+      <div>
+        <p class="eyebrow cycle__eyebrow">The obligation, precisely</p>
+        <h2 class="cycle__h2">The Act does not ask whether your site is accessible.</h2>
+        <p class="cycle__body">
+          It asks you to publish a three year accessibility plan, run a process for receiving feedback about barriers,
+          and publish a progress report in the years between describing what actually changed.
+        </p>
+        <p class="cycle__body cycle__body--emph">
+          That is an operating loop with an evidence requirement attached. It is a different problem from passing a scan,
+          and it is the one that comes back every year.
+        </p>
+      </div>
+
+      <div class="cycle__list">
+        {
+          cycle.map((c) => (
+            <div class="cycleCard">
+              <p class="cycleCard__title">{c.title}</p>
+              <p class="cycleCard__body">{c.body}</p>
+            </div>
+          ))
+        }
+        <div class="cycleNote">
+          <CheckCircle size={17} />
+          <span>
+            The plan and the progress report are themselves published documents, held to the same bar as the services
+            they describe. limena audits PDF, Word, and PowerPoint alongside the sites.
+          </span>
+        </div>
+      </div>
+    </div>
+  </section>
 
   <OutcomeBand heading="Services that work for everyone entitled to use them." outcomes={outcomes} />
 
@@ -211,7 +267,99 @@ const outcomes = [
     body="The one most residents have to get through, and the one most likely to be blocking someone today."
     primaryLabel="Book a demo"
     primaryHref="/contact"
-    secondaryLabel="Test a page free"
-    secondaryHref="/scan"
+    secondaryLabel="Canadian data residency"
+    secondaryHref="/canadian-residency"
   />
 </Base>
+
+<style>
+  .cycle {
+    border-top: 1px solid rgba(22, 38, 28, 0.06);
+    border-bottom: 1px solid rgba(22, 38, 28, 0.06);
+  }
+
+  .cycle__inner {
+    max-width: 1160px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 0.44fr 0.56fr;
+    gap: 56px;
+    align-items: start;
+  }
+
+  .cycle__eyebrow {
+    display: block;
+    margin-bottom: 16px;
+  }
+
+  .cycle__h2 {
+    font-size: 34px;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    line-height: 1.08;
+    margin-bottom: 18px;
+    text-wrap: balance;
+  }
+
+  .cycle__body {
+    font-size: 16.5px;
+    line-height: 1.6;
+    color: var(--ink-500);
+  }
+
+  .cycle__body + .cycle__body {
+    margin-top: 14px;
+  }
+
+  .cycle__body--emph {
+    color: var(--ink-700);
+  }
+
+  .cycle__list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .cycleCard {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 13px;
+    padding: 20px 22px;
+  }
+
+  .cycleCard__title {
+    font-size: 15.5px;
+    font-weight: 700;
+    letter-spacing: -0.015em;
+    margin-bottom: 6px;
+  }
+
+  .cycleCard__body {
+    font-size: 14.5px;
+    line-height: 1.55;
+    color: var(--ink-500);
+  }
+
+  .cycleNote {
+    display: flex;
+    align-items: flex-start;
+    gap: 11px;
+    padding: 18px 22px;
+    background: var(--green-tint);
+    border-radius: var(--r-control);
+    font-size: 14.5px;
+    line-height: 1.55;
+    color: var(--ink-700);
+  }
+
+  @media (max-width: 1000px) {
+    .cycle__inner {
+      grid-template-columns: 1fr;
+      gap: 32px;
+    }
+    .cycle__h2 {
+      font-size: 27px;
+    }
+  }
+</style>
