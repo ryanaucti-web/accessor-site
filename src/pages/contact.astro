@@ -1,10 +1,9 @@
 ---
 import Base from '../layouts/Base.astro';
 
-// The form posts wherever this points. It is deliberately a single constant so
-// wiring it to a real handler (Formspree, a Vercel function, your CRM) is one
-// edit. Until it is set, the form does nothing on submit and says so.
-const FORM_ENDPOINT = '';
+// The Vercel function in api/contact.ts. It forwards submissions through
+// Resend to hello@limena.app; see that file for the environment it needs.
+const FORM_ENDPOINT = '/api/contact';
 
 const expect = [
   'We test something you own before the call, so we are looking at your findings rather than a demo account.',
@@ -106,13 +105,23 @@ const routes = [
           <p class="formCard__sub">Two minutes. We reply within one business day.</p>
         </div>
 
-        <form
-          class="form"
-          method="post"
-          action={FORM_ENDPOINT || undefined}
-          data-endpointless={FORM_ENDPOINT ? undefined : ''}
-          novalidate
-        >
+        <!-- The handler answers no-JS posts with a redirect to one of these
+             fragments, so the confirmation is visible without any script. -->
+        <p id="sent" class="formCard__landing formCard__landing--ok" tabindex="-1">
+          ✓ Request received. We reply within one business day.
+        </p>
+        <p id="send-failed" class="formCard__landing formCard__landing--err" tabindex="-1">
+          ✗ Sending failed. Email <a href="mailto:hello@limena.app">hello@limena.app</a> and we will pick it up.
+        </p>
+
+        <form class="form" method="post" action={FORM_ENDPOINT} novalidate>
+          <!-- Honeypot. Off-screen and out of the tab order; people never see
+               it, bots fill it, and the handler drops those quietly. -->
+          <div class="form__trap" aria-hidden="true">
+            <label for="phone">Phone</label>
+            <input id="phone" name="phone" type="text" tabindex="-1" autocomplete="off" />
+          </div>
+
           <div class="form__pair">
             <div class="field">
               <label for="first">First name</label>
@@ -341,6 +350,36 @@ const routes = [
     color: var(--muted);
   }
 
+  /* No-JS confirmation targets. Hidden until the handler's redirect points the
+     URL fragment at one of them. */
+  .formCard__landing {
+    display: none;
+    margin: 20px 28px 0;
+    padding: 12px 14px;
+    border-radius: var(--r-control-sm);
+    font-size: 13.5px;
+    line-height: 1.5;
+    font-weight: 600;
+  }
+
+  .formCard__landing:target {
+    display: block;
+  }
+
+  .formCard__landing--ok {
+    background: var(--green-soft);
+    color: var(--green-hover);
+  }
+
+  .formCard__landing--err {
+    background: var(--fail-tint);
+    color: var(--fail-text);
+  }
+
+  .formCard__landing--err a {
+    color: inherit;
+  }
+
   .form {
     padding: 26px 28px 28px;
     display: flex;
@@ -352,6 +391,16 @@ const routes = [
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 14px;
+  }
+
+  /* Honeypot: parked off-screen rather than display:none so naive bots still
+     treat it as a fillable field. */
+  .form__trap {
+    position: absolute;
+    left: -9999px;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
   }
 
   .field {
@@ -519,6 +568,16 @@ const routes = [
     font-weight: 600;
   }
 
+  .form__status[data-tone='ok'] {
+    background: var(--green-soft);
+    color: var(--green-hover);
+  }
+
+  .form__status[data-tone='err'] {
+    background: var(--fail-tint);
+    color: var(--fail-text);
+  }
+
   /* ---------- Other routes ---------- */
 
   .routes__lead {
@@ -636,7 +695,17 @@ const routes = [
       field.closest('.field')?.querySelector('.field__error')?.remove();
     };
 
+    const setStatus = (tone: 'attention' | 'ok' | 'err', message: string) => {
+      status.dataset.tone = tone;
+      status.textContent = message;
+    };
+
     form.addEventListener('submit', (e) => {
+      // Always our fetch below, never a page navigation. The bare form post
+      // only happens without JS, and the handler redirects that case back
+      // here to a visible confirmation.
+      e.preventDefault();
+
       const fields = Array.from(
         form.querySelectorAll<HTMLInputElement | HTMLSelectElement>('input[required], select[required]')
       );
@@ -655,18 +724,38 @@ const routes = [
       }
 
       if (firstInvalid) {
-        e.preventDefault();
-        status.textContent = 'The form has some missing details. The first one is highlighted below.';
+        setStatus('attention', 'The form has some missing details. The first one is highlighted below.');
         firstInvalid.focus();
         return;
       }
 
-      // No endpoint wired yet: say so rather than appearing to send.
-      if (form.hasAttribute('data-endpointless')) {
-        e.preventDefault();
-        status.textContent =
-          'This form is not connected to a handler yet. In the meantime, email hello@limena.app and we will pick it up.';
+      const data = new FormData(form);
+      const body: Record<string, unknown> = {};
+      for (const [name, value] of data.entries()) {
+        if (name !== 'kind') body[name] = value;
       }
+      body.kind = data.getAll('kind');
+
+      const submit = form.querySelector<HTMLButtonElement>('.form__submit');
+      if (submit) submit.disabled = true;
+      setStatus('attention', 'Sending…');
+
+      fetch(form.action, {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify(body),
+      })
+        .then((res) => {
+          if (!res.ok) throw new Error(String(res.status));
+          setStatus('ok', '✓ Request received. We reply within one business day.');
+          form.reset();
+        })
+        .catch(() => {
+          setStatus('err', '✗ Sending failed. Email hello@limena.app and we will pick it up.');
+        })
+        .finally(() => {
+          if (submit) submit.disabled = false;
+        });
     });
   }
 </script>
