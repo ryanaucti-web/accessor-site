@@ -3,69 +3,93 @@ import Base from '../layouts/Base.astro';
 import CtaBand from '../components/CtaBand.astro';
 import CheckCircle from '../components/ui/CheckCircle.astro';
 
+// Prices are hypotheses, not commitments. Change them here and nowhere else.
 const plans = [
   {
-    name: 'Assess',
-    forWho: 'For teams establishing a defensible baseline for the first time.',
+    name: 'Team',
+    forWho: 'For organizations operationalizing accessibility across a focused digital experience.',
     prefix: 'from',
-    price: '$15k',
+    price: '$6k',
     unit: '/ year',
-    billing: 'Billed annually · 1 product in scope',
+    billing: 'Billed annually · one digital property',
     cta: 'Book a demo',
     href: '/contact',
-    includesLabel: 'Everything you need to know where you stand',
+    includesLabel: 'The full operating loop, focused scope',
     features: [
-      'One product under governance',
-      'Automated testing of every page, on a cadence',
-      'Up to 500 documents a year, read in full',
-      'AI plain-language explanations',
-      'Reach and severity prioritization',
-      'Live VPAT and evidence record',
+      'One primary digital property',
+      'Up to 3 active customer journeys',
+      'Weekly recurring monitoring',
+      'One Jira project, with ticket creation and status sync',
+      'Audit intake and manual findings',
       'Unlimited seats',
     ],
   },
   {
-    name: 'Operate',
-    forWho: 'For organizations running accessibility continuously across teams.',
+    name: 'Growth',
+    forWho: 'For organizations managing accessibility across multiple products and customer journeys.',
     prefix: 'from',
-    price: '$45k',
+    price: '$15k',
     unit: '/ year',
-    billing: 'Billed annually · up to 5 products',
+    billing: 'Billed annually · multiple properties and teams',
     cta: 'Book a demo',
     href: '/contact',
     badgeLabel: 'Most common',
-    includesLabel: 'Everything in Assess, plus the operating layer',
+    includesLabel: 'Everything in Team, at organizational scale',
     features: [
-      'Up to 5 products under governance',
-      'Up to 5,000 documents a year, read in full',
-      'ARRM ownership routing',
-      'Linear, Jira and GitHub sync',
-      'Regression detection at every release',
-      'Maturity scoring and trend history',
-      'Executive reporting',
-      'Priority support',
+      '3 to 5 digital properties',
+      '10 to 20 active journeys',
+      'Daily or weekly monitoring',
+      'Multiple Jira projects and richer workflow mapping',
+      'Multiple product teams and audit sources',
+      'Authenticated monitoring where supported',
+      'Expanded reporting and API access',
     ],
   },
   {
-    name: 'Govern',
-    forWho: 'For enterprises and public bodies answering to regulators.',
+    name: 'Enterprise',
+    forWho: 'For complex, regulated, or large-scale digital environments.',
     prefix: '',
     price: 'Custom',
     unit: '',
-    billing: 'Annual contract · unlimited products',
+    billing: 'Annual agreement · starting around $45k a year',
     cta: 'Talk to sales',
     href: '/contact',
-    includesLabel: 'Everything in Operate, plus governance and control',
+    includesLabel: 'Everything in Growth, across the enterprise',
     features: [
-      'Unlimited products and portfolio rollups',
-      'Unlimited document volume',
-      'Procurement and compliance exports',
-      'SAML SSO and audit history',
-      'Data residency options',
-      'API and CI integration',
-      'Named contact and onboarding',
-      'Custom terms and security review',
+      'Many properties, journeys, and business units',
+      'Custom schedules, high volume, deployment-triggered monitoring',
+      'Multiple Jira or work-management environments',
+      'SAML SSO and enterprise access control',
+      'Private runner for protected environments',
+      'Security review, custom retention, custom integrations',
+      'Named implementation support',
     ],
+  },
+];
+
+const loop = [
+  'Continuous monitoring',
+  'Accessibility findings',
+  'Audit intake',
+  'Journey context and prioritization',
+  'Ownership and remediation',
+  'Verification',
+  'Evidence and history',
+  'Workflow connectivity',
+];
+
+const drivers = [
+  {
+    title: 'Properties and journeys',
+    body: 'Each website, web app, or product you bring under the loop, and each customer journey limena watches inside it. A checkout, an account opening, an enrolment. More of the organization under monitoring, higher the band.',
+  },
+  {
+    title: 'Monitoring frequency and volume',
+    body: 'Weekly on Team, daily or weekly on Growth, custom schedules and deployment-triggered runs on Enterprise. Frequency and scan volume scale the price. The monitoring itself is in every plan.',
+  },
+  {
+    title: 'Teams, integrations, and security',
+    body: 'Business units, multiple Jira environments, enterprise identity, authenticated and private environments, security review, retention requirements. Complexity of the deployment, not capability of the product.',
   },
 ];
 
@@ -87,8 +111,8 @@ const agencyAdds = [
     body: 'Per-client cost is set so you can package accessibility as a retainer and hold your margin.',
   },
   {
-    title: 'Operate-grade capability per client',
-    body: 'Ownership routing, tracker sync, regression detection, and a live VPAT, scoped to one product per client workspace.',
+    title: 'The full loop per client',
+    body: 'Monitoring, findings, ownership routing, tracker sync, verification, and evidence, scoped to one property per client workspace.',
   },
 ];
 
@@ -110,83 +134,94 @@ const risks = [
   },
 ];
 
-const matrix: [string, string, string, string][] = [
-  ['Products under governance', '1', 'Up to 5', 'Unlimited'],
-  ['Documents read per year', '500', '5,000', 'Unlimited'],
-  ['Word, Excel, PowerPoint, PDF', 'yes', 'yes', 'yes'],
-  ['Automated testing, every page', 'yes', 'yes', 'yes'],
-  ['AI plain-language explanations', 'yes', 'yes', 'yes'],
-  ['Reach and severity prioritization', 'yes', 'yes', 'yes'],
-  ['Live VPAT and evidence record', 'yes', 'yes', 'yes'],
+type MatrixRow = [string, string, string, string];
+
+const matrixCore: MatrixRow[] = [
+  ['Accessibility baseline', 'yes', 'yes', 'yes'],
+  ['Recurring monitoring and regression detection', 'yes', 'yes', 'yes'],
+  ['Findings management and audit intake', 'yes', 'yes', 'yes'],
+  ['Journey context and prioritization', 'yes', 'yes', 'yes'],
+  ['Ownership and remediation workflow', 'yes', 'yes', 'yes'],
+  ['Verification of fixes', 'yes', 'yes', 'yes'],
+  ['Evidence and history', 'yes', 'yes', 'yes'],
+  ['Jira connectivity', 'yes', 'yes', 'yes'],
   ['Unlimited seats', 'yes', 'yes', 'yes'],
-  ['ARRM ownership routing', 'no', 'yes', 'yes'],
-  ['Tracker sync (Linear, Jira, GitHub)', 'no', 'yes', 'yes'],
-  ['Regression detection at release', 'no', 'yes', 'yes'],
-  ['Maturity scoring and trends', 'no', 'yes', 'yes'],
-  ['Portfolio rollups', 'no', 'no', 'yes'],
-  ['SAML SSO and audit history', 'no', 'no', 'yes'],
-  ['Data residency options', 'no', 'no', 'yes'],
-  ['API and CI integration', 'no', 'yes', 'yes'],
-  ['Named contact and onboarding', 'no', 'no', 'yes'],
+];
+
+const matrixScale: MatrixRow[] = [
+  ['Digital properties', '1', '3 to 5', 'Custom'],
+  ['Active customer journeys', 'Up to 3', '10 to 20', 'Custom'],
+  ['Monitoring cadence', 'Weekly', 'Daily or weekly', 'Custom and deploy-triggered'],
+  ['Jira projects', '1', 'Multiple', 'Multiple environments'],
+  ['Business units', '1', 'Multiple', 'Many'],
+  ['Authenticated monitoring', 'Public experiences', 'Where supported', 'Full, with private runner'],
+  ['API and integrations', 'Standard', 'Expanded', 'Custom'],
+  ['SAML SSO and enterprise access control', 'no', 'no', 'yes'],
+  ['Security review, residency, custom retention', 'no', 'no', 'yes'],
 ];
 
 const faq = [
+  {
+    q: 'What counts as a digital property?',
+    a: 'One website, web app, or product under the loop. Pages and templates inside a property are never counted, so nobody is ever tempted to narrow scope to save money.',
+  },
+  {
+    q: 'What is an active journey?',
+    a: 'A path through your product that limena monitors end to end, like a checkout, an account opening, or a course enrolment. Journeys are how findings get business context, so plans are sized by how many you keep active rather than by page count.',
+  },
+  {
+    q: 'limena discovered 1,746 URLs on our site. Are we paying for 1,746 pages?',
+    a: 'No. Most of those URLs share a handful of templates, so limena evaluates representative pages and reports the rest as potential affected surface. You pay for the properties and journeys under monitoring, not for the URL count a crawl happens to find.',
+  },
+  {
+    q: 'Why does every plan include Jira?',
+    a: 'Because product and engineering should not have to live in limena. Findings that cannot reach the tracker where work actually happens do not get fixed, so basic workflow connectivity is part of the core product, not an upgrade.',
+  },
+  {
+    q: 'What actually changes when we move from Team to Growth?',
+    a: 'Scope, not capability. Team already runs the complete loop. Growth runs it across more properties, more journeys, more teams, and a faster monitoring cadence. The reason to upgrade is that you are operating accessibility across more of the organization.',
+  },
+  {
+    q: 'Can limena monitor experiences behind a login?',
+    a: 'Growth supports authenticated monitoring where it can be done securely. Enterprise environments that limena cloud should never reach directly can run the private runner inside their own infrastructure, with credentials staying in their own secret manager. Scoped during security review.',
+  },
+  {
+    q: 'Can we start with a pilot?',
+    a: 'Yes. A paid pilot runs 60 to 90 days on one property: baseline, recurring monitoring, one existing audit, and one to three critical journeys with the full remediation and verification workflow. If you convert to an annual agreement, the pilot fee is credited toward it.',
+  },
   {
     q: 'Why is pricing annual rather than monthly?',
     a: 'Accessibility is a programme, not a one-off check. Annual terms match the cadence of audits, procurement cycles, and the reporting your stakeholders actually ask for.',
   },
   {
-    q: 'What counts as a product?',
-    a: 'One website, web app, or document set under governance. Pages and templates inside a website or app are unlimited, so nobody is ever tempted to narrow scope to save money.',
-  },
-  {
-    q: 'We send thousands of documents a year. How does that work?',
-    a: 'Documents carry an annual volume allowance rather than being unlimited, because every file is read page by page instead of sharing one live template. Assess covers 500 a year, Operate 5,000, and Govern is unlimited. Most findings trace back to a handful of templates, so the remediation work is far smaller than the file count suggests.',
-  },
-  {
-    q: 'Do documents count against the product limit?',
-    a: 'No. A document set is one product no matter how many templates it spans, and it is the volume allowance that scales. A firm governing one website and its client deliverables is on two products.',
-  },
-  {
-    q: 'We already have Acrobat Pro. Why pay for this too?',
-    a: 'Acrobat and PAC check the file in front of you, and limena aligns with those rule sets rather than competing with them. What they cannot do is run across every file on a cadence without someone clicking, trace three hundred failures back to the two templates that caused them, route each one to an owner, and keep a dated record you can attach to a proposal. Keep Acrobat for the file on your desk; limena governs the estate.',
-  },
-  {
     q: 'Why are seats unlimited?',
-    a: 'Because per-seat pricing quietly makes accessibility one person’s job. Findings need to reach designers, content editors, and engineers directly, so the whole team is included.',
+    a: 'Because per-seat pricing quietly makes accessibility one person’s job. Findings need to reach designers, content editors, and engineers directly, so the whole team is included on every plan.',
   },
   {
     q: 'Do you offer nonprofit or public sector terms?',
-    a: 'Yes. Registered nonprofits, educational institutions, and public bodies have dedicated terms, usually on Govern. Tell us your context and we will sort it.',
-  },
-  {
-    q: 'Is the evidence sufficient for a real audit?',
-    a: 'Findings map to WCAG success criteria and the VPAT is generated from live results. Govern adds procurement-ready exports. Where a conformance claim needs human judgment, your specialists make it and limena records who signed off.',
-  },
-  {
-    q: 'Can we start smaller than Assess?',
-    a: 'You can test a single page free, with no account, to see the output before any conversation about price. Assess is the smallest governed programme we support.',
+    a: 'Yes. Registered nonprofits, educational institutions, and public bodies have dedicated terms. Tell us your context and we will sort it.',
   },
   {
     q: 'We are an agency. Which plan applies?',
-    a: 'The Agency plan. It is priced per client workspace rather than per organization, at wholesale rates set against your client count, so margin stays in your retainer. Each workspace covers one product with the same capability as a direct plan, white-labelled and isolated from your other clients. Talk to partnerships and we will size it with you.',
+    a: 'The Agency plan. It is priced per client workspace rather than per organization, at wholesale rates set against your client count, so margin stays in your retainer. Each workspace runs the full loop on one property, white-labelled and isolated from your other clients. Talk to partnerships and we will size it with you.',
   },
 ];
 ---
 
 <Base
   title="Pricing · limena"
-  description="limena is the system of record for accessibility across your digital estate. Plans are annual, seats are unlimited, and every plan includes the full testing and evidence layer."
+  description="Every limena plan runs the complete operating loop: monitoring, findings, context, remediation, verification, evidence. Price follows the scale it operates at, not which parts you are allowed to use."
   active="pricing"
 >
   <!-- HERO -->
   <section class="band band--dark priceHero">
     <div class="priceHero__inner">
       <p class="eyebrow priceHero__eyebrow">Pricing</p>
-      <h1 class="priceHero__h1">Priced against the risk you are managing.</h1>
+      <h1 class="priceHero__h1">Pay for scale, not access.</h1>
       <p class="priceHero__lede">
-        limena is the system of record for accessibility across your digital estate. Plans are annual, seats are
-        unlimited, and every plan includes the full testing and evidence layer.
+        Every plan runs the complete limena operating loop, from baseline through monitoring, findings, remediation, and
+        verification. Price follows how much of your organization the loop operates across, never which parts of it you
+        are allowed to use.
       </p>
     </div>
   </section>
@@ -227,11 +262,24 @@ const faq = [
         }
       </div>
 
-      <p class="plansNote">
-        Every plan includes unlimited seats, full automated coverage of every page in scope, AI explanations, ownership
-        routing, and a live VPAT. Websites, web apps, and documents are all first-class: Word, Excel, PowerPoint, and PDF
-        are tested page by page, never sampled. Nonprofits and public bodies have dedicated terms.
-      </p>
+      <div class="loopStrip">
+        <p class="loopStrip__label">In every plan</p>
+        <ul class="loopStrip__list">
+          {
+            loop.map((item) => (
+              <li class="loopStrip__item">
+                <CheckCircle size={16} color="var(--green-hover)" />
+                <span>{item}</span>
+              </li>
+            ))
+          }
+        </ul>
+        <p class="loopStrip__note">
+          A Team customer runs the same product an Enterprise customer runs. The plans differ in how many properties,
+          journeys, teams, and environments the loop covers, and how often it runs. Nonprofits and public bodies have
+          dedicated terms.
+        </p>
+      </div>
     </div>
   </section>
 
@@ -240,59 +288,44 @@ const faq = [
     <div class="band__inner">
       <div class="lead">
         <p class="eyebrow">How pricing works</p>
-        <h2 class="h2 lead__h2">Two inputs, no surprises.</h2>
+        <h2 class="h2 lead__h2">The loop is never the lever.</h2>
         <p class="lede">
-          We do not price per page or per scan, because that punishes you for testing thoroughly. Price is set by the
-          size of your organization and the breadth of what you are governing.
+          We do not remove capabilities to make you upgrade, and we do not meter raw URL counts. Three things move the
+          price, and all of them are about scale.
         </p>
       </div>
 
       <div class="drivers">
-        <div class="card driver">
-          <span class="driver__icon">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-              <path
-                d="M9 8a3 3 0 100-6 3 3 0 000 6zM3 20c0-3.3 2.7-5 6-5s6 1.7 6 5M17 11a2.5 2.5 0 100-5 2.5 2.5 0 000 5zM21 20c0-2.5-1.8-4-4-4"
-                stroke="var(--green-hover)"
-                stroke-width="1.8"
-                stroke-linecap="round"
-                stroke-linejoin="round"></path>
-            </svg>
-          </span>
-          <h3 class="driver__title">Organization size</h3>
-          <p class="driver__body">
-            A 40-person studio and a 12,000-person bank carry different accessibility exposure. Size sets the band, and
-            it is the only thing that changes as you grow.
-          </p>
-        </div>
-
-        <div class="card driver">
-          <span class="driver__icon">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-              <path
-                d="M4 5h7v7H4zM13 12h7v7h-7z"
-                stroke="var(--green-hover)"
-                stroke-width="1.8"
-                stroke-linecap="round"
-                stroke-linejoin="round"></path>
-            </svg>
-          </span>
-          <h3 class="driver__title">Products in scope</h3>
-          <p class="driver__body">
-            Each website, web app, or document set you bring under governance. Pages and templates inside a product are
-            never counted, so test everything.
-          </p>
-          <p class="driver__body">
-            Documents work the same way, with an annual volume allowance per plan, because each file is read individually
-            rather than sharing a template at runtime.
-          </p>
-        </div>
+        {
+          drivers.map((d, i) => (
+            <div class="card driver">
+              <p class="driver__n">{String(i + 1).padStart(2, '0')}</p>
+              <h3 class="driver__title">{d.title}</h3>
+              <p class="driver__body">{d.body}</p>
+            </div>
+          ))
+        }
       </div>
 
-      <p class="seatsNote">
-        <strong>Seats are never a lever.</strong> Accessibility fails when it belongs to one person. Every plan is unlimited
-        seats so design, content, engineering, QA, and compliance all work in the same system.
-      </p>
+      <div class="urlNote">
+        <div class="urlNote__copy">
+          <h3 class="urlNote__title">URLs are not the meter.</h3>
+          <p class="urlNote__body">
+            A crawl of one route can surface thousands of URLs that share a single template. limena evaluates
+            representative pages, reports the rest as potential affected surface, and never bills you for the size of
+            the crawl. One template fix can clear the whole route.
+          </p>
+        </div>
+        <div class="urlNote__panel" role="img" aria-label="Example: route /pro/* has 1,746 URLs discovered, 5 representative pages evaluated, a potential shared-template barrier detected, and a potential affected surface of up to 1,746 URLs.">
+          <p class="urlNote__route">/pro/*</p>
+          <dl class="urlNote__rows">
+            <div class="urlNote__row"><dt>URLs discovered</dt><dd>1,746</dd></div>
+            <div class="urlNote__row"><dt>Representative pages evaluated</dt><dd>5</dd></div>
+            <div class="urlNote__row"><dt>Shared-template barrier</dt><dd>Detected</dd></div>
+            <div class="urlNote__row"><dt>Potential affected surface</dt><dd>Up to 1,746 URLs</dd></div>
+          </dl>
+        </div>
+      </div>
     </div>
   </section>
 
@@ -322,8 +355,8 @@ const faq = [
         </div>
 
         <p class="agency__note">
-          Every workspace carries the same capability as a direct plan, scoped to one product per client. A client with
-          several products, or one needing governance controls, moves onto a direct plan you can resell.
+          Every workspace runs the full loop, scoped to one property per client. A client with several properties, or
+          one needing enterprise controls, moves onto a direct plan you can resell.
         </p>
       </div>
 
@@ -384,22 +417,43 @@ const faq = [
   <!-- COMPARISON -->
   <section class="band band--paper">
     <div class="band__inner">
-      <h2 class="h2 matrix__h2">What is in each plan</h2>
+      <h2 class="h2 matrix__h2">How the plans scale</h2>
 
       <div class="tableWrap">
         <table class="matrix">
-          <caption class="visually-hidden">Capabilities included in the Assess, Operate, and Govern plans.</caption>
+          <caption class="visually-hidden">
+            What every plan includes, and how scope scales across the Team, Growth, and Enterprise plans.
+          </caption>
           <thead>
             <tr>
               <th scope="col">Capability</th>
-              <th scope="col">Assess</th>
-              <th scope="col">Operate</th>
-              <th scope="col">Govern</th>
+              <th scope="col">Team</th>
+              <th scope="col">Growth</th>
+              <th scope="col">Enterprise</th>
             </tr>
           </thead>
           <tbody>
+            <tr class="matrix__group">
+              <th scope="rowgroup" colspan="4">The operating loop, in every plan</th>
+            </tr>
             {
-              matrix.map(([label, a, b, c]) => (
+              matrixCore.map(([label, a, b, c]) => (
+                <tr>
+                  <th scope="row">{label}</th>
+                  {[a, b, c].map(() => (
+                    <td class="cell--yes">
+                      <span aria-hidden="true">✓</span>
+                      <span class="visually-hidden">Included</span>
+                    </td>
+                  ))}
+                </tr>
+              ))
+            }
+            <tr class="matrix__group">
+              <th scope="rowgroup" colspan="4">Scale and environment</th>
+            </tr>
+            {
+              matrixScale.map(([label, a, b, c]) => (
                 <tr>
                   <th scope="row">{label}</th>
                   {[a, b, c].map((v) => (
@@ -425,6 +479,12 @@ const faq = [
           </tbody>
         </table>
       </div>
+
+      <p class="matrixNote">
+        Enterprise agreements are scoped to the deployment, and large ones scale with it. The private runner executes
+        evaluations inside your own infrastructure, retrieving credentials from your own secret manager, so protected
+        environments never open a door to limena cloud. Scoped with your security team during review.
+      </p>
     </div>
   </section>
 
@@ -446,8 +506,8 @@ const faq = [
   </section>
 
   <CtaBand
-    heading="Start with one product."
-    body="We will test it, show you what matters most, and price the programme around what we find. No obligation to continue."
+    heading="Land with one experience."
+    body="We will baseline one property, monitor one to three journeys that matter, and prove the loop works before you commit to more. Pilots run 60 to 90 days and credit toward an annual agreement."
     primaryLabel="Book a demo"
     primaryHref="/contact"
     secondaryLabel="Test a page free"
@@ -666,8 +726,51 @@ const faq = [
     margin-top: 2px;
   }
 
-  .plansNote {
+  /* ---------- Loop strip ---------- */
+
+  .loopStrip {
     margin-top: 32px;
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: var(--r-card);
+    padding: 28px 30px;
+  }
+
+  .loopStrip__label {
+    font-family: var(--mono);
+    font-size: 10.5px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--green-hover);
+    margin-bottom: 16px;
+  }
+
+  .loopStrip__list {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px 20px;
+  }
+
+  .loopStrip__item {
+    display: flex;
+    gap: 9px;
+    align-items: flex-start;
+    font-size: 14px;
+    line-height: 1.4;
+    color: var(--ink-700);
+    font-weight: 600;
+  }
+
+  .loopStrip__item :global(svg) {
+    margin-top: 1px;
+    flex-shrink: 0;
+  }
+
+  .loopStrip__note {
+    margin-top: 20px;
+    padding-top: 18px;
+    border-top: 1px solid rgba(22, 38, 28, 0.07);
     font-size: 14px;
     line-height: 1.65;
     color: var(--muted);
@@ -678,7 +781,7 @@ const faq = [
 
   .drivers {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: repeat(3, 1fr);
     gap: 18px;
   }
 
@@ -686,15 +789,13 @@ const faq = [
     padding: 30px;
   }
 
-  .driver__icon {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 40px;
-    height: 40px;
-    border-radius: 11px;
-    background: var(--green-tint);
-    margin-bottom: 16px;
+  .driver__n {
+    font-family: var(--mono);
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    color: var(--green-hover);
+    margin-bottom: 14px;
   }
 
   .driver__title {
@@ -710,18 +811,65 @@ const faq = [
     color: var(--ink-500);
   }
 
-  .driver__body + .driver__body {
-    margin-top: 12px;
+  /* ---------- URL note ---------- */
+
+  .urlNote {
+    margin-top: 20px;
+    display: grid;
+    grid-template-columns: 0.52fr 0.48fr;
+    gap: 40px;
+    align-items: center;
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: var(--r-card);
+    padding: 34px;
   }
 
-  .seatsNote {
-    margin-top: 20px;
-    padding: 18px 22px;
-    background: var(--green-tint);
-    border-radius: var(--r-control);
-    font-size: 14.5px;
-    line-height: 1.6;
-    color: var(--ink-700);
+  .urlNote__title {
+    font-size: 21px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    margin-bottom: 10px;
+  }
+
+  .urlNote__body {
+    font-size: 15px;
+    line-height: 1.65;
+    color: var(--ink-500);
+  }
+
+  .urlNote__panel {
+    background: var(--evergreen);
+    border-radius: var(--r-card-sm);
+    padding: 24px 26px;
+  }
+
+  .urlNote__route {
+    font-family: var(--mono);
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--green-light);
+    margin-bottom: 16px;
+  }
+
+  .urlNote__row {
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 9px 0;
+    border-top: 1px solid var(--on-dark-border);
+  }
+
+  .urlNote__row dt {
+    font-size: 13.5px;
+    color: var(--on-dark-sage);
+  }
+
+  .urlNote__row dd {
+    font-size: 13.5px;
+    font-weight: 700;
+    color: var(--paper);
+    text-align: right;
   }
 
   /* ---------- Agency ---------- */
@@ -928,7 +1076,20 @@ const faq = [
     text-align: center;
   }
 
-  .matrix tbody th {
+  .matrix__group th {
+    padding: 16px 24px 12px;
+    background: var(--sunken);
+    border-bottom: 1px solid var(--border);
+    font-family: var(--mono);
+    font-size: 10.5px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--green-hover);
+    text-align: left;
+  }
+
+  .matrix tbody tr:not(.matrix__group) th {
     padding: 14px 24px;
     font-size: 15px;
     font-weight: 400;
@@ -942,10 +1103,6 @@ const faq = [
   .matrix tbody tr:not(:last-child) th,
   .matrix tbody tr:not(:last-child) td {
     border-bottom: 1px solid rgba(22, 38, 28, 0.06);
-  }
-
-  .matrix tbody tr:nth-child(even) {
-    background: var(--sunken);
   }
 
   .cell--yes {
@@ -962,6 +1119,14 @@ const faq = [
   .cell--text {
     font-size: 14px;
     font-weight: 600;
+  }
+
+  .matrixNote {
+    margin-top: 24px;
+    font-size: 14px;
+    line-height: 1.65;
+    color: var(--muted);
+    max-width: 90ch;
   }
 
   /* ---------- FAQ ---------- */
@@ -1008,6 +1173,13 @@ const faq = [
     .risks,
     .faq {
       grid-template-columns: 1fr;
+    }
+    .loopStrip__list {
+      grid-template-columns: 1fr;
+    }
+    .urlNote {
+      grid-template-columns: 1fr;
+      gap: 24px;
     }
     .agency {
       gap: 32px;
